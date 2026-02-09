@@ -8,8 +8,11 @@ import Skills from "./components/Skills";
 import { Outlet } from "react-router-dom";
 import Project from "./components/Project";
 import Contact from "./components/Contact";
+import { store } from "./utils/store";
+import { Provider } from "react-redux";
 const AppLayout = () => {
   return (
+    <Provider store={store}>
     <div>
       <Header />
       <Outlet />
@@ -19,6 +22,7 @@ const AppLayout = () => {
       <Project />
       <Contact />
     </div>
+    </Provider>
   );
 };
 

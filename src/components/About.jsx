@@ -1,35 +1,73 @@
-import {User, Briefcase,Folder} from "lucide-react"
+import { servicesData } from "../utils/aboutservice";
 const About = () => {
-    return (
-        <div className="w-full bg-white/40">
-            <div className="flex flex-col gap-5 max-w-7xl mx-auto items-center p-10 pt-20 pb-20 text-center ">
-                <h1 className="text-2xl text-yellow-700 font-lato font-semibold">ABOUT ME</h1>
-               <ul className="flex flex-col gap-3 max-w-[90%]">
-                <li className="text-3xl text-black text-left font-semibold"> Crafting clean and thoughtful web experiences</li>
-                <li className="text-[20px] text-stone-800/70 font-lato text-left">I’m a frontend developer passionate about building responsive, user-friendly web applications using React and JavaScript, with a focus on clean UI and smooth user experience.</li>
-                </ul>
-                <div className="flex w-[70%] justify-between">
-                    <div className="items-start  text-start">
-                        <h1 className="">🧩 Frontend Developer</h1>
-                        <h1>⚡ Performance</h1>
-                        <h1>🎨 UI/UX Designer</h1>
-                        <h1>♿ Accessibility</h1>
+  return (
+    <div className="w-full h-auto pt-20 pb-20 ">
+      <div className="flex flex-col gap-5 bg-white max-w-7xl mx-auto items-center pt-32 pb-16 p-10 rounded-lg text-center ">
+        <h1 className="text-[20px] text-yellow-700 font-lato font-semibold">
+          ABOUT ME
+        </h1>
+        <ul className="gap-3">
+          <li className="text-[20px] flex flex-col gap-5 text-stone-800/70 pt-5 pb-5 font-lato text-left">
+            <p className="font-lato">
+              I create modern web experiences that focus on usability
+              accessibility and performance. My goal is to build interfaces that
+              are intuitive, well-structured, and seamless across devices.
+            </p>
 
-                    </div>
-                    <div>
-                        <h1>What I Do</h1>
-                        <ul className="flex flex-col gap-3">
-                            <li>Build responsive and modern web applications</li>
-                            <li>Create clean, intuitive user interfaces</li>
-                            <li>Optimize performance for fast load times</li>
-                            <li>Ensure accessibility and inclusive design</li>
-                            
-                        </ul>
-                    </div>
-                </div>
-            </div>
-
+            <p className="font-lato">
+              My work emphasizes clean, reusable code and modern frontend
+              practices, while focusing on UI/UX design to deliver visually
+              balanced and user-friendly layouts. I enjoy turning ideas and
+              designs into scalable, responsive solutions that provide
+              meaningful experiences for users. Check my work below, or feel
+              free to reach out at{" "}
+              <a href="mailto:priyanshuvwork@gmail.com">
+                {" "}
+                <b className="text-yellow-600 font-medium font-lato">email</b>
+              </a>{" "}
+              or +91-8273552253.
+            </p>
+          </li>
+        </ul>
+      </div>
+      <div className="bg-white max-w-7xl mx-auto pb-32 gap-5">
+        <div className="flex flex-row gap-2 items-center ml-8">
+          <b className="text-yellow-500 mb-2">→</b>
+          <h1 className="text-[20px] font-lato text-yellow-500 font-bold">
+            SERVICES
+          </h1>
         </div>
-    );
+
+        <h1 className="text-5xl text-stone-500/40 font-bold mb-10 mt-5 ml-[4.6%]">
+          What I Can Do For You
+        </h1>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-16 px-8">
+          {servicesData.map((service, index) => {
+            const Icon = service.icon;
+
+            return (
+              <div
+                key={index}
+                className="flex flex-col gap-5 bg-amber-50/5 hover:shadow-lg border border-amber-500/20 hover:border-amber-200 rounded-lg p-10 h-[250px]"
+              >
+                <div className="bg-yellow-500/20 p-2 rounded-lg text-yellow-600 w-[50px] h-[50px] flex items-center justify-center">
+                  {service.icon}
+                </div>
+
+                <h2 className="text-xl font-lato text-stone-700">
+                  {service.title}
+                </h2>
+
+                <p className="font-lato text-stone-600">
+                  {service.description}
+                </p>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
 };
 export default About;

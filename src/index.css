@@ -17,5 +17,9 @@
 }
 
 body {
-  background-color:#fffaf0;
+  background-color:#fcf8ef;
+}
+
+.animate-slideLeft:hover {
+  animation-play-state: paused;
 }
