@@ -3,7 +3,7 @@ import Skillimage from "../utils/skillimage";
 const Skill = () => {
   return (
     <div className="w-full pb-32 bg-white/90">
-      <div className="max-w-7xl mx-auto pt-32 flex flex-col gap-4">
+      <div className="max-w-7xl mx-auto pt-32 flex flex-col gap-5">
         
         <h1 className="text-[20px] text-yellow-700 font-lato font-semibold text-center">
           SKILLS

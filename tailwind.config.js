@@ -16,7 +16,7 @@ export default {
         },
       },
       animation: {
-        slideLeft: "slideLeft linear infinite",
+        slideLeft: "slideLeft 10s linear infinite",
       },
     },
   },
