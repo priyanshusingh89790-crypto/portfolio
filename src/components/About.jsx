@@ -1,13 +1,13 @@
 import { servicesData } from "../utils/aboutservice";
 const About = () => {
   return (
-    <div id="about" className="w-full h-auto pt-20 pb-20 ">
-      <div className="flex flex-col gap-5 bg-white max-w-7xl mx-auto items-center pt-32 pb-16 p-10 rounded-lg text-center ">
-        <h1 className="text-[20px] text-yellow-700 font-lato font-semibold">
+    <div id="about" className="w-full dark:bg-neutral-900 h-auto pt-20 pb-20 ">
+      <div className="flex flex-col gap-5 dark:bg-neutral-950 bg-white max-w-7xl mx-auto items-center pt-32 pb-16 p-10 rounded-lg text-center ">
+        <h1 className="text-[20px] text-yellow-700 dark:text-yellow-600 font-lato font-semibold">
           ABOUT ME
         </h1>
         <ul className="gap-3">
-          <li className="text-[20px] flex flex-col gap-5 text-stone-800/70 pt-5 pb-5 font-lato text-left">
+          <li className="text-[20px] flex flex-col gap-5 dark:text-stone-200 text-stone-800/70 pt-5 pb-5 font-lato text-left">
             <p className="font-lato">
               I create modern web experiences that focus on usability
               accessibility and performance. My goal is to build interfaces that
@@ -23,22 +23,22 @@ const About = () => {
               free to reach out at{" "}
               <a href="mailto:priyanshuvwork@gmail.com">
                 {" "}
-                <b className="text-yellow-600 font-medium font-lato">email</b>
+                <b className="text-yellow-600 dark:text-yellow-600 font-medium font-lato">email</b>
               </a>{" "}
               or +91-8273552253.
             </p>
           </li>
         </ul>
       </div>
-      <div className="bg-white max-w-7xl mx-auto pb-32 gap-5">
+      <div className="bg-white dark:bg-neutral-950 max-w-7xl mx-auto pb-32 gap-5">
         <div className="flex flex-row gap-2 items-center ml-8">
           <b className="text-yellow-500 mb-2">→</b>
-          <h1 className="text-[20px] font-lato text-yellow-500 font-bold">
+          <h1 className="text-[20px] font-lato text-yellow-500 dark:text-yellow-600 font-bold">
             SERVICES
           </h1>
         </div>
 
-        <h1 className="text-5xl text-stone-700/60 font-bold mb-10 mt-5 ml-[4.6%]">
+        <h1 className="text-5xl text-stone-700/60 dark:text-stone-500 font-bold mb-10 mt-5 ml-[4.6%]">
           What I Can Do For You
         </h1>
 
@@ -49,17 +49,18 @@ const About = () => {
             return (
               <div
                 key={index}
-                className="flex flex-col gap-5 bg-amber-50/5 hover:shadow-lg border border-amber-500/20 hover:border-amber-200 rounded-lg p-10 h-[250px]"
+                className="flex reveal-top flex-col gap-5 bg-amber-50/5 hover:shadow-lg border
+                 dark:border-amber-300/20 dark:hover:border-amber-200/60 dark:bg-stone-800/70 border-amber-500/20 hover:border-amber-200 rounded-lg p-10 h-[250px]"
               >
-                <div className="bg-yellow-500/20 p-2 rounded-lg text-yellow-600 w-[50px] h-[50px] flex items-center justify-center">
+                <div className="bg-yellow-500/20 dark:bg-yellow-100/20 dark:text-amber-500 p-2 rounded-lg text-yellow-600 w-[50px] h-[50px] flex items-center justify-center">
                   {service.icon}
                 </div>
 
-                <h2 className="text-xl font-lato text-stone-700">
+                <h2 className="text-xl font-lato dark:text-stone-200 text-stone-700">
                   {service.title}
                 </h2>
 
-                <p className="font-lato text-stone-600">
+                <p className="font-lato dark:text-stone-200 text-stone-600">
                   {service.description}
                 </p>
               </div>

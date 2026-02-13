@@ -3,14 +3,14 @@ import { ArrowRight } from "lucide-react";
 
 const Project = () => {
   return (
-    <div id="projects" className="w-full p-20 overflow-x-hidden">
-      <div className="max-w-7xl bg-white rounded-lg mx-auto px-4 items-center justify-center pt-32 pb-32 flex flex-col gap-5">
+    <div id="projects" className="w-full dark:bg-neutral-950 p-20 overflow-x-hidden">
+      <div className="max-w-7xl bg-white dark:bg-neutral-900 rounded-lg mx-auto px-4 items-center justify-center pt-32 pb-32 flex flex-col gap-5">
         
-        <h1 className="text-[20px] text-yellow-700 font-lato font-semibold">
+        <h1 className="text-[20px] dark:text-yellow-600 text-yellow-700 font-lato font-semibold">
           PROJECTS
         </h1>
 
-        <h1 className="text-5xl font-semibold text-stone-700 text-center lg:text-left">
+        <h1 className="text-5xl font-semibold text-stone-700 dark:text-stone-200 text-center lg:text-left">
           Selected Work & Case Studies
         </h1>
 
@@ -24,7 +24,7 @@ const Project = () => {
                 className={`flex flex-col h-auto lg:flex-row gap-20  
                 transition-all 
                 rounded-lg ${
-                  !isEven ? "lg:flex-row-reverse" : ""
+                  !isEven ? "lg:flex-row-reverse reveal-left" : "reveal-right"
                 }`}
               >
                 {/* Image Section */}
@@ -46,13 +46,13 @@ const Project = () => {
 
                 {/* Content Section */}
                 <div className="w-full lg:w-[50%] p-2 lg:p-4 lg:mt-10">
-                  <h1 className="text-3xl text-stone-700 font-semibold">
+                  <h1 className="text-3xl dark:text-stone-200 text-stone-700 font-semibold">
                     {project.title}
                   </h1>
 
-                  <div className="border-b-2 border-yellow-800/20 w-full lg:max-w-[550px] pt-8" />
+                  <div className="border-b-2 dark:border-yellow-500/50 border-yellow-800/20 w-full lg:max-w-[550px] pt-8" />
 
-                  <p className="text-[18px] lg:text-[20px] pt-10 text-stone-600 font-lato">
+                  <p className="text-[18px] dark:text-stone-200 text-stone-600 font-lato lg:text-[20px] pt-10 ">
                     {project.description}
                   </p>
 
@@ -60,7 +60,7 @@ const Project = () => {
                     {project.tags.map((tag, i) => (
                       <li
                         key={i}
-                        className="font-lato text-white text-[14px] bg-amber-500 px-3 py-1 rounded-lg"
+                        className="font-lato text-white text-[14px] dark:text-stone-100 dark:bg-amber-600/80 bg-amber-500 px-3 py-1 rounded-lg"
                       >
                         {tag}
                       </li>
@@ -70,7 +70,7 @@ const Project = () => {
                   <button
                     onClick={() => window.open(project.link, "_blank")}
                     className="mt-10 text-amber-500 text-[18px] lg:text-[20px] 
-                    hover:text-amber-400 border-b-2 border-amber-500/30 
+                    hover:text-amber-400 border-b-2 dark:border-amber-500/30 dark:text-amber-500/90 dark:hover:text-amber-400 dark:hover:border-amber-500/70 border-amber-500/90 
                     flex items-center gap-2 p-2"
                   >
                     View Project <ArrowRight />
