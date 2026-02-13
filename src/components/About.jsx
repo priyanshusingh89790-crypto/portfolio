@@ -1,7 +1,7 @@
 import { servicesData } from "../utils/aboutservice";
 const About = () => {
   return (
-    <div className="w-full h-auto pt-20 pb-20 ">
+    <div id="about" className="w-full h-auto pt-20 pb-20 ">
       <div className="flex flex-col gap-5 bg-white max-w-7xl mx-auto items-center pt-32 pb-16 p-10 rounded-lg text-center ">
         <h1 className="text-[20px] text-yellow-700 font-lato font-semibold">
           ABOUT ME
@@ -38,7 +38,7 @@ const About = () => {
           </h1>
         </div>
 
-        <h1 className="text-5xl text-stone-500/40 font-bold mb-10 mt-5 ml-[4.6%]">
+        <h1 className="text-5xl text-stone-700/60 font-bold mb-10 mt-5 ml-[4.6%]">
           What I Can Do For You
         </h1>
 

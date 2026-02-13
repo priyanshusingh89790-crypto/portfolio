@@ -2,14 +2,14 @@ import Skillimage from "../utils/skillimage";
 
 const Skill = () => {
   return (
-    <div className="w-full pb-32 bg-white/90">
+    <div id="skills" className="w-full pb-32 bg-white/90">
       <div className="max-w-7xl mx-auto pt-32 flex flex-col gap-5">
         
         <h1 className="text-[20px] text-yellow-700 font-lato font-semibold text-center">
           SKILLS
         </h1>
 
-        <h1 className="text-5xl font-semibold text-stone-900/80 text-center">
+        <h1 className="text-5xl font-semibold text-stone-700 text-center">
           Technologies I use to build the web
         </h1>
 
