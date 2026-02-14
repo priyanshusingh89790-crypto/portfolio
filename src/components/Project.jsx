@@ -3,32 +3,32 @@ import { ArrowRight } from "lucide-react";
 
 const Project = () => {
   return (
-    <div id="projects" className="w-full dark:bg-neutral-950 p-20 overflow-x-hidden">
-      <div className="max-w-7xl bg-white dark:bg-neutral-900 rounded-lg mx-auto px-4 items-center justify-center pt-32 pb-32 flex flex-col gap-5">
+    <div id="projects" className="w-full dark:bg-neutral-950 pt-32 overflow-x-hidden">
+      <div className="lg:max-w-[80%] md:w-[90%] lg:p-0 p-2 bg-white dark:bg-neutral-900 rounded-lg mx-auto items-center  justify-center pt-32 pb-32 flex flex-col gap-5">
         
-        <h1 className="text-[20px] dark:text-yellow-600 text-yellow-700 font-lato font-semibold">
+        <h1 className="lg:text-[20px] md:text-[18px] text-[16px] dark:text-yellow-600 text-yellow-700 font-lato font-semibold">
           PROJECTS
         </h1>
 
-        <h1 className="text-5xl font-semibold text-stone-700 dark:text-stone-200 text-center lg:text-left">
+        <h1 className="lg:text-5xl md:text-4xl text-3xl font-semibold text-stone-700 dark:text-stone-200 text-center lg:text-left">
           Selected Work & Case Studies
         </h1>
 
-        <div className="pt-20 flex flex-col gap-32">
+        <div className="pt-10 flex lg:m-[4.6%] flex-col gap-32">
           {projectData.map((project, index) => {
             const isEven = index % 2 === 0;
 
             return (
               <div
                 key={index}
-                className={`flex flex-col h-auto lg:flex-row gap-20  
+                className={`flex flex-col h-auto p-2 lg:p-0 lg:flex-row gap-16 w-full  
                 transition-all 
                 rounded-lg ${
                   !isEven ? "lg:flex-row-reverse reveal-left" : "reveal-right"
                 }`}
               >
                 {/* Image Section */}
-                <div className="relative w-full lg:w-[50%] h-[220px] lg:h-[500px] border border-yellow-800/20 rounded-lg overflow-hidden">
+                <div className="relative w-full lg:w-[50%] h-[220px] md:h-[400px] lg:h-[500px] border border-yellow-800/20 rounded-lg overflow-hidden">
                   <img
                     src={project.image}
                     alt="background"
@@ -45,14 +45,14 @@ const Project = () => {
                 </div>
 
                 {/* Content Section */}
-                <div className="w-full lg:w-[50%] p-2 lg:p-4 lg:mt-10">
-                  <h1 className="text-3xl dark:text-stone-200 text-stone-700 font-semibold">
+                <div className="w-full lg:w-[50%] lg:mt-10">
+                  <h1 className="lg:text-3xl text-2xl dark:text-stone-200 text-stone-700 font-semibold">
                     {project.title}
                   </h1>
 
                   <div className="border-b-2 dark:border-yellow-500/50 border-yellow-800/20 w-full lg:max-w-[550px] pt-8" />
 
-                  <p className="text-[18px] dark:text-stone-200 text-stone-600 font-lato lg:text-[20px] pt-10 ">
+                  <p className="text-[16px] dark:text-stone-200 text-stone-600 font-lato lg:text-[20px] pt-10 ">
                     {project.description}
                   </p>
 

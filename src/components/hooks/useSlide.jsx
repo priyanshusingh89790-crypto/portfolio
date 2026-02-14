@@ -3,8 +3,14 @@ import { useEffect } from "react";
 const useSlide = () => {
   useEffect(() => {
     const elements = document.querySelectorAll(
-      ".reveal-left, .reveal-right, .reveal-down, .reveal-top"
+      ".reveal-left, .reveal-right, .reveal-top, .reveal-down"
     );
+
+    requestAnimationFrame(() => {
+      elements.forEach((el) => {
+        el.classList.add("reveal-init");
+      });
+    });
 
     const observer = new IntersectionObserver(
       (entries) => {

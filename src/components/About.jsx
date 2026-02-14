@@ -1,13 +1,13 @@
 import { servicesData } from "../utils/aboutservice";
 const About = () => {
   return (
-    <div id="about" className="w-full dark:bg-neutral-900 h-auto pt-20 pb-20 ">
-      <div className="flex flex-col gap-5 dark:bg-neutral-950 bg-white max-w-7xl mx-auto items-center pt-32 pb-16 p-10 rounded-lg text-center ">
-        <h1 className="text-[20px] text-yellow-700 dark:text-yellow-600 font-lato font-semibold">
+    <div id="about" className="w-full dark:bg-neutral-900 h-auto lg:pt-20 md:pt-10 lg:pb-20 ">
+      <div className="flex flex-col gap-5 dark:bg-neutral-950 bg-white lg:max-w-[80%] md:w-[90%] mx-auto items-center pt-32 pb-16 lg:p-10 p-4 rounded-t-lg text-center ">
+        <h1 className="lg:text-[20px] md:text-[18px] text-[16px] text-yellow-700 dark:text-yellow-600 font-lato font-semibold">
           ABOUT ME
         </h1>
         <ul className="gap-3">
-          <li className="text-[20px] flex flex-col gap-5 dark:text-stone-200 text-stone-800/70 pt-5 pb-5 font-lato text-left">
+          <li className="lg:text-[20px] md:text-[18px] text-[16px] flex flex-col gap-5 dark:text-stone-200 text-stone-800/70 pt-5 pb-5 font-lato text-left">
             <p className="font-lato">
               I create modern web experiences that focus on usability
               accessibility and performance. My goal is to build interfaces that
@@ -30,19 +30,19 @@ const About = () => {
           </li>
         </ul>
       </div>
-      <div className="bg-white dark:bg-neutral-950 max-w-7xl mx-auto pb-32 gap-5">
+      <div className="bg-white dark:bg-neutral-950 lg:max-w-[80%] md:w-[90%] mx-auto md:mb-20 lg:pb-20  lg:mb-0 rounded-b-lg gap-5">
         <div className="flex flex-row gap-2 items-center ml-8">
           <b className="text-yellow-500 mb-2">→</b>
-          <h1 className="text-[20px] font-lato text-yellow-500 dark:text-yellow-600 font-bold">
+          <h1 className="lg:text-[20px] md:text-[18px] text-[16px] font-lato text-yellow-500 dark:text-yellow-600 font-bold">
             SERVICES
           </h1>
         </div>
 
-        <h1 className="text-5xl text-stone-700/60 dark:text-stone-500 font-bold mb-10 mt-5 ml-[4.6%]">
+        <h1 className="lg:text-5xl md:text-4xl text-3xl text-stone-700/60 dark:text-stone-500 font-bold mb-10 mt-5 m-[4.6%]">
           What I Can Do For You
         </h1>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-16 px-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-14 m-[4.6%]">
           {servicesData.map((service, index) => {
             const Icon = service.icon;
 

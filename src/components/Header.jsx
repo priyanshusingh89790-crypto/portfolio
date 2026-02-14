@@ -1,14 +1,12 @@
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import { LOGO } from "../utils/constant";
+import UseDarkmodebutton from "./hooks/usedarkmodebutton";
 import useDarkMode from "./hooks/usedarkmode";
-import { Moon, Sun } from "lucide-react";
-
 const Header = () => {
   const [open, setOpen] = useState(false);
-  const { theme, toggleTheme } = useDarkMode();
+ const {theme,toggleTheme} = useDarkMode();
   const navItems = ["Home", "About", "Skills", "Projects", "Contact"];
-
   const handleScroll = (id) => {
     const section = document.getElementById(id);
     if (section) {
@@ -16,33 +14,21 @@ const Header = () => {
       setOpen(false);
     }
   };
-
+  
   return (
-    <header
+    <header id="header-root"
       className={
         theme === "dark"
-          ? "bg-neutral-900 fixed top-0 left-0 right-0 z-[999] h-20"
-          : "bg-orange-950 fixed top-0 left-0 right-0 z-[999] h-20"
+          ? "bg-neutral-900 fixed inset-x-0 top-0 z-[999] h-20"
+          : "bg-orange-950 fixed inset-x-0 top-0 z-[999] h-20"
       }
     >
-      <div className="flex items-center justify-between h-full max-w-7xl mx-auto">
-        <h1 className="font-bold text-white text-4xl">{LOGO}</h1>
+<div className="flex items-center justify-between h-full w-full px-4 md:w-[90%] lg:px-0 lg:max-w-[80%] mx-auto">
 
-        <ul className="hidden md:flex items-center gap-10 text-white">
-          <div
-            onClick={() => toggleTheme()}
-            className={`relative w-14 h-7 flex items-center rounded-full cursor-pointer transition-colors duration-300
-  ${theme === "dark" ? "bg-white" : "bg-amber-200"}`}
-          >
-            <div className="absolute inset-0 flex justify-between items-center px-2">
-              <Moon size={14} className="text-black" />
-              <Sun size={14} className="text-yellow-600" />
-            </div>
-            <div
-              className={`absolute top-1 w-5 h-5 dark:bg-black bg-white rounded-full shadow-md transition-transform duration-300
-    ${theme === "dark" ? "translate-x-7" : "translate-x-1"}`}
-            />
-          </div>
+        <h1 className="font-bold text-white flex-shrink-0">{LOGO}</h1>
+        <ul className="hidden md:flex items-center lg:gap-10 gap-8 text-white">
+         <UseDarkmodebutton theme={theme} toggleTheme={toggleTheme}/>  
+
           {navItems.map((item) => (
             <li
               key={item}
@@ -53,10 +39,12 @@ const Header = () => {
             </li>
           ))}
         </ul>
-
-        <button className="md:hidden text-white" onClick={() => setOpen(!open)}>
+        <div className="flex gap-4 items-center md:hidden">
+          <UseDarkmodebutton theme={theme} toggleTheme={toggleTheme}/>
+        <button className=" text-white" onClick={() => setOpen(!open)}>
           {open ? <X size={32} /> : <Menu size={32} />}
         </button>
+        </div>
       </div>
 
       {open && (

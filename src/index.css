@@ -1,12 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;600;700&display=swap');
 
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
 
 
 * {
@@ -26,42 +24,46 @@ body {
 html {
   scroll-behavior: smooth;
 }
-.reveal {
+.reveal-left,
+.reveal-right,
+.reveal-top,
+.reveal-down {
   opacity: 0;
-  transform: translateX(-80px);
-  transition: all 0.8s ease;
+  transition: transform 0.8s ease, opacity 0.8s ease;
 }
+
 .reveal-left {
-  opacity: 0;
   transform: translateX(-80px);
-  transition: all 0.8s ease;
 }
 
 .reveal-right {
-  opacity: 0;
   transform: translateX(80px);
-  transition: all 0.8s ease;
-}
-
-.reveal-left.show,
-.reveal-right.show {
-  opacity: 1;
-  transform: translateX(0);
-}
-.reveal-down {
-  opacity: 0;
-  transform: translateY(-80px);
-  transition: all 0.8s ease;
 }
 
 .reveal-top {
-  opacity: 0;
   transform: translateY(80px);
-  transition: all 0.8s ease;
 }
 
-.reveal-down.show,
-.reveal-top.show {
+.reveal-down {
+  transform: translateY(-80px);
+}
+
+.reveal-left.show,
+.reveal-right.show,
+.reveal-top.show,
+.reveal-down.show {
   opacity: 1;
-  transform: translateY(0);
+  transform: translate3d(0, 0, 0);
+}
+
+#form-message {
+  font-weight: bold;
+  font-size: 14px;
+  transition: 0.3s ease;
+}
+html {
+  scrollbar-gutter: stable;
+}
+html, body {
+  overflow-x: hidden;
 }
