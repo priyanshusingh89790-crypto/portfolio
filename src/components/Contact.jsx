@@ -53,13 +53,13 @@ const Contact = () => {
             </div>
           </div>
 
-          <div className="flex w-full flex-col reveal-right bg-white/30 dark:bg-stone-900 border dark:border-yellow-600/30 border-yellow-800/20 shadow-lg justify-between rounded-lg lg:p-10 p-5 md:p-8 lg:items-center items-stretch gap-5">
+          <div className="flex w-full flex-col lg:w-[50%] reveal-right bg-white/30 dark:bg-stone-900 border dark:border-yellow-600/30 border-yellow-800/20 shadow-lg justify-between rounded-lg lg:p-10 p-5 md:p-8 lg:items-center items-stretch gap-5">
             <form
               ref={formfill}
               onSubmit={sendEmail}
-              className="flex flex-col gap-5"
+              className="flex flex-col w-full  gap-5"
             >
-              <div className="flex flex-col lg:w-[550px] w-full gap-5">
+              <div className="flex flex-col w-full gap-5">
                 <label className="lg:text-[18px] text-[16px] font-lato dark:text-yellow-600 text-yellow-700">
                   {" "}
                   Name

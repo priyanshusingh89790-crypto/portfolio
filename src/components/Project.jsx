@@ -3,8 +3,8 @@ import { ArrowRight } from "lucide-react";
 
 const Project = () => {
   return (
-    <div id="projects" className="w-full dark:bg-neutral-950 pt-32 overflow-x-hidden">
-      <div className="lg:max-w-[80%] md:w-[90%] lg:p-0 p-2 bg-white dark:bg-neutral-900 rounded-lg mx-auto items-center  justify-center pt-32 pb-32 flex flex-col gap-5">
+    <div id="projects" className="w-full dark:bg-neutral-950 pt-32 lg:pb-32 md:pb-0 pb-0 overflow-x-hidden">
+      <div className="lg:max-w-[80%] md:w-[90%] lg:pt-32 lg:pb-32 lg:p-0 p-2 bg-white dark:bg-neutral-900 rounded-lg mx-auto items-center  justify-center pt-32 pb-32 flex flex-col gap-5">
         
         <h1 className="lg:text-[20px] md:text-[18px] text-[16px] dark:text-yellow-600 text-yellow-700 font-lato font-semibold">
           PROJECTS
