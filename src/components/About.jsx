@@ -1,8 +1,9 @@
 import { servicesData } from "../utils/aboutservice";
 const About = () => {
   return (
-    <div id="about" className="w-full dark:bg-neutral-900 h-auto lg:pt-20 md:pt-10 lg:pb-20 ">
-      <div className="flex flex-col gap-5 dark:bg-neutral-950 bg-white lg:max-w-[80%] md:w-[90%] mx-auto items-center pt-32 pb-16 lg:p-10 p-4 rounded-t-lg text-center ">
+    <div id="about" className="w-full dark:bg-neutral-900 h-auto lg:pt-20 md:pt-10 md:pb-20 lg:pb-20 ">
+      <div className="flex flex-col rounded-lg dark:bg-neutral-950 bg-white lg:max-w-[80%] md:w-[90%] mx-auto items-center ">
+      <div className="flex flex-col gap-5 mx-auto items-center pt-32 pb-16 lg:p-10 p-4 text-center ">
         <h1 className="lg:text-[20px] md:text-[18px] text-[16px] text-yellow-700 dark:text-yellow-600 font-lato font-semibold">
           ABOUT ME
         </h1>
@@ -30,7 +31,7 @@ const About = () => {
           </li>
         </ul>
       </div>
-      <div className="bg-white dark:bg-neutral-950 lg:max-w-[80%] md:w-[90%] mx-auto md:mb-20 lg:pb-20  lg:mb-0 rounded-b-lg gap-5">
+      <div className="pb-20 gap-5">
         <div className="flex flex-row gap-2 items-center ml-8">
           <b className="text-yellow-500 mb-2">→</b>
           <h1 className="lg:text-[20px] md:text-[18px] text-[16px] font-lato text-yellow-500 dark:text-yellow-600 font-bold">
@@ -67,6 +68,7 @@ const About = () => {
             );
           })}
         </div>
+      </div>
       </div>
     </div>
   );

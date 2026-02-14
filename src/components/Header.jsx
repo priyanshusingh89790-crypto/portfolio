@@ -27,7 +27,7 @@ const Header = () => {
 
         <h1 className="font-bold text-white flex-shrink-0">{LOGO}</h1>
         <ul className="hidden md:flex items-center lg:gap-10 gap-8 text-white">
-         <UseDarkmodebutton theme={theme} toggleTheme={toggleTheme}/>  
+         <UseDarkmodebutton theme={theme} toggleTheme={toggleTheme} className="cursor-pointer"/>  
 
           {navItems.map((item) => (
             <li
@@ -40,7 +40,7 @@ const Header = () => {
           ))}
         </ul>
         <div className="flex gap-4 items-center md:hidden">
-          <UseDarkmodebutton theme={theme} toggleTheme={toggleTheme}/>
+          <UseDarkmodebutton theme={theme} toggleTheme={toggleTheme} className=""/>
         <button className=" text-white" onClick={() => setOpen(!open)}>
           {open ? <X size={32} /> : <Menu size={32} />}
         </button>
@@ -48,20 +48,33 @@ const Header = () => {
       </div>
 
       {open && (
-        <div className="md:hidden bg-orange-950 border-t border-white/10">
-          <ul className="flex flex-col items-center gap-6 py-6 text-white">
-            {navItems.map((item) => (
-              <li
-                key={item}
-                onClick={() => handleScroll(item.toLowerCase())}
-                className="cursor-pointer hover:text-yellow-400 font-lato text-lg"
-              >
-                {item}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
+  <>
+    {/* Overlay */}
+    <div
+      className="fixed inset-0 z-[998]"
+      onClick={() => setOpen(false)}
+    ></div>
+
+    {/* Mobile Menu */}
+    <div className="fixed top-20 left-0 right-0 z-[999] md:hidden dark:bg-neutral-950 bg-orange-950 border-t border-white/10">
+      <ul className="flex flex-col items-start p-4 gap-6 py-6 text-white">
+        {navItems.map((item) => (
+          <li
+            key={item}
+            onClick={() => {
+              handleScroll(item.toLowerCase());
+              setOpen(false);
+            }}
+            className="cursor-pointer hover:text-yellow-400 font-lato text-lg"
+          >
+            {item}
+          </li>
+        ))}
+      </ul>
+    </div>
+  </>
+)}
+
     </header>
   );
 };
