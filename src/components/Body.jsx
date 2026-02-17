@@ -55,12 +55,12 @@ const Body = () => {
         />
       </div>
     {showArrow && (
-        <div className="absolute lg:block  bottom-8 animate-bounce dark:text-yellow-500 left-1/2 -translate-x-1/2 text-yellow-700 flex flex-col items-center gap-2"> 
-        <h1 className="font-lato hidden md:hidden lg:block text-center">Scroll down</h1>
-            <Mouse className="hidden md:hidden lg:block"/>
+        <div className="absolute lg:block bottom-8 animate-bounce dark:text-yellow-500 left-1/2 -translate-x-1/2 text-yellow-700 items-center justify-center flex flex-col gap-2"> 
+        <h1 className="font-lato hidden md:hidden lg:block">Scroll down</h1>
+            <Mouse className="hidden md:hidden w-6 h-6 mx-auto lg:block"/>
         
         </div>
-        )}
+        )} 
     </div>
     </div>
   );
