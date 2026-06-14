@@ -1,69 +1,132 @@
-@import url('https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Syne:wght@400;500;600;700;800&display=swap');
 
-
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-
-* {
-  font-family: "Playfair Display", serif;
+:root {
+  --bg-primary:    #080810;   /* near-black, main background */
+  --bg-secondary:  #0f0f1a;   /* slightly lighter, card surfaces */
+  --bg-card:       rgba(255, 255, 255, 0.03); /* glassmorphism card fill */
+  --border-glass:  rgba(255, 255, 255, 0.08); /* glassmorphism card border */
+  --accent-indigo: #6366f1;   /* primary accent — indigo */
+  --accent-cyan:   #22d3ee;   /* secondary accent — cyan */
+  --accent-glow:   rgba(99, 102, 241, 0.15); /* indigo glow for shadows */
+  --text-primary:  #f1f5f9;   /* near-white, headings */
+  --text-secondary:#94a3b8;   /* muted, body copy */
+  --text-muted:    #475569;   /* very muted, labels */
+  --font-display:  'Syne', sans-serif;       /* all headings */
+  --font-body:     'Space Grotesk', sans-serif; /* all body text */
+  --radius-card:   20px;
+  --radius-pill:   100px;
+  --transition:    cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
-.font-lato {
-  font-family: 'Lato', system-ui, sans-serif;
-}
 
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: auto; } /* Lenis handles smooth scroll, NOT CSS */
 body {
-  background-color:#fcf8ef;
-}
-
-.animate-slideLeft:hover {
-  animation-play-state: paused;
-}
-html {
-  scroll-behavior: smooth;
-}
-.reveal-left,
-.reveal-right,
-.reveal-top,
-.reveal-down {
-  opacity: 0;
-  transition: transform 0.8s ease, opacity 0.8s ease;
-}
-
-.reveal-left {
-  transform: translateX(-80px);
-}
-
-.reveal-right {
-  transform: translateX(80px);
-}
-
-.reveal-top {
-  transform: translateY(80px);
-}
-
-.reveal-down {
-  transform: translateY(-80px);
-}
-
-.reveal-left.show,
-.reveal-right.show,
-.reveal-top.show,
-.reveal-down.show {
-  opacity: 1;
-  transform: translate3d(0, 0, 0);
-}
-
-#form-message {
-  font-weight: bold;
-  font-size: 14px;
-  transition: 0.3s ease;
-}
-html {
-  scrollbar-gutter: stable;
-}
-html, body {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-body);
   overflow-x: hidden;
+  cursor: none; /* hide default cursor — custom cursor replaces it */
+}
+
+section {
+  padding: 8rem 3rem;   /* top/bottom: 8rem, left/right: 3rem */
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.section-label {
+  font-size: 0.75rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+  display: block;
+}
+
+section h2 {
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 700;
+  line-height: 1.05;
+  margin-bottom: 4rem;
+}
+
+/* Marquee animations */
+@keyframes marquee-left  { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+@keyframes marquee-right { from { transform: translateX(-50%); } to { transform: translateX(0); } }
+
+.marquee-track { display: flex; width: max-content; }
+.marquee-item  {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 3vw, 2.5rem);
+  font-weight: 700;
+  color: var(--text-muted);
+  white-space: nowrap;
+  padding: 0 1.5rem;
+  transition: color 0.3s;
+}
+.marquee-item:hover { color: var(--accent-indigo); }
+.marquee-wrapper { overflow: hidden; padding: 1.5rem 0; border-top: 1px solid var(--border-glass); border-bottom: 1px solid var(--border-glass); }
+
+/* Contact form styles */
+.contact-input {
+  background: var(--bg-card);
+  border: 1px solid var(--border-glass);
+  border-radius: 10px;
+  padding: 0.875rem 1.25rem;
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.3s, box-shadow 0.3s;
+  resize: none;
+}
+.contact-input:focus {
+  border-color: var(--accent-indigo);
+  box-shadow: 0 0 0 3px rgba(99,102,241,0.1);
+}
+.contact-submit {
+  background: var(--accent-indigo);
+  color: white;
+  border: none;
+  border-radius: var(--radius-pill);
+  padding: 0.875rem 2rem;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  cursor: none;
+  align-self: flex-start;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+.contact-submit:hover { transform: translateY(-2px); box-shadow: 0 16px 32px rgba(99,102,241,0.3); }
+
+/* Pulse animation for available badge */
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.2); }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  body { cursor: auto; }           /* restore default cursor on mobile */
+  .custom-cursor { display: none; } /* hide custom cursor */
+
+  section { padding: 5rem 1.5rem; }
+
+  /* About: stack columns */
+  .about-grid { grid-template-columns: 1fr; }
+  .about-sticky { position: static; }
+
+  /* Projects: disable horizontal scroll, stack vertically */
+  /* On mobile, the project track should NOT be horizontal */
+  /* Instead: set height: auto on the section, remove the pin, and render cards stacked */
+
+  /* Skills bento: 1 column */
+  .skills-grid { grid-template-columns: 1fr; }
+
+  /* Timeline: single column, no alternating */
+  .timeline-line { display: none; }
+  .timeline-item { margin-left: 0; margin-right: 0; text-align: left; }
+
+  /* Hero h1 */
+  h1 { font-size: clamp(3rem, 15vw, 5rem); }
 }
