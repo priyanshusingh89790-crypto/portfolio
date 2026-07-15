@@ -63,34 +63,11 @@ export default function CustomCursor() {
     <>
       <div
         ref={dotRef}
-        className="custom-cursor"
-        style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          width: '8px',
-          height: '8px',
-          background: 'var(--accent-indigo)',
-          borderRadius: '50%',
-          zIndex: 9998,
-          pointerEvents: 'none'
-        }}
+        className="custom-cursor fixed top-0 left-0 w-2 h-2 bg-[var(--accent-indigo)] rounded-full z-[9998] pointer-events-none"
       />
       <div
         ref={ringRef}
-        className="custom-cursor"
-        style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          width: '40px',
-          height: '40px',
-          border: '1.5px solid var(--accent-indigo)',
-          borderRadius: '50%',
-          zIndex: 9998,
-          pointerEvents: 'none',
-          background: 'transparent'
-        }}
+        className="custom-cursor fixed top-0 left-0 w-10 h-10 border-[1.5px] border-[var(--accent-indigo)] rounded-full z-[9998] pointer-events-none bg-transparent"
       />
     </>
   );

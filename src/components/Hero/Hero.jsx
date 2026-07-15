@@ -120,7 +120,7 @@ export default function Hero() {
   // Helper function to wrap letters in spans
   const wrapLetters = (text) => {
     return text.split('').map((char, i) => (
-      <span key={i} style={{ display: 'inline-block', overflow: 'hidden' }}>
+      <span key={i} className="inline-block overflow-hidden">
         {char === ' ' ? '\u00A0' : char}
       </span>
     ));
@@ -129,18 +129,11 @@ export default function Hero() {
   return (
     <section
       ref={heroRef}
-      style={{
-        position: 'relative',
-        height: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        overflow: 'hidden'
-      }}
+      className="relative h-screen flex items-center justify-center overflow-hidden"
     >
       {/* Three.js Canvas Background */}
       <Canvas
-        style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
+        className="!absolute top-0 left-0 w-full h-full"
         camera={{ position: [0, 0, 1], fov: 75 }}
         gl={{ antialias: true, alpha: true }}
       >
@@ -149,45 +142,24 @@ export default function Hero() {
 
       {/* Hero Text Layer */}
       <div
-        style={{
-          position: 'relative',
-          zIndex: 2,
-          textAlign: 'center',
-          padding: '0 2rem'
-        }}
+        className="relative z-[2] text-center px-8"
       >
         {/* Eyebrow */}
         <div
-          className="hero-eyebrow"
-          style={{
-            fontSize: '0.875rem',
-            letterSpacing: '0.2em',
-            textTransform: 'uppercase',
-            color: 'var(--text-muted)',
-            marginBottom: '1.5rem',
-            fontFamily: 'var(--font-body)'
-          }}
+          className="hero-eyebrow text-sm tracking-[0.2em] uppercase text-[var(--text-muted)] mb-6 font-[family-name:var(--font-body)]"
         >
           Frontend Developer · Intern @ Company
         </div>
 
         {/* Main heading */}
         <h1
-          style={{
-            fontFamily: 'var(--font-display)',
-            fontWeight: 800,
-            lineHeight: 0.9,
-            letterSpacing: '-0.03em',
-            color: 'var(--text-primary)',
-            fontSize: 'clamp(4rem, 10vw, 9rem)'
-          }}
+          className="font-[family-name:var(--font-display)] font-extrabold leading-[0.9] tracking-[-0.03em] text-[var(--text-primary)] text-[clamp(4rem,10vw,9rem)]"
         >
-          <div className="hero-line-1" style={{ overflow: 'hidden' }}>
+          <div className="hero-line-1 overflow-hidden">
             {wrapLetters('Priyanshu')}
           </div>
           <div 
-            className="hero-line-2" 
-            style={{ overflow: 'hidden', color: 'var(--accent-indigo)' }}
+            className="hero-line-2 overflow-hidden text-[var(--accent-indigo)]" 
           >
             {wrapLetters('Singh.')}
           </div>
@@ -195,33 +167,14 @@ export default function Hero() {
 
         {/* Description */}
         <p
-          className="hero-desc"
-          style={{
-            fontSize: '1.125rem',
-            color: 'var(--text-secondary)',
-            maxWidth: '480px',
-            margin: '1.5rem auto 2.5rem',
-            lineHeight: 1.7,
-            fontFamily: 'var(--font-body)'
-          }}
+          className="hero-desc text-[1.125rem] text-[var(--text-secondary)] max-w-[480px] mt-6 mx-auto mb-10 leading-[1.7] font-[family-name:var(--font-body)]"
         >
           I craft fast, beautiful interfaces — and I know what's happening on the other side too.
         </p>
 
         {/* CTA Button */}
         <button
-          className="hero-cta"
-          style={{
-            background: 'var(--accent-indigo)',
-            color: 'white',
-            border: 'none',
-            padding: '0.875rem 2rem',
-            borderRadius: 'var(--radius-pill)',
-            fontFamily: 'var(--font-body)',
-            fontSize: '1rem',
-            cursor: 'none',
-            transition: 'transform 0.3s, box-shadow 0.3s'
-          }}
+          className="hero-cta bg-[var(--accent-indigo)] text-white border-none py-[0.875rem] px-8 rounded-[var(--radius-pill)] font-[family-name:var(--font-body)] text-base cursor-none transition-all duration-300"
           onClick={() => document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' })}
           onMouseEnter={(e) => {
             e.target.style.transform = 'translateY(-3px)';
@@ -238,14 +191,7 @@ export default function Hero() {
 
       {/* Scroll Indicator */}
       <div
-        className="scroll-indicator"
-        style={{
-          position: 'absolute',
-          bottom: '2rem',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          zIndex: 2
-        }}
+        className="scroll-indicator absolute bottom-8 left-1/2 -translate-x-1/2 z-[2]"
       >
         <svg
           width="24"

@@ -35,91 +35,36 @@ export default function Navbar() {
   return (
     <nav
       ref={navRef}
-      style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        zIndex: 100,
-        padding: '1.5rem 3rem',
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        background: scrolled ? 'rgba(8, 8, 16, 0.8)' : 'transparent',
-        backdropFilter: scrolled ? 'blur(12px)' : 'none',
-        transition: 'background 0.3s, backdrop-filter 0.3s'
-      }}
+      className={`fixed top-0 left-0 right-0 z-[100] py-6 px-12 flex justify-between items-center transition-all duration-300 ${scrolled ? 'bg-[rgba(8,8,16,0.8)] backdrop-blur-md' : 'bg-transparent'}`}
     >
       <div
-        className="nav-item"
-        style={{
-          fontFamily: 'var(--font-display)',
-          fontWeight: 800,
-          fontSize: '1.25rem',
-          color: 'var(--accent-indigo)'
-        }}
+        className="nav-item font-[family-name:var(--font-display)] font-extrabold text-xl text-[var(--accent-indigo)]"
       >
         PS.
       </div>
 
-      <div style={{ display: 'flex', gap: '2rem', alignItems: 'center' }}>
+      <div className="flex gap-8 items-center">
         <a
           href="#projects"
-          className="nav-item"
-          style={{
-            color: 'var(--text-primary)',
-            textDecoration: 'none',
-            fontSize: '0.9rem',
-            fontFamily: 'var(--font-body)',
-            transition: 'color 0.3s'
-          }}
-          onMouseEnter={(e) => e.target.style.color = 'var(--accent-indigo)'}
-          onMouseLeave={(e) => e.target.style.color = 'var(--text-primary)'}
+          className="nav-item text-[var(--text-primary)] no-underline text-[0.9rem] font-[family-name:var(--font-body)] transition-colors duration-300 hover:text-[var(--accent-indigo)]"
         >
           Work
         </a>
         <a
           href="#skills"
-          className="nav-item"
-          style={{
-            color: 'var(--text-primary)',
-            textDecoration: 'none',
-            fontSize: '0.9rem',
-            fontFamily: 'var(--font-body)',
-            transition: 'color 0.3s'
-          }}
-          onMouseEnter={(e) => e.target.style.color = 'var(--accent-indigo)'}
-          onMouseLeave={(e) => e.target.style.color = 'var(--text-primary)'}
+          className="nav-item text-[var(--text-primary)] no-underline text-[0.9rem] font-[family-name:var(--font-body)] transition-colors duration-300 hover:text-[var(--accent-indigo)]"
         >
           Skills
         </a>
         <a
           href="#about"
-          className="nav-item"
-          style={{
-            color: 'var(--text-primary)',
-            textDecoration: 'none',
-            fontSize: '0.9rem',
-            fontFamily: 'var(--font-body)',
-            transition: 'color 0.3s'
-          }}
-          onMouseEnter={(e) => e.target.style.color = 'var(--accent-indigo)'}
-          onMouseLeave={(e) => e.target.style.color = 'var(--text-primary)'}
+          className="nav-item text-[var(--text-primary)] no-underline text-[0.9rem] font-[family-name:var(--font-body)] transition-colors duration-300 hover:text-[var(--accent-indigo)]"
         >
           About
         </a>
         <a
           href="#contact"
-          className="nav-item"
-          style={{
-            color: 'var(--text-primary)',
-            textDecoration: 'none',
-            fontSize: '0.9rem',
-            fontFamily: 'var(--font-body)',
-            transition: 'color 0.3s'
-          }}
-          onMouseEnter={(e) => e.target.style.color = 'var(--accent-indigo)'}
-          onMouseLeave={(e) => e.target.style.color = 'var(--text-primary)'}
+          className="nav-item text-[var(--text-primary)] no-underline text-[0.9rem] font-[family-name:var(--font-body)] transition-colors duration-300 hover:text-[var(--accent-indigo)]"
         >
           Contact
         </a>

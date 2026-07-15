@@ -59,96 +59,50 @@ export default function Experience() {
   }, []);
 
   return (
-    <section id="experience" ref={timelineRef} style={{ position: 'relative' }}>
+    <section id="experience" ref={timelineRef} className="relative">
       <span className="section-label">04 — Experience</span>
       <h2>Where I've been</h2>
 
-      <div style={{ position: 'relative', padding: '2rem 0' }}>
+      <div className="relative py-8">
         {/* Center timeline line */}
         <div
-          className="timeline-line"
-          style={{
-            position: 'absolute',
-            left: '50%',
-            top: 0,
-            bottom: 0,
-            width: '1px',
-            background: 'var(--border-glass)',
-            transform: 'translateX(-50%)'
-          }}
+          className="timeline-line absolute left-1/2 top-0 bottom-0 w-[1px] bg-[var(--border-glass)] -translate-x-1/2"
         />
 
         {timeline.map((item, index) => (
           <div
             key={index}
-            className="timeline-item"
-            style={{
-              display: 'flex',
-              justifyContent: index % 2 === 0 ? 'flex-end' : 'flex-start',
-              marginBottom: '4rem',
-              position: 'relative'
-            }}
+            className={`timeline-item flex relative mb-16 ${index % 2 === 0 ? 'justify-end' : 'justify-start'}`}
           >
             {/* Content */}
             <div
-              style={{
-                width: '45%',
-                padding: index % 2 === 0 ? '0 3rem 0 0' : '0 0 0 3rem',
-                textAlign: index % 2 === 0 ? 'right' : 'left'
-              }}
+              className={`w-[45%] ${index % 2 === 0 ? 'pr-12 text-right' : 'pl-12 text-left'}`}
             >
               <div
-                style={{
-                  fontSize: '3rem',
-                  fontWeight: 800,
-                  color: 'var(--text-muted)',
-                  fontFamily: 'var(--font-display)',
-                  marginBottom: '0.5rem'
-                }}
+                className="text-5xl font-extrabold text-[var(--text-muted)] font-[family-name:var(--font-display)] mb-2"
               >
                 {item.year}
               </div>
               <div
-                style={{
-                  fontSize: '1.25rem',
-                  fontWeight: 600,
-                  color: 'var(--text-primary)',
-                  marginBottom: '0.25rem'
-                }}
+                className="text-xl font-semibold text-[var(--text-primary)] mb-1"
               >
                 {item.role}
               </div>
               <div
-                style={{
-                  fontSize: '0.9rem',
-                  color: 'var(--accent-cyan)',
-                  marginBottom: '1rem'
-                }}
+                className="text-sm text-[var(--accent-cyan)] mb-4"
               >
                 {item.company}
               </div>
               <p
-                style={{
-                  fontSize: '0.875rem',
-                  color: 'var(--text-secondary)',
-                  lineHeight: 1.7,
-                  marginBottom: '1rem'
-                }}
+                className="text-sm text-[var(--text-secondary)] leading-[1.7] mb-4"
               >
                 {item.description}
               </p>
-              <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', justifyContent: index % 2 === 0 ? 'flex-end' : 'flex-start' }}>
+              <div className={`flex gap-2 flex-wrap ${index % 2 === 0 ? 'justify-end' : 'justify-start'}`}>
                 {item.tags.map(tag => (
                   <span
                     key={tag}
-                    style={{
-                      fontSize: '0.75rem',
-                      padding: '0.25rem 0.75rem',
-                      borderRadius: 'var(--radius-pill)',
-                      border: '1px solid var(--accent-indigo)44',
-                      color: 'var(--accent-indigo)',
-                      background: 'var(--accent-indigo)11'
-                    }}
+                    className="text-xs py-1 px-3 rounded-[var(--radius-pill)] border border-indigo-500/40 text-[var(--accent-indigo)] bg-indigo-500/10"
                   >
                     {tag}
                   </span>
@@ -158,18 +112,7 @@ export default function Experience() {
 
             {/* Center dot */}
             <div
-              style={{
-                position: 'absolute',
-                left: '50%',
-                top: '0',
-                transform: 'translateX(-50%)',
-                width: '16px',
-                height: '16px',
-                borderRadius: '50%',
-                background: 'var(--accent-indigo)',
-                border: '3px solid var(--bg-primary)',
-                zIndex: 1
-              }}
+              className="absolute left-1/2 top-0 -translate-x-1/2 w-4 h-4 rounded-full bg-[var(--accent-indigo)] border-[3px] border-[var(--bg-primary)] z-10"
             />
           </div>
         ))}

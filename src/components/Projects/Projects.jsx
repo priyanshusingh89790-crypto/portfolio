@@ -1,200 +1,242 @@
 import { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import projectData from '../../utils/projectcontent';
+import PenguinWalker from './PenguinWalker';
+import ProjectModal from './ProjectModal';
 
 gsap.registerPlugin(ScrollTrigger);
 
-export default function Projects() {
-  const sectionRef = useRef(null);
-  const stickyRef = useRef(null);
-  const trackRef = useRef(null);
-  const progressRef = useRef(null);
-  const [isMobile, setIsMobile] = useState(false);
-
-  const projects = [
-    {
-      id: 1,
-      title: "ERP System",
-      description: "Built a full-scale ERP platform from scratch during internship. Set up Redux architecture, integrated REST APIs, and created dashboards for real business workflows.",
-      tech: ["React", "Redux", "REST API", "Tailwind CSS"],
-      color: "#6366f1",
-      image: "/images/project-erp.png",
-      link: "#"
-    },
-    {
-      id: 2,
-      title: "Project Two",
-      description: "Replace this with your actual project description. Keep it to 2 lines max.",
-      tech: ["React", "JavaScript", "CSS"],
-      color: "#22d3ee",
-      image: "/images/project-2.png",
-      link: "#"
-    },
-    {
-      id: 3,
-      title: "Project Three",
-      description: "Replace this with your actual project description. Keep it to 2 lines max.",
-      tech: ["TypeScript", "Tailwind", "API"],
-      color: "#a78bfa",
-      image: "/images/project-3.png",
-      link: "#"
-    }
-  ];
+function ProjectCard({ project, index, onOpen }) {
+  const cardRef = useRef(null);
+  const imgRef = useRef(null);
+  const glowRef = useRef(null);
 
   useEffect(() => {
-    setIsMobile(window.innerWidth < 768);
-
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-
-    window.addEventListener('resize', handleResize);
-
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-    if (!prefersReducedMotion && !isMobile) {
-      const totalWidth = trackRef.current.scrollWidth - window.innerWidth + (3 * 16);
-
-      gsap.to(trackRef.current, {
-        x: -totalWidth,
-        ease: 'none',
+    // Scroll-reveal: staggered slide-up
+    gsap.fromTo(
+      cardRef.current,
+      { y: 80, opacity: 0 },
+      {
+        y: 0,
+        opacity: 1,
+        duration: 0.9,
+        ease: 'power3.out',
+        delay: index * 0.12,
         scrollTrigger: {
-          trigger: sectionRef.current,
-          start: 'top top',
-          end: 'bottom bottom',
-          scrub: 1,
-          pin: stickyRef.current,
-          onUpdate: (self) => {
-            progressRef.current.style.width = (self.progress * 100) + '%';
-          }
-        }
-      });
-    }
-
-    return () => {
-      window.removeEventListener('resize', handleResize);
-      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
-    };
-  }, [isMobile]);
-
-  function ProjectCard({ project }) {
-    const cardRef = useRef();
-    const imgRef = useRef();
-
-    const onEnter = () => gsap.to(imgRef.current, { scale: 1.06, duration: 0.6, ease: 'power2.out' });
-    const onLeave = () => gsap.to(imgRef.current, { scale: 1.0, duration: 0.6, ease: 'power2.out' });
-
-    return (
-      <div
-        ref={cardRef}
-        onMouseEnter={onEnter}
-        onMouseLeave={onLeave}
-        style={{
-          flexShrink: 0,
-          width: 'min(80vw, 760px)',
-          height: '75vh',
-          borderRadius: 'var(--radius-card)',
-          background: 'var(--bg-card)',
-          border: '1px solid var(--border-glass)',
-          backdropFilter: 'blur(12px)',
-          overflow: 'hidden',
-          position: 'relative',
-          cursor: 'none'
-        }}
-      >
-        {/* Image — fills top 60% of card */}
-        <div style={{ height: '60%', overflow: 'hidden' }}>
-          <img
-            ref={imgRef}
-            src={project.image}
-            alt={project.title}
-            style={{ width: '100%', height: '100%', objectFit: 'cover', transformOrigin: 'center' }}
-            onError={(e) => { e.target.style.background = project.color; e.target.style.opacity = 0.3; }}
-          />
-        </div>
-
-        {/* Card content — bottom 40% */}
-        <div style={{ padding: '1.75rem 2rem' }}>
-          <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1.75rem', fontWeight: 700, marginBottom: '0.5rem' }}>
-            {project.title}
-          </h3>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', lineHeight: 1.6, marginBottom: '1rem' }}>
-            {project.description}
-          </p>
-          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '1.25rem' }}>
-            {project.tech.map(t => (
-              <span key={t} style={{
-                fontSize: '0.75rem', padding: '0.25rem 0.75rem',
-                borderRadius: 'var(--radius-pill)',
-                border: `1px solid ${project.color}44`,
-                color: project.color,
-                background: `${project.color}11`
-              }}>{t}</span>
-            ))}
-          </div>
-          <a href={project.link} style={{ color: 'var(--text-primary)', fontSize: '0.9rem', display: 'inline-flex', alignItems: 'center', gap: '0.5rem', textDecoration: 'none' }}>
-            View project <span style={{ transition: 'transform 0.3s' }}>→</span>
-          </a>
-        </div>
-
-        {/* Accent glow at card top edge */}
-        <div style={{
-          position: 'absolute', top: 0, left: 0, right: 0, height: '2px',
-          background: `linear-gradient(90deg, transparent, ${project.color}, transparent)`
-        }} />
-      </div>
+          trigger: cardRef.current,
+          start: 'top 88%',
+          toggleActions: 'play none none reverse',
+        },
+      }
     );
-  }
+  }, [index]);
 
-  if (isMobile) {
-    // Mobile: stack vertically
-    return (
-      <section id="projects" style={{ height: 'auto' }}>
-        <div style={{ marginBottom: '3rem' }}>
-          <span className="section-label">02 — Work</span>
-          <h2>Selected Projects</h2>
-        </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-          {projects.map(p => <ProjectCard key={p.id} project={p} />)}
-        </div>
-      </section>
-    );
-  }
+  const onEnter = () => {
+    gsap.to(imgRef.current, { scale: 1.07, duration: 0.6, ease: 'power2.out' });
+    gsap.to(glowRef.current, { opacity: 1, duration: 0.4 });
+  };
+  const onLeave = () => {
+    gsap.to(imgRef.current, { scale: 1, duration: 0.6, ease: 'power2.out' });
+    gsap.to(glowRef.current, { opacity: 0, duration: 0.4 });
+  };
 
-  // Desktop: horizontal scroll
   return (
-    <section
-      id="projects"
-      ref={sectionRef}
-      style={{ position: 'relative', height: `${projects.length * 100}vh`, padding: 0 }}
+    <div
+      ref={cardRef}
+      onMouseEnter={onEnter}
+      onMouseLeave={onLeave}
+      onClick={() => onOpen(project)}
+      className="group relative rounded-[var(--radius-card)] overflow-hidden border cursor-none"
+      style={{
+        background: 'var(--bg-card)',
+        borderColor: 'var(--border-glass)',
+        backdropFilter: 'blur(12px)',
+        willChange: 'transform, opacity',
+      }}
     >
-      <div ref={stickyRef} style={{ position: 'sticky', top: 0, height: '100vh', overflow: 'hidden' }}>
-        {/* Section heading — outside the scrolling track */}
-        <div className="projects-header" style={{ position: 'absolute', top: '2.5rem', left: '3rem', zIndex: 10 }}>
-          <span className="section-label">02 — Work</span>
-          <h2 style={{ marginBottom: 0 }}>Selected Projects</h2>
-        </div>
+      {/* Top accent line */}
+      <div
+        className="absolute top-0 left-0 right-0 h-[2px] z-10"
+        style={{ background: `linear-gradient(90deg, transparent, ${project.color}, transparent)` }}
+      />
 
-        {/* Horizontal track — this is what GSAP moves */}
+      {/* Glow on hover */}
+      <div
+        ref={glowRef}
+        className="absolute inset-0 z-0 opacity-0 pointer-events-none"
+        style={{
+          background: `radial-gradient(ellipse at 50% 0%, ${project.color}18 0%, transparent 70%)`,
+        }}
+      />
+
+      {/* Image */}
+      <div className="h-[220px] md:h-[260px] overflow-hidden relative">
+        <img
+          ref={imgRef}
+          src={project.image}
+          alt={project.title}
+          className="w-full h-full object-cover origin-center"
+          style={{ willChange: 'transform' }}
+          onError={(e) => {
+            e.target.style.background = project.color;
+            e.target.style.opacity = '0.25';
+          }}
+        />
+        {/* Image overlay gradient */}
         <div
-          ref={trackRef}
+          className="absolute inset-0"
+          style={{ background: 'linear-gradient(to bottom, transparent 60%, rgba(0,0,0,0.45))' }}
+        />
+
+        {/* "Click to view" pill — appears on hover */}
+        <div
+          className="absolute bottom-3 right-3 text-xs font-semibold py-1.5 px-3 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0"
           style={{
-            display: 'flex',
-            gap: '2rem',
-            padding: '0 3rem',
-            alignItems: 'center',
-            height: '100%',
-            willChange: 'transform'
+            background: project.color,
+            color: 'white',
+            fontFamily: 'var(--font-body)',
           }}
         >
-          {projects.map(p => <ProjectCard key={p.id} project={p} />)}
-        </div>
-
-        {/* Progress bar */}
-        <div style={{ position: 'absolute', bottom: '2rem', left: '3rem', right: '3rem', height: '1px', background: 'var(--border-glass)' }}>
-          <div ref={progressRef} style={{ height: '100%', background: 'var(--accent-indigo)', width: '0%', transition: 'none' }} />
+          View project ↗
         </div>
       </div>
-    </section>
+
+      {/* Card body */}
+      <div className="p-6 md:p-8 relative z-[1]">
+        {/* Number */}
+        <span
+          className="text-[0.7rem] tracking-[0.25em] uppercase mb-1 block"
+          style={{ color: project.color, fontFamily: 'var(--font-body)' }}
+        >
+          {String(index + 1).padStart(2, '0')} — Project
+        </span>
+
+        <h3
+          className="text-[1.5rem] font-bold mb-2 leading-tight"
+          style={{ fontFamily: 'var(--font-display)', color: 'var(--text-primary)' }}
+        >
+          {project.title}
+        </h3>
+
+        <p
+          className="text-[0.875rem] leading-[1.65] mb-5 line-clamp-2"
+          style={{ color: 'var(--text-secondary)', fontFamily: 'var(--font-body)' }}
+        >
+          {project.description}
+        </p>
+
+        {/* Tech chips */}
+        <div className="flex gap-2 flex-wrap">
+          {project.tech.slice(0, 3).map((t) => (
+            <span
+              key={t}
+              className="text-[0.72rem] py-[3px] px-3 rounded-full border"
+              style={{
+                borderColor: `${project.color}44`,
+                color: project.color,
+                background: `${project.color}11`,
+                fontFamily: 'var(--font-body)',
+              }}
+            >
+              {t}
+            </span>
+          ))}
+          {project.tech.length > 3 && (
+            <span
+              className="text-[0.72rem] py-[3px] px-3 rounded-full border"
+              style={{
+                borderColor: 'var(--border-glass)',
+                color: 'var(--text-muted)',
+                background: 'transparent',
+                fontFamily: 'var(--font-body)',
+              }}
+            >
+              +{project.tech.length - 3}
+            </span>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function Projects() {
+  const sectionRef = useRef(null);
+  const headingRef = useRef(null);
+  const [activeProject, setActiveProject] = useState(null);
+
+  useEffect(() => {
+    // Section heading reveal
+    gsap.fromTo(
+      headingRef.current,
+      { y: 40, opacity: 0 },
+      {
+        y: 0,
+        opacity: 1,
+        duration: 1,
+        ease: 'power3.out',
+        scrollTrigger: {
+          trigger: headingRef.current,
+          start: 'top 85%',
+          toggleActions: 'play none none reverse',
+        },
+      }
+    );
+
+    return () => ScrollTrigger.getAll().forEach((t) => t.kill());
+  }, []);
+
+  return (
+    <>
+      <section
+        id="projects"
+        ref={sectionRef}
+        className="relative"
+        style={{ paddingBottom: '10rem' }} // extra space for penguin
+      >
+        {/* Heading */}
+        <div ref={headingRef} className="mb-16">
+          <span className="section-label">02 — Work</span>
+          <h2 style={{ marginBottom: 0 }}>Selected Projects</h2>
+          <p
+            className="mt-3 text-base max-w-[480px]"
+            style={{ color: 'var(--text-secondary)', fontFamily: 'var(--font-body)' }}
+          >
+            A handful of things I've shipped — click any card to dive in.
+          </p>
+        </div>
+
+        {/* Project grid — 2 columns on desktop, 1 on mobile */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
+          {projectData.map((project, i) => (
+            <ProjectCard
+              key={project.id}
+              project={project}
+              index={i}
+              onOpen={setActiveProject}
+            />
+          ))}
+        </div>
+
+        {/* Penguin walker — absolute at bottom of section */}
+        <div className="relative mt-16 h-[120px] overflow-hidden">
+          {/* Ground line */}
+          <div
+            className="absolute bottom-[6px] left-0 right-0 h-[1px]"
+            style={{ background: 'var(--border-glass)' }}
+          />
+          <PenguinWalker sectionRef={sectionRef} />
+        </div>
+      </section>
+
+      {/* Modal */}
+      {activeProject && (
+        <ProjectModal
+          project={activeProject}
+          onClose={() => setActiveProject(null)}
+        />
+      )}
+    </>
   );
 }

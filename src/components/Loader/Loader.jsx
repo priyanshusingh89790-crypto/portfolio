@@ -49,60 +49,27 @@ export default function Loader({ onComplete }) {
   return (
     <div
       ref={loaderRef}
-      style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        width: '100vw',
-        height: '100vh',
-        zIndex: 9999,
-        background: 'var(--bg-primary)',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center'
-      }}
+      className="fixed top-0 left-0 w-screen h-screen z-[9999] bg-[var(--bg-primary)] flex flex-col items-center justify-center"
     >
       <div
         ref={logoRef}
-        style={{
-          fontFamily: 'var(--font-display)',
-          fontSize: '4rem',
-          fontWeight: 800,
-          color: 'var(--accent-indigo)',
-          marginBottom: '2rem'
-        }}
+        className="font-[family-name:var(--font-display)] text-[4rem] font-extrabold text-[var(--accent-indigo)] mb-8"
       >
         PS
       </div>
       
       <div
         ref={progressRef}
-        style={{
-          width: '200px',
-          height: '2px',
-          background: 'var(--border-glass)',
-          borderRadius: '2px',
-          overflow: 'hidden',
-          marginBottom: '1rem'
-        }}
+        className="w-[200px] h-[2px] bg-[var(--border-glass)] rounded-[2px] overflow-hidden mb-4"
       >
         <div
-          style={{
-            width: '0%',
-            height: '100%',
-            background: 'var(--accent-indigo)'
-          }}
+          className="w-0 h-full bg-[var(--accent-indigo)]"
         />
       </div>
 
       <div
         ref={counterRef}
-        style={{
-          color: 'var(--text-muted)',
-          fontSize: '0.875rem',
-          fontFamily: 'var(--font-body)'
-        }}
+        className="text-[var(--text-muted)] text-sm font-[family-name:var(--font-body)]"
       >
         0%
       </div>

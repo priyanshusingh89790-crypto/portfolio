@@ -18,6 +18,7 @@ import Skills from './components/Skills/Skills';
 import Experience from './components/Experience/Experience';
 import Contact from './components/Contact/Contact';
 import AudioPlayer from './components/AudioPlayer/AudioPlayer';
+import ThemeToggle from './components/ThemeToggle/ThemeToggle';
 
 function App() {
   const [loaderComplete, setLoaderComplete] = useState(false);
@@ -54,6 +55,7 @@ function App() {
           <Experience />
           <Contact />
           <AudioPlayer />
+          <ThemeToggle />
         </div>
       )}
       <Loader onComplete={() => setLoaderComplete(true)} />

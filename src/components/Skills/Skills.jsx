@@ -72,39 +72,26 @@ export default function Skills() {
       <h2>What I work with</h2>
 
       {/* Marquee rows */}
-      <div className="marquee-wrapper" style={{ marginBottom: '4rem' }}>
-        <div className="marquee-track" style={{ animation: 'marquee-left 20s linear infinite' }}>
+      <div className="marquee-wrapper mb-16">
+        <div className="marquee-track animate-[marquee-left_20s_linear_infinite]">
           <span className="marquee-item">React · TypeScript · JavaScript · Tailwind CSS · Redux · REST APIs · Git · React · TypeScript · JavaScript · Tailwind CSS · Redux · REST APIs · Git ·</span>
         </div>
       </div>
 
-      <div className="marquee-wrapper" style={{ marginBottom: '4rem' }}>
-        <div className="marquee-track" style={{ animation: 'marquee-right 25s linear infinite' }}>
+      <div className="marquee-wrapper mb-16">
+        <div className="marquee-track animate-[marquee-right_25s_linear_infinite]">
           <span className="marquee-item">Prompt Engineering · Figma · HTML5 · CSS3 · Node.js · Firebase · Vite · Prompt Engineering · Figma · HTML5 · CSS3 · Node.js · Firebase · Vite ·</span>
         </div>
       </div>
 
       {/* Bento skill cards grid */}
       <div
-        className="skills-grid"
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(3, 1fr)',
-          gap: '1rem'
-        }}
+        className="skills-grid grid grid-cols-1 md:grid-cols-3 gap-4"
       >
         {skillCards.map((card) => (
           <div
             key={card.title}
-            className="skill-card"
-            style={{
-              background: 'var(--bg-card)',
-              border: '1px solid var(--border-glass)',
-              borderRadius: 'var(--radius-card)',
-              padding: '1.75rem',
-              backdropFilter: 'blur(12px)',
-              transition: 'border-color 0.3s, box-shadow 0.3s'
-            }}
+            className="skill-card bg-[var(--bg-card)] border border-[var(--border-glass)] rounded-[var(--radius-card)] p-7 backdrop-blur-md transition-all duration-300"
             onMouseEnter={(e) => {
               e.currentTarget.style.borderColor = card.accent + '55';
               e.currentTarget.style.boxShadow = `0 0 30px ${card.accent}15`;
@@ -114,12 +101,12 @@ export default function Skills() {
               e.currentTarget.style.boxShadow = 'none';
             }}
           >
-            <div style={{ fontSize: '2rem', marginBottom: '0.75rem', color: card.accent }}>{card.icon}</div>
-            <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1.1rem', fontWeight: 600, marginBottom: '1rem' }}>{card.title}</h3>
-            <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+            <div className="text-3xl mb-3" style={{ color: card.accent }}>{card.icon}</div>
+            <h3 className="font-[family-name:var(--font-display)] text-[1.1rem] font-semibold mb-4">{card.title}</h3>
+            <ul className="list-none flex flex-col gap-[0.4rem]">
               {card.items.map(item => (
-                <li key={item} style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <span style={{ width: 4, height: 4, borderRadius: '50%', background: card.accent, flexShrink: 0 }} />
+                <li key={item} className="text-[0.85rem] text-[var(--text-secondary)] flex items-center gap-2">
+                  <span className="w-1 h-1 rounded-full shrink-0" style={{ background: card.accent }} />
                   {item}
                 </li>
               ))}

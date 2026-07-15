@@ -55,19 +55,13 @@ export default function Contact() {
       {/* Giant heading with text scramble */}
       <h2
         ref={headingRef}
-        style={{
-          fontFamily: 'var(--font-display)',
-          fontSize: 'clamp(3rem, 8vw, 7rem)',
-          fontWeight: 800,
-          lineHeight: 0.9,
-          marginBottom: '1.5rem'
-        }}
+        className="font-[family-name:var(--font-display)] text-[clamp(3rem,8vw,7rem)] font-extrabold leading-[0.9] mb-6"
       >
         Let's build something.
       </h2>
 
       {/* Sub-content */}
-      <p style={{ color: 'var(--text-secondary)', fontSize: '1.125rem', maxWidth: 480, margin: '1.5rem 0' }}>
+      <p className="text-[var(--text-secondary)] text-lg max-w-[480px] my-6">
         Have a project in mind? Want to hire a developer who thinks deeply about UX and code equally?
         Let's talk.
       </p>
@@ -75,34 +69,18 @@ export default function Contact() {
       {/* Email link */}
       <a
         href="mailto:priyanshu@email.com"
-        style={{
-          fontSize: 'clamp(1rem, 2.5vw, 1.5rem)',
-          color: 'var(--accent-cyan)',
-          display: 'inline-block',
-          marginBottom: '2.5rem',
-          textDecoration: 'none',
-          transition: 'color 0.3s'
-        }}
-        onMouseEnter={(e) => e.target.style.color = 'var(--accent-indigo)'}
-        onMouseLeave={(e) => e.target.style.color = 'var(--accent-cyan)'}
+        className="text-[clamp(1rem,2.5vw,1.5rem)] text-[var(--accent-cyan)] inline-block mb-10 no-underline transition-colors duration-300 hover:text-[var(--accent-indigo)]"
       >
         priyanshu@email.com
       </a>
 
       {/* Social row */}
-      <div style={{ display: 'flex', gap: '1.5rem', marginBottom: '3rem' }}>
+      <div className="flex gap-6 mb-12">
         <a
           href="https://github.com/YOUR_HANDLE"
           target="_blank"
           rel="noopener noreferrer"
-          style={{
-            color: 'var(--text-primary)',
-            textDecoration: 'none',
-            fontSize: '0.9rem',
-            transition: 'color 0.3s'
-          }}
-          onMouseEnter={(e) => e.target.style.color = 'var(--accent-indigo)'}
-          onMouseLeave={(e) => e.target.style.color = 'var(--text-primary)'}
+          className="text-[var(--text-primary)] no-underline text-[0.9rem] transition-colors duration-300 hover:text-[var(--accent-indigo)]"
         >
           GitHub →
         </a>
@@ -110,14 +88,7 @@ export default function Contact() {
           href="https://linkedin.com/in/YOUR_HANDLE"
           target="_blank"
           rel="noopener noreferrer"
-          style={{
-            color: 'var(--text-primary)',
-            textDecoration: 'none',
-            fontSize: '0.9rem',
-            transition: 'color 0.3s'
-          }}
-          onMouseEnter={(e) => e.target.style.color = 'var(--accent-indigo)'}
-          onMouseLeave={(e) => e.target.style.color = 'var(--text-primary)'}
+          className="text-[var(--text-primary)] no-underline text-[0.9rem] transition-colors duration-300 hover:text-[var(--accent-indigo)]"
         >
           LinkedIn →
         </a>
@@ -125,7 +96,7 @@ export default function Contact() {
 
       {/* Contact form */}
       <form
-        style={{ maxWidth: 520, marginTop: '3rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}
+        className="max-w-[520px] mt-12 flex flex-col gap-4"
         onSubmit={handleSubmit}
       >
         <input
