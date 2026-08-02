@@ -1,211 +1,313 @@
-import { useEffect, useRef, useMemo } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useRef } from "react"
+import { motion, useScroll, useTransform } from "motion/react"
 
-gsap.registerPlugin(ScrollTrigger);
+const PORTRAIT = "./mypic.jpg"
 
-// ParticleField component for Three.js background
-function ParticleField({ mouse }) {
-  const meshRef = useRef();
+const fd = "var(--font-display, sans-serif)"
+const fm = "var(--font-body, monospace)"
 
-  const positions = useMemo(() => {
-    const arr = new Float32Array(3000 * 3);
-    for (let i = 0; i < 3000; i++) {
-      arr[i * 3] = (Math.random() - 0.5) * 10;
-      arr[i * 3 + 1] = (Math.random() - 0.5) * 10;
-      arr[i * 3 + 2] = (Math.random() - 0.5) * 10;
-    }
-    return arr;
-  }, []);
+export default function HeroAS() {
+  const containerRef = useRef(null)
 
-  useFrame(() => {
-    if (meshRef.current) {
-      meshRef.current.rotation.y += 0.0005;
-      meshRef.current.rotation.x += 0.0002;
+  // ── Primary hero scroll: 0→1 over the 300vh container
+  const { scrollYProgress: sp } = useScroll({
+    target: containerRef,
+    offset: ["start start", "end end"],
+  })
 
-      // Mouse parallax
-      meshRef.current.rotation.y += (mouse.current.x * 0.3 - meshRef.current.rotation.y) * 0.05;
-      meshRef.current.rotation.x += (mouse.current.y * 0.3 - meshRef.current.rotation.x) * 0.05;
-    }
-  });
+  // ── Cinematic exit: driven by the final 100vh of the 400vh container
+  // sp goes 0→1 over 400vh, so the last 100vh = sp 0.75→1.0
+  const exitProgress = useTransform(sp, [0.75, 1.0], [0, 1])
+  const heroScale    = useTransform(exitProgress, [0, 1], [1, 0.92])
+  const heroOpacity  = useTransform(exitProgress, [0, 0.7], [1, 0.4])
+  // perspective Z retreat — expressed as a translateZ equivalent via scaleX trick
+  // We use a wrapper with perspective and scale the inner panel
+  const heroZ        = useTransform(exitProgress, [0, 1], ["perspective(1200px) scale(1) translateZ(0px)", "perspective(1200px) scale(0.92) translateZ(-60px)"])
 
-  return (
-    <points ref={meshRef}>
-      <bufferGeometry>
-        <bufferAttribute
-          attach="attributes-position"
-          count={positions.length / 3}
-          array={positions}
-          itemSize={3}
-        />
-      </bufferGeometry>
-      <pointsMaterial
-        size={0.015}
-        color="#6366f1"
-        transparent
-        opacity={0.6}
-      />
-    </points>
-  );
-}
+  // ── Stage 1 — name fade-out on scroll
+  const n1ScrollOp = useTransform(sp, [0.37, 0.5], [1, 0])
+  const n2ScrollOp = useTransform(sp, [0.34, 0.48], [1, 0])
 
-export default function Hero() {
-  const heroRef = useRef(null);
-  const mouseRef = useRef({ x: 0, y: 0 });
+  const sideOp = useTransform(sp, [0.02, 0.12, 0.45, 0.55], [0, 1, 1, 0])
+  const sideY  = useTransform(sp, [0.02, 0.12], ["2.5rem", "0rem"])
+  const subOp  = useTransform(sp, [0.02, 0.1, 0.43, 0.53], [0, 1, 1, 0])
 
-  useEffect(() => {
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // ── Stage 2 — Typography morphing (0.18 → 0.44)
+  const n1LS = useTransform(sp, [0.18, 0.42], ["0.01em", "0.32em"])
+  const n1SY = useTransform(sp, [0.22, 0.44], [1, 0.68])
+  const n2SX = useTransform(sp, [0.2,  0.45], [1, 2.7])
+  const n2SY = useTransform(sp, [0.2,  0.45], [1, 0.28])
+  const n2LS = useTransform(sp, [0.18, 0.45], ["0.01em", "0.58em"])
 
-    // Mouse move listener for parallax
-    const handleMouseMove = (e) => {
-      mouseRef.current.x = (e.clientX / window.innerWidth) * 2 - 1;
-      mouseRef.current.y = -(e.clientY / window.innerHeight) * 2 + 1;
-    };
+  // ── Stage 3 — Portrait reveal (0.28 → 0.68) — compressed to fit 300vh portion
+  const pClip = useTransform(sp,
+    [0.21, 0.51],
+    ["polygon(50% 0%, 50% 0%, 50% 100%, 50% 100%)",
+     "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)"]
+  )
+  const pOp    = useTransform(sp, [0.21, 0.32, 0.64, 0.72], [0, 1, 1, 0])
+  const pScale = useTransform(sp, [0.21, 0.54], [1.14, 1.0])
+  const pX     = useTransform(sp, [0.21, 0.49], ["5%", "0%"])
 
-    window.addEventListener('mousemove', handleMouseMove);
+  // Layer swap — portrait overtakes text once it's fully revealed
+  const pZIndex    = useTransform(sp, [0.33, 0.3301], [10, 60])
+  const textZIndex = useTransform(sp, [0.33, 0.3301], [20, 5])
 
-    // GSAP entrance animation (runs after loader)
-    if (!prefersReducedMotion) {
-      const tl = gsap.timeline({ delay: 2.4 }); // Wait for loader + navbar
+  // Orbital rings
+  const s1Rot      = useTransform(sp, [0, 0.75], [0, 180])
+  const sRingScale = useTransform(sp, [0.22, 0.44, 0.66, 0.72], [0, 1, 1, 0])
+  const s1Op       = useTransform(sp, [0.24, 0.36, 0.66, 0.72], [0, 0.7, 0.7, 0])
+  const s2Rot      = useTransform(sp, [0, 0.75], [45, 225])
+  const s2Op       = useTransform(sp, [0.29, 0.41, 0.66, 0.72], [0, 0.45, 0.45, 0])
 
-      tl.from('.hero-eyebrow', { 
-        opacity: 0, 
-        y: 20, 
-        duration: 0.8, 
-        ease: 'power3.out' 
-      })
-      .from('.hero-line-1 span', { 
-        y: '110%', 
-        duration: 1, 
-        ease: 'power4.out', 
-        stagger: 0.05 
-      }, '-=0.4')
-      .from('.hero-line-2 span', { 
-        y: '110%', 
-        duration: 1, 
-        ease: 'power4.out', 
-        stagger: 0.05 
-      }, '-=0.7')
-      .from('.hero-desc', { 
-        opacity: 0, 
-        y: 30, 
-        duration: 0.8, 
-        ease: 'power3.out' 
-      }, '-=0.5')
-      .from('.hero-cta', { 
-        opacity: 0, 
-        y: 20, 
-        duration: 0.6, 
-        ease: 'power3.out' 
-      }, '-=0.4');
+  // Floating fragments
+  const fAOp = useTransform(sp, [0.29, 0.39, 0.57, 0.65], [0, 0.1, 0.1, 0])
+  const fARot = useTransform(sp, [0.29, 0.57], [-6, 10])
+  const fAY  = useTransform(sp, [0.29, 0.57], ["0rem", "-4.5rem"])
+  const fMOp = useTransform(sp, [0.32, 0.42, 0.57, 0.65], [0, 0.07, 0.07, 0])
+  const fMX  = useTransform(sp, [0.32, 0.57], ["0rem", "4rem"])
 
-      // Scroll indicator fade out
-      gsap.to('.scroll-indicator', {
-        opacity: 0,
-        scrollTrigger: {
-          trigger: heroRef.current,
-          start: 'top top',
-          end: '20% top',
-          scrub: true
-        }
-      });
-    }
+  // Diagonal line
+  const diagRot = useTransform(sp, [0.34, 0.64], [-1, -6])
+  const diagOp  = useTransform(sp, [0.33, 0.45, 0.64, 0.69], [0, 0.8, 0.8, 0])
 
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-    };
-  }, []);
+  // Grid overlay
+  const gridOp = useTransform(sp, [0.52, 0.64], [0, 0.85])
 
-  // Helper function to wrap letters in spans
-  const wrapLetters = (text) => {
-    return text.split('').map((char, i) => (
-      <span key={i} className="inline-block overflow-hidden">
-        {char === ' ' ? '\u00A0' : char}
-      </span>
-    ));
-  };
+  const circRot     = useTransform(sp, [0, 0.75], [0, 720])
+  const scrollIndOp = useTransform(sp, [0, 0.04, 0.14], [0, 1, 0])
 
   return (
-    <section
-      ref={heroRef}
-      className="relative h-screen flex items-center justify-center overflow-hidden"
-    >
-      {/* Three.js Canvas Background */}
-      <Canvas
-        className="!absolute top-0 left-0 w-full h-full"
-        camera={{ position: [0, 0, 1], fov: 75 }}
-        gl={{ antialias: true, alpha: true }}
-      >
-        <ParticleField mouse={mouseRef} />
-      </Canvas>
+    <>
+      {/*
+        ── 400vh total:
+           0→300vh  = hero internal scroll stages (sp 0→0.75)
+           300→400vh = cinematic exit transition (sp 0.75→1.0)
+           About reads this same final 100vh window to slide up simultaneously.
+      */}
+      <div ref={containerRef} style={{ height: "400vh" }} className="relative">
 
-      {/* Hero Text Layer */}
-      <div
-        className="relative z-[2] text-center px-8"
-      >
-        {/* Eyebrow */}
+        {/* ── Cinematic scale wrapper — perspective container */}
         <div
-          className="hero-eyebrow text-sm tracking-[0.2em] uppercase text-[var(--text-muted)] mb-6 font-[family-name:var(--font-body)]"
+          style={{
+            position: "sticky",
+            top: 0,
+            height: "100vh",
+            overflow: "hidden",
+            // perspective on the outer container makes translateZ work
+            perspective: "1200px",
+          }}
         >
-          Frontend Developer · Intern @ Company
+          <motion.div
+            style={{
+              width: "100%",
+              height: "100%",
+              transform: heroZ,
+              opacity: heroOpacity,
+              transformOrigin: "center center",
+              willChange: "transform, opacity",
+            }}
+          >
+            <div
+              style={{ background: "#080808", color: "#f0ebe3", width: "100%", height: "100%", position: "relative", overflow: "hidden" }}
+            >
+              {/* Grain */}
+              <div
+                className="absolute inset-0 pointer-events-none z-[1]"
+                style={{
+                  opacity: 0.022,
+                  backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
+                  backgroundRepeat: "repeat",
+                  backgroundSize: "128px",
+                }}
+              />
+
+              {/* Grid overlay */}
+              <motion.div className="absolute inset-0 pointer-events-none z-[2]" style={{ opacity: gridOp }}>
+                {Array.from({ length: 11 }).map((_, i) => (
+                  <div key={`v${i}`} className="absolute top-0 bottom-0 border-l"
+                    style={{ left: `${(i + 1) * (100 / 12)}%`, borderColor: "rgba(240,235,227,0.04)" }} />
+                ))}
+                {Array.from({ length: 7 }).map((_, i) => (
+                  <div key={`h${i}`} className="absolute left-0 right-0 border-t"
+                    style={{ top: `${(i + 1) * (100 / 8)}%`, borderColor: "rgba(240,235,227,0.04)" }} />
+                ))}
+              </motion.div>
+
+              {/* ── Lamp */}
+              <div
+                className="absolute pointer-events-none"
+                style={{ left: "14%", top: 0, zIndex: 35, display: "flex", flexDirection: "column", alignItems: "center" }}
+              >
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: "calc(50vh - 9rem)", opacity: 1 }}
+                  transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1], delay: 0.7 }}
+                  style={{ width: "1px", background: "linear-gradient(to bottom, rgba(240,235,227,0.0), rgba(240,235,227,0.25))", transformOrigin: "top center" }}
+                />
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, ease: "easeOut", delay: 1.85 }}
+                  style={{ display: "flex", flexDirection: "column", alignItems: "center" }}
+                >
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ duration: 0.4, ease: [0.34, 1.56, 0.64, 1], delay: 1.9 }}
+                    style={{ width: "5px", height: "5px", borderRadius: "50%", background: "#fff8e8", boxShadow: "0 0 6px 3px rgba(255,240,180,0.7), 0 0 18px 8px rgba(255,220,100,0.35)" }}
+                  />
+                  <motion.div
+                    initial={{ opacity: 0, scaleY: 0 }}
+                    animate={{ opacity: 1, scaleY: 1 }}
+                    transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1], delay: 2.0 }}
+                    style={{ transformOrigin: "top center", width: "220px", height: "160px", background: "radial-gradient(ellipse 60% 100% at 50% 0%, rgba(255,230,120,0.13) 0%, rgba(255,200,80,0.06) 45%, transparent 100%)", filter: "blur(2px)" }}
+                  />
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: [0, 1, 0.7, 1] }}
+                    transition={{ duration: 0.6, ease: "easeOut", delay: 2.0, times: [0, 0.4, 0.7, 1] }}
+                    style={{ position: "absolute", top: "5px", left: "50%", transform: "translateX(-50%)", width: "180px", height: "180px", borderRadius: "50%", background: "radial-gradient(circle, rgba(255,220,100,0.18) 0%, transparent 70%)", filter: "blur(8px)", pointerEvents: "none" }}
+                  />
+                </motion.div>
+              </div>
+
+              {/* ── Left editorial column */}
+              <motion.div className="absolute left-10 top-1/2 -translate-y-1/2 z-30" style={{ opacity: sideOp, y: sideY }}>
+                <div className="flex flex-col">
+                  <div className="pb-5">
+                    <div style={{ fontFamily: fm, fontSize: "7px", letterSpacing: "0.52em" }} className="uppercase text-white/18 mb-1.5">Role</div>
+                    <div style={{ fontFamily: fm, fontSize: "8px", letterSpacing: "0.2em" }} className="uppercase text-white/44">Creative Technologist</div>
+                  </div>
+                  <div className="w-px h-9 mb-5" style={{ background: "rgba(240,235,227,0.1)" }} />
+                  <div className="pb-5">
+                    <div style={{ fontFamily: fm, fontSize: "7px", letterSpacing: "0.52em" }} className="uppercase text-white/18 mb-1.5">Discipline</div>
+                    <div style={{ fontFamily: fm, fontSize: "8px", letterSpacing: "0.2em" }} className="uppercase text-white/44">Frontend Engineer</div>
+                  </div>
+                  <div className="w-px h-9 mb-5" style={{ background: "rgba(240,235,227,0.1)" }} />
+                  <div>
+                    <div style={{ fontFamily: fm, fontSize: "7px", letterSpacing: "0.52em" }} className="uppercase text-white/18 mb-1.5">Status</div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-1.5 h-1.5 rounded-full" style={{ background: "rgba(52,211,153,0.7)" }} />
+                      <div style={{ fontFamily: fm, fontSize: "8px", letterSpacing: "0.2em" }} className="uppercase text-white/44">Open to work</div>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* ── Portrait with orbital rings */}
+              <motion.div
+                className="absolute right-0 top-0 bottom-0 w-[52%]"
+                style={{ opacity: pOp, scale: pScale, x: pX, zIndex: pZIndex }}
+              >
+                <motion.div className="absolute inset-0" style={{ clipPath: pClip }}>
+                  <img src={PORTRAIT} alt="Priyanshu Singh"
+                    className="w-full h-full object-cover object-top"
+                    style={{ filter: "grayscale(100%) contrast(1.06) brightness(0.78)" }}
+                  />
+                  <div className="absolute inset-0" style={{ background: "linear-gradient(to left, transparent 25%, rgba(8,8,8,0.12) 55%, rgba(8,8,8,0.6) 100%)" }} />
+                </motion.div>
+                <motion.div className="absolute rounded-full border" style={{
+                  width: "66%", aspectRatio: "1/1", top: "50%", left: "50%",
+                  x: "-50%", y: "-50%", borderColor: "rgba(240,235,227,0.08)",
+                  rotate: s1Rot, scale: sRingScale, opacity: s1Op,
+                }} />
+                <motion.div className="absolute border" style={{
+                  width: "44%", aspectRatio: "1/1", top: "50%", left: "50%",
+                  x: "-50%", y: "-50%", borderColor: "rgba(240,235,227,0.05)",
+                  rotate: s2Rot, scale: sRingScale, opacity: s2Op,
+                }} />
+              </motion.div>
+
+              {/* ── Main typography */}
+              <motion.div
+                className="absolute inset-0 flex flex-col justify-center pl-[14%] select-none"
+                style={{ zIndex: textZIndex }}
+              >
+                <div className="overflow-hidden leading-none">
+                  <motion.div
+                    initial={{ y: "110%", opacity: 0 }}
+                    animate={{ y: "0%", opacity: 1 }}
+                    transition={{ duration: 1.0, ease: [0.22, 1, 0.36, 1], delay: 0.05 }}
+                    style={{ scaleY: n1SY, letterSpacing: n1LS, opacity: n1ScrollOp, transformOrigin: "center bottom" }}
+                  >
+                    <span style={{ fontFamily: fd, fontWeight: 300, fontStyle: "normal", fontSize: "clamp(5rem, 13.5vw, 16rem)", lineHeight: 0.88, display: "block", color: "#f0ebe3" }}>
+                      PRIYANSHU
+                    </span>
+                  </motion.div>
+                </div>
+                <div className="overflow-hidden leading-none">
+                  <motion.div
+                    initial={{ y: "110%", opacity: 0 }}
+                    animate={{ y: "0%", opacity: 1 }}
+                    transition={{ duration: 1.0, ease: [0.22, 1, 0.36, 1], delay: 0.18 }}
+                    style={{ scaleX: n2SX, scaleY: n2SY, letterSpacing: n2LS, opacity: n2ScrollOp, transformOrigin: "left center" }}
+                  >
+                    <span style={{ fontFamily: fd, fontWeight: 300, fontStyle: "italic", fontSize: "clamp(5rem, 13.5vw, 16rem)", lineHeight: 0.88, display: "block", color: "#f0ebe3" }}>
+                      SINGH
+                    </span>
+                  </motion.div>
+                </div>
+              </motion.div>
+
+              {/* Floating fragments */}
+              <motion.div className="absolute top-[20%] right-[56%] z-20 pointer-events-none" style={{ opacity: fAOp, rotate: fARot, y: fAY }}>
+                <span style={{ fontFamily: fd, fontWeight: 300, fontSize: "clamp(4rem, 11vw, 13rem)", lineHeight: 1, color: "#f0ebe3", display: "block" }}>P</span>
+              </motion.div>
+              <motion.div className="absolute bottom-[22%] left-[40%] z-20 pointer-events-none" style={{ opacity: fMOp, x: fMX }}>
+                <span style={{ fontFamily: fd, fontWeight: 300, fontStyle: "italic", fontSize: "clamp(2.5rem, 7.5vw, 9rem)", lineHeight: 1, color: "#f0ebe3", display: "block" }}>S</span>
+              </motion.div>
+
+              {/* Diagonal line */}
+              <motion.div
+                className="absolute top-1/2 left-[14%] right-0 h-px origin-left z-20 pointer-events-none"
+                style={{ opacity: diagOp, rotate: diagRot, background: "rgba(240,235,227,0.07)" }}
+              />
+
+              {/* Bottom bar */}
+              <motion.div className="absolute bottom-9 left-10 right-10 flex items-end justify-between z-40" style={{ opacity: subOp }}>
+                <div className="flex items-center gap-5">
+                  <span style={{ fontFamily: fm, fontSize: "7px", letterSpacing: "0.55em" }} className="uppercase text-white/18">§001</span>
+                  <div className="w-5 h-px" style={{ background: "rgba(240,235,227,0.12)" }} />
+                  <span style={{ fontFamily: fm, fontSize: "8px", letterSpacing: "0.24em" }} className="uppercase text-white/30">
+                    Interactive Developer — Digital Craftsman
+                  </span>
+                </div>
+                <motion.div className="relative flex-shrink-0" style={{ width: "68px", height: "68px", rotate: circRot }}>
+                  <svg viewBox="0 0 68 68" style={{ width: "100%", height: "100%" }}>
+                    <defs>
+                      <path id="ctp" d="M 34 34 m -24 0 a 24 24 0 1 1 48 0 a 24 24 0 1 1 -48 0" />
+                    </defs>
+                    <text style={{ fontFamily: fm, fontSize: "5.6px", letterSpacing: "2.5px", fill: "rgba(240,235,227,0.17)" }}>
+                      <textPath href="#ctp">CREATIVE · TECHNOLOGIST · DEVELOPER ·</textPath>
+                    </text>
+                  </svg>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span style={{ color: "rgba(240,235,227,0.17)", fontSize: "10px" }}>✦</span>
+                  </div>
+                </motion.div>
+              </motion.div>
+
+              {/* Scroll indicator */}
+              <motion.div className="absolute right-10 bottom-9 flex flex-col items-center gap-2.5 z-40" style={{ opacity: scrollIndOp }}>
+                <div className="w-px h-12 relative overflow-hidden" style={{ background: "rgba(240,235,227,0.1)" }}>
+                  <motion.div
+                    className="absolute left-0 right-0"
+                    animate={{ top: ["-35%", "135%"] }}
+                    transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+                    style={{ height: "35%", background: "rgba(240,235,227,0.4)" }}
+                  />
+                </div>
+                <span style={{ fontFamily: fm, writingMode: "vertical-lr", fontSize: "6.5px", letterSpacing: "0.5em" }} className="uppercase text-white/20 mt-1">
+                  Scroll
+                </span>
+              </motion.div>
+
+            </div>
+          </motion.div>
         </div>
 
-        {/* Main heading */}
-        <h1
-          className="font-[family-name:var(--font-display)] font-extrabold leading-[0.9] tracking-[-0.03em] text-[var(--text-primary)] text-[clamp(4rem,10vw,9rem)]"
-        >
-          <div className="hero-line-1 overflow-hidden">
-            {wrapLetters('Priyanshu')}
-          </div>
-          <div 
-            className="hero-line-2 overflow-hidden text-[var(--accent-indigo)]" 
-          >
-            {wrapLetters('Singh.')}
-          </div>
-        </h1>
-
-        {/* Description */}
-        <p
-          className="hero-desc text-[1.125rem] text-[var(--text-secondary)] max-w-[480px] mt-6 mx-auto mb-10 leading-[1.7] font-[family-name:var(--font-body)]"
-        >
-          I craft fast, beautiful interfaces — and I know what's happening on the other side too.
-        </p>
-
-        {/* CTA Button */}
-        <button
-          className="hero-cta bg-[var(--accent-indigo)] text-white border-none py-[0.875rem] px-8 rounded-[var(--radius-pill)] font-[family-name:var(--font-body)] text-base cursor-none transition-all duration-300"
-          onClick={() => document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' })}
-          onMouseEnter={(e) => {
-            e.target.style.transform = 'translateY(-3px)';
-            e.target.style.boxShadow = '0 20px 40px rgba(99,102,241,0.3)';
-          }}
-          onMouseLeave={(e) => {
-            e.target.style.transform = 'translateY(0)';
-            e.target.style.boxShadow = 'none';
-          }}
-        >
-          See my work ↓
-        </button>
       </div>
-
-      {/* Scroll Indicator */}
-      <div
-        className="scroll-indicator absolute bottom-8 left-1/2 -translate-x-1/2 z-[2]"
-      >
-        <svg
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="var(--text-muted)"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <path d="M12 5v14M5 12l7 7 7-7" />
-        </svg>
-      </div>
-    </section>
-  );
+    </>
+  )
 }
