@@ -1,248 +1,222 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { motion, useScroll, useTransform } from 'motion/react';
 
 gsap.registerPlugin(ScrollTrigger);
 
+const typingText = "Hello.\n\nSo you found me.\n\nI'm Priyanshu.\n\nLet's build the future together.";
+
+const floatingNodes = [
+  { id: 1, label: '01', className: 'left-[8%] top-[18%] text-slate-300/70' },
+  { id: 2, label: 'UI', className: 'right-[10%] top-[22%] text-cyan-300/70' },
+  { id: 3, label: 'SYSTEM', className: 'right-[16%] bottom-[22%] text-violet-300/60' },
+  { id: 4, label: 'VISION', className: 'left-[16%] bottom-[20%] text-slate-300/60' },
+];
+
+function AboutBackground() {
+  return (
+    <div className="absolute inset-0 pointer-events-none">
+      <img src="/Aboutme.jpeg" alt="" className="absolute inset-0 h-full w-full object-cover object-center" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(59,130,246,0.22),transparent_30%),linear-gradient(120deg,rgba(2,6,23,0.96)_0%,rgba(2,6,23,0.78)_35%,rgba(2,6,23,0.95)_100%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle,rgba(255,255,255,0.12),transparent_58%)] opacity-70" />
+      <div className="absolute inset-0" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px)', backgroundSize: '110px 110px', maskImage: 'linear-gradient(to bottom, rgba(0,0,0,0.8), transparent)' }} />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(2,6,23,0.25)_45%,rgba(2,6,23,0.6)_100%)]" />
+    </div>
+  );
+}
+
+function FloatingElements() {
+  return (
+    <div className="pointer-events-none absolute inset-0 overflow-hidden">
+      {floatingNodes.map((item) => (
+        <div key={item.id} className={`float-item absolute ${item.className}`}>
+          <div className="rounded-full border border-white/15 bg-white/5 px-3 py-1 text-[11px] uppercase tracking-[0.35em] backdrop-blur-sm">
+            {item.label}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function Avatar({ avatarRef, onMouseMove, onMouseLeave }) {
+  return (
+    <div
+      ref={avatarRef}
+      onMouseMove={onMouseMove}
+      onMouseLeave={onMouseLeave}
+      className="relative mx-auto flex h-[430px] w-[320px] items-end justify-center lg:h-[520px] lg:w-[380px]"
+    >
+      <div className="absolute inset-x-0 bottom-0 h-[82%] rounded-[32px] border border-white/10 bg-white/5 shadow-[0_0_80px_rgba(0,0,0,0.35)] backdrop-blur-xl" />
+      <div className="absolute inset-x-8 top-8 h-20 rounded-full bg-cyan-400/15 blur-3xl" />
+      <img
+        src="/aboutme.jpeg"
+        alt="Priyanshu"
+        className="relative h-full w-full object-contain object-bottom drop-shadow-[0_25px_60px_rgba(0,0,0,0.55)]"
+      />
+      <div className="absolute bottom-8 left-8 right-8 h-20 rounded-full border border-white/10 bg-black/20 blur-3xl" />
+    </div>
+  );
+}
+
+function SpeechBubble({ bubbleRef, text, visible }) {
+  return (
+    <div ref={bubbleRef} className="pointer-events-none absolute left-[36%] top-[10%] w-[270px] max-w-[85vw] rounded-[24px] border border-white/15 bg-slate-950/60 p-4 text-sm leading-7 text-slate-200 shadow-[0_20px_60px_rgba(0,0,0,0.35)] backdrop-blur-xl lg:left-[46%] lg:w-[320px]">
+      <div className="mb-3 h-1 w-10 rounded-full bg-cyan-400/70" />
+      <div className="min-h-[120px] whitespace-pre-line text-[14px] text-slate-100/90">
+        {visible ? text : ''}
+      </div>
+      <div className="mt-3 inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.35em] text-slate-400">
+        <span className="h-2 w-2 rounded-full bg-cyan-300" />
+        Studio live
+      </div>
+    </div>
+  );
+}
+
 export default function About() {
-  const imageRef = useRef();
-  const contentRef = useRef();
-  const headingRef = useRef();
-  const sectionRef = useRef();
-
-  /*
-    Cinematic slide-up: About rises from 100vh below while Hero retreats.
-    Hero's container is 400vh tall. The transition zone is the last 100vh
-    (300vh→400vh of page scroll). We attach to the sectionRef sentinel which
-    sits at the boundary between Hero and About — exactly where that zone starts.
-
-    offset ["start end", "start start"] means:
-      - progress=0 when sectionRef's top hits the viewport bottom  (≈ 300vh scroll)
-      - progress=1 when sectionRef's top hits the viewport top     (≈ 400vh scroll)
-  */
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ["start end", "start start"],
-  });
-
-  // About panel: enters from behind the Hero and rises into focus
-  const panelY      = useTransform(scrollYProgress, [0, 1], ["10vh", "0vh"]);
-  const panelScale  = useTransform(scrollYProgress, [0, 0.5, 1], [0.96, 0.99, 1]);
-  const panelOpacity = useTransform(scrollYProgress, [0, 0.25, 1], [0, 0.7, 1]);
+  const sectionRef = useRef(null);
+  const panelRef = useRef(null);
+  const avatarRef = useRef(null);
+  const bubbleRef = useRef(null);
+  const contentRef = useRef(null);
+  const [typedText, setTypedText] = useState('');
+  const [bubbleVisible, setBubbleVisible] = useState(false);
 
   useEffect(() => {
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const heroScene = document.querySelector('[data-hero-scene]');
+    const panel = panelRef.current;
+    const avatar = avatarRef.current;
+    const bubble = bubbleRef.current;
+    const content = contentRef.current;
 
-    if (!prefersReducedMotion) {
-      // Image parallax and entrance
-      gsap.fromTo(
-        imageRef.current,
-        { opacity: 0, y: 60, scale: 0.95 },
-        {
-          opacity: 1,
-          y: 0,
-          scale: 1,
-          duration: 1.2,
-          ease: 'power3.out',
-          scrollTrigger: {
-            trigger: contentRef.current,
-            start: 'top 75%',
-            toggleActions: 'play none none reverse'
-          }
-        }
-      );
-
-      // Heading animation
-      gsap.fromTo(
-        headingRef.current,
-        { opacity: 0, y: 40 },
-        {
-          opacity: 1,
-          y: 0,
-          duration: 1,
-          ease: 'power3.out',
-          scrollTrigger: {
-            trigger: contentRef.current,
-            start: 'top 75%',
-            toggleActions: 'play none none reverse'
-          }
-        }
-      );
-
-      // Paragraph animations - staggered
-      gsap.utils.toArray('.about-para').forEach((el, i) => {
-        gsap.from(el, {
-          opacity: 0,
-          y: 30,
-          duration: 0.8,
-          ease: 'power3.out',
-          delay: i * 0.15,
-          scrollTrigger: {
-            trigger: el,
-            start: 'top 85%',
-            toggleActions: 'play none none reverse'
-          }
-        });
-      });
-
-      // Stats animation
-      gsap.utils.toArray('.stat-item').forEach((el, i) => {
-        gsap.from(el, {
-          opacity: 0,
-          x: -40,
-          duration: 0.8,
-          ease: 'power3.out',
-          delay: i * 0.1 + 0.3,
-          scrollTrigger: {
-            trigger: contentRef.current,
-            start: 'top 75%',
-            toggleActions: 'play none none reverse'
-          }
-        });
-      });
-
-      // Accent line animation
-      gsap.from('.about-accent-line', {
-        scaleX: 0,
-        transformOrigin: 'left center',
-        duration: 0.8,
-        ease: 'power3.out',
-        scrollTrigger: {
-          trigger: contentRef.current,
-          start: 'top 75%',
-          toggleActions: 'play none none reverse'
-        }
-      });
+    if (!heroScene || !panel || !avatar || !bubble || !content || prefersReducedMotion) {
+      return undefined;
     }
+
+    gsap.set(panel, { y: '100vh', opacity: 0, scale: 0.94, filter: 'blur(16px)' });
+    gsap.set(avatar, { y: 36, opacity: 0, scale: 0.95, rotate: -2 });
+    gsap.set(bubble, { y: 24, opacity: 0, scale: 0.95 });
+    gsap.set('.float-item', { opacity: 0, y: 18, scale: 0.95 });
+
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: sectionRef.current,
+        start: 'top 88%',
+        end: '+=1400',
+        scrub: 0.9,
+        pin: heroScene,
+        pinSpacing: false,
+        anticipatePin: 1,
+      },
+    });
+
+    tl.to(heroScene, { scale: 0.96, opacity: 0.72, filter: 'blur(6px)', y: -40, duration: 1, ease: 'power2.out' }, 0)
+      .to(panel, { y: '0vh', opacity: 1, scale: 1, filter: 'blur(0px)', duration: 1, ease: 'power3.out' }, 0)
+      .to(bubble, { y: 0, opacity: 1, scale: 1, duration: 0.7, ease: 'power2.out' }, 0.16)
+      .to(avatar, { y: 0, opacity: 1, scale: 1, rotate: 0, duration: 0.8, ease: 'power3.out' }, 0.2)
+      .to('.float-item', { y: 0, opacity: 1, scale: 1, stagger: 0.05, duration: 0.8, ease: 'power2.out' }, 0.24)
+      .to(content, { y: 0, opacity: 1, duration: 0.8, ease: 'power3.out' }, 0.22);
+
+    const startTyping = () => {
+      setBubbleVisible(true);
+      let index = 0;
+      const chars = typingText.split('');
+      const cursor = window.setInterval(() => {
+        setTypedText((prev) => prev + chars[index]);
+        index += 1;
+        if (index >= chars.length) {
+          window.clearInterval(cursor);
+          gsap.to(bubble, { opacity: 0.82, duration: 0.6, ease: 'power2.out' });
+        }
+      }, 32);
+      return () => window.clearInterval(cursor);
+    };
+
+    const typingTimer = gsap.delayedCall(0.4, startTyping);
+
+    gsap.to(avatar, { y: -8, scale: 1.01, duration: 3.2, repeat: -1, yoyo: true, ease: 'sine.inOut' });
+
+    return () => {
+      typingTimer.kill();
+      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
+      gsap.killTweensOf([avatar, bubble, '.float-item', heroScene, panel, content]);
+    };
   }, []);
 
+  const handleMouseMove = (event) => {
+    const rect = avatarRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    const x = (event.clientX - rect.left) / rect.width - 0.5;
+    const y = (event.clientY - rect.top) / rect.height - 0.5;
+
+    gsap.to(avatarRef.current, { x: x * 12, y: y * 10, rotate: x * 5, duration: 0.8, ease: 'power2.out' });
+    gsap.to(bubbleRef.current, { x: x * 10, y: y * 8, duration: 0.8, ease: 'power2.out' });
+    gsap.to('.float-item', { x: x * -8, y: y * -6, duration: 0.8, ease: 'power2.out', overwrite: 'auto' });
+  };
+
+  const handleMouseLeave = () => {
+    gsap.to(avatarRef.current, { x: 0, y: 0, rotate: 0, duration: 0.8, ease: 'power2.out' });
+    gsap.to(bubbleRef.current, { x: 0, y: 0, duration: 0.8, ease: 'power2.out' });
+    gsap.to('.float-item', { x: 0, y: 0, duration: 0.8, ease: 'power2.out', overwrite: 'auto' });
+  };
+
   return (
-    /*
-      sectionRef is the scroll sentinel — its top edge marks where the
-      cinematic transition window begins (at the 300vh mark of Hero's container).
-      The motion.section is position:sticky so it stays pinned as About slides up,
-      then returns to normal flow once the transition completes.
-    */
-    <div ref={sectionRef} style={{ position: "relative", zIndex: 20, marginTop: "-100vh", overflow: "visible" }}>
-      <motion.section
+    <div ref={sectionRef} className="relative z-20 mt-[-100vh] w-full overflow-visible">
+      <section
+        ref={panelRef}
         id="about"
-        className="relative py-24 lg:py-32 overflow-hidden isolate"
-        style={{
-          y: panelY,
-          scale: panelScale,
-          opacity: panelOpacity,
-          borderRadius: "1.5rem 1.5rem 0 0",
-          boxShadow: "0 -32px 100px rgba(0,0,0,0.6)",
-          transformOrigin: "center bottom",
-          willChange: "transform, opacity",
-          backfaceVisibility: "hidden",
-          position: "relative",
-          minHeight: "100vh",
-          zIndex: 30,
-        }}
+        className="relative isolate flex min-h-screen w-screen items-center overflow-hidden py-20"
+        style={{ width: '100vw', marginLeft: 'calc(50% - 50vw)', boxShadow: '0 -32px 100px rgba(0,0,0,0.55)' }}
       >
-        <div className="absolute inset-0 z-0 pointer-events-none">
-          <img
-            src="/aboutme.jpeg"
-            alt=""
-            className="absolute inset-0 h-full w-full object-cover object-center opacity-20"
-          />
-          <div className="absolute inset-0 bg-[linear-gradient(120deg,rgba(2,6,23,0.96)_0%,rgba(2,6,23,0.70)_45%,rgba(2,6,23,0.92)_100%)]" />
-        </div>
-        <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8">
-          {/* Section label */}
-          <div className="flex items-center gap-3 mb-8">
-            <div className="w-1 h-1 bg-[var(--accent-indigo)] rounded-full" />
-            <span className="text-xs uppercase tracking-widest text-[var(--text-muted)] font-semibold">
-              01 — About Me
+        <AboutBackground />
+        <FloatingElements />
+
+        <div ref={contentRef} className="relative z-10 mx-auto flex w-full max-w-none flex-col gap-10 px-6 lg:px-12">
+          <div className="flex items-center gap-3">
+            <div className="h-1.5 w-1.5 rounded-full bg-cyan-300" />
+            <span className="text-[11px] uppercase tracking-[0.4em] text-slate-300/70">
+              01 — About Studio
             </span>
           </div>
 
-          <div ref={contentRef} className="grid lg:grid-cols-[1fr_1.3fr] gap-12 lg:gap-20 items-center">
-
-            {/* RIGHT SIDE - Content */}
-            <div className="w-full space-y-8">
-              <div>
-                <h2
-                  ref={headingRef}
-                  className="font-[family-name:var(--font-display)] text-[clamp(2.5rem,5vw,4rem)] font-bold leading-[1.1] text-[var(--text-primary)] mb-6"
-                >
-                  Product-focused developer crafting seamless digital experiences.
-                </h2>
-                <div className="about-accent-line h-1 w-16 bg-gradient-to-r from-[var(--accent-indigo)] to-[var(--accent-cyan)] rounded-full" />
-              </div>
-
-              <div className="p-6 rounded-2xl border border-[rgba(99,102,241,0.2)] bg-[rgba(99,102,241,0.05)] backdrop-filter backdrop-blur-sm">
-                <p className="text-[var(--text-primary)] text-base leading-[1.8] font-medium">
-                  I'm a <span className="text-[var(--accent-indigo)] font-semibold">Frontend Developer</span> at EWHENT,
-                  specializing in building production-grade applications. My focus: turning complex product flows into intuitive,
-                  pixel-perfect interfaces that users love.
-                </p>
-              </div>
-
-              <div className="space-y-6">
-                <p className="about-para text-[var(--text-secondary)] leading-[1.8] text-base">
-                  Currently designing and building the complete UI/UX for enterprise ERP systems — from architecture planning
-                  to pixel-perfect delivery. I own the entire product flow across multiple client-facing modules: dashboards,
-                  inventory management, billing systems, and role-based user management.
-                </p>
-                <p className="about-para text-[var(--text-secondary)] leading-[1.8] text-base">
-                  What sets me apart: I don't just build interfaces. I architect state management from scratch, integrate
-                  complex REST API flows, and ensure every data transfer is predictable and traceable. Working alongside backend
-                  engineers means I think in data flows, not just components.
-                </p>
-                <p className="about-para text-[var(--text-secondary)] leading-[1.8] text-base">
-                  Beyond React: I hold a Prompt Engineering certificate, giving me the ability to leverage AI strategically in
-                  development workflows. I approach tools — whether code editors, LLMs, or design systems — with the same
-                  precision I apply to building products.
-                </p>
-                <p className="about-para text-[var(--text-secondary)] leading-[1.8] text-base">
-                  When I'm not building, I'm obsessed with understanding what makes great interfaces feel effortless.
-                  That intersection of technical depth and user-centric design is where I thrive.
-                </p>
-              </div>
-
-              <div>
-                <p className="text-xs uppercase tracking-widest text-[var(--text-muted)] font-semibold mb-4">Core Stack</p>
-                <div className="flex flex-wrap gap-3">
-                  {['React', 'TypeScript', 'Redux', 'REST APIs', 'Tailwind CSS', 'Node.js'].map((tech) => (
-                    <div
-                      key={tech}
-                      className="px-4 py-2 rounded-full border border-[var(--accent-indigo)] bg-[rgba(99,102,241,0.1)] text-[var(--accent-indigo)] text-xs font-semibold hover:border-[var(--accent-cyan)] hover:bg-[rgba(34,211,238,0.1)] hover:text-[var(--accent-cyan)] transition-all duration-300"
-                    >
-                      {tech}
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="pt-4 flex items-center gap-4">
-                <div className="inline-flex items-center gap-2 bg-[rgba(34,211,238,0.1)] border border-[rgba(34,211,238,0.3)] rounded-full py-3 px-6">
-                  <span className="relative flex h-2.5 w-2.5">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[var(--accent-cyan)] opacity-75" />
-                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[var(--accent-cyan)]" />
-                  </span>
-                  <span className="text-[var(--text-primary)] text-sm font-semibold">
-                    Available for New Projects
-                  </span>
-                </div>
-              </div>
+          <div className="grid items-center gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16">
+            <div className="relative order-2 lg:order-1">
+              <SpeechBubble bubbleRef={bubbleRef} text={typedText} visible={bubbleVisible} />
+              <Avatar avatarRef={avatarRef} onMouseMove={handleMouseMove} onMouseLeave={handleMouseLeave} />
             </div>
-          </div>
 
-          {/* Bottom accent divider */}
-          <div className="mt-24 pt-12 border-t border-[rgba(255,255,255,0.05)]">
-            <div className="flex items-center gap-4">
-              <div className="flex-1 h-px bg-gradient-to-r from-[var(--accent-indigo)] via-transparent to-transparent" />
-              <p className="text-xs uppercase tracking-widest text-[var(--text-muted)] font-semibold whitespace-nowrap">
-                Building Next
-              </p>
-              <div className="flex-1 h-px bg-gradient-to-l from-[var(--accent-cyan)] via-transparent to-transparent" />
+            <div className="order-1 space-y-8 lg:order-2">
+              <div className="space-y-5">
+                <p className="text-[11px] uppercase tracking-[0.4em] text-cyan-300/80">Creative technologist</p>
+                <h2 className="max-w-3xl font-[family-name:var(--font-display)] text-[clamp(2.6rem,5vw,4.2rem)] font-semibold leading-[0.95] text-white">
+                  I build immersive digital experiences that feel alive.
+                </h2>
+                <div className="h-1 w-20 rounded-full bg-gradient-to-r from-cyan-400 via-sky-300 to-violet-400" />
+              </div>
+
+              <div className="max-w-2xl rounded-[28px] border border-white/10 bg-white/8 p-7 backdrop-blur-xl">
+                <p className="text-base leading-8 text-slate-200/90">
+                  I’m a frontend engineer crafting premium interfaces with cinematic motion, thoughtful systems, and future-facing product design.
+                  My work lives at the intersection of code, storytelling, and tactile interaction.
+                </p>
+              </div>
+
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="rounded-[24px] border border-white/10 bg-slate-950/30 p-5 backdrop-blur-xl">
+                  <p className="text-[10px] uppercase tracking-[0.35em] text-slate-400">Focus</p>
+                  <p className="mt-2 text-lg font-semibold text-white">Cinematic product experiences</p>
+                </div>
+                <div className="rounded-[24px] border border-white/10 bg-slate-950/30 p-5 backdrop-blur-xl">
+                  <p className="text-[10px] uppercase tracking-[0.35em] text-slate-400">Stack</p>
+                  <p className="mt-2 text-lg font-semibold text-white">React • GSAP • Tailwind</p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </motion.section>
+      </section>
     </div>
   );
 }
