@@ -18,15 +18,20 @@ export default function HeroAS() {
   // ── Cinematic exit: driven by the final 100vh of the 400vh container
   // sp goes 0→1 over 400vh, so the last 100vh = sp 0.75→1.0
   const exitProgress = useTransform(sp, [0.75, 1.0], [0, 1])
-  const heroScale    = useTransform(exitProgress, [0, 1], [1, 0.92])
-  const heroOpacity  = useTransform(exitProgress, [0, 0.7], [1, 0.4])
-  // perspective Z retreat — expressed as a translateZ equivalent via scaleX trick
-  // We use a wrapper with perspective and scale the inner panel
-  const heroZ        = useTransform(exitProgress, [0, 1], ["perspective(1200px) scale(1) translateZ(0px)", "perspective(1200px) scale(0.92) translateZ(-60px)"])
+  const heroOpacity  = useTransform(exitProgress, [0, 0.6, 1], [1, 0.25, 0])
+  const heroTransform = useTransform(exitProgress, [0, 0.6, 1], [
+    "translate3d(0px, 0px, 0px) scale(1)",
+    "translate3d(0px, -8px, -26px) scale(0.97)",
+    "translate3d(0px, -20px, -70px) scale(0.95)",
+  ])
+  const lampOpacity  = useTransform(exitProgress, [0, 0.4, 0.8, 1], [1, 0.85, 0.2, 0])
+  const lampScale    = useTransform(exitProgress, [0, 0.45, 0.8, 1], [1, 0.96, 0.82, 0.72])
+  const lampY        = useTransform(exitProgress, [0, 0.5, 1], [0, 8, 24])
+  const lampRotate   = useTransform(exitProgress, [0, 0.55, 1], [0, -3, -8])
 
   // ── Stage 1 — name fade-out on scroll
-  const n1ScrollOp = useTransform(sp, [0.37, 0.5], [1, 0])
-  const n2ScrollOp = useTransform(sp, [0.34, 0.48], [1, 0])
+  const n1ScrollOp = useTransform(sp, [0, 0.37, 0.5], [1, 1, 0])
+  const n2ScrollOp = useTransform(sp, [0, 0.34, 0.48], [1, 1, 0])
 
   const sideOp = useTransform(sp, [0.02, 0.12, 0.45, 0.55], [0, 1, 1, 0])
   const sideY  = useTransform(sp, [0.02, 0.12], ["2.5rem", "0rem"])
@@ -50,8 +55,8 @@ export default function HeroAS() {
   const pX     = useTransform(sp, [0.21, 0.49], ["5%", "0%"])
 
   // Layer swap — portrait overtakes text once it's fully revealed
-  const pZIndex    = useTransform(sp, [0.33, 0.3301], [10, 60])
-  const textZIndex = useTransform(sp, [0.33, 0.3301], [20, 5])
+  const pZIndex    = useTransform(sp, [0.2, 0.26], [10, 80])
+  const textZIndex = useTransform(sp, [0.2, 0.26], [20, 4])
 
   // Orbital rings
   const s1Rot      = useTransform(sp, [0, 0.75], [0, 180])
@@ -94,6 +99,8 @@ export default function HeroAS() {
             top: 0,
             height: "100vh",
             overflow: "hidden",
+            zIndex: 1,
+            isolation: "isolate",
             // perspective on the outer container makes translateZ work
             perspective: "1200px",
           }}
@@ -102,10 +109,11 @@ export default function HeroAS() {
             style={{
               width: "100%",
               height: "100%",
-              transform: heroZ,
+              transform: heroTransform,
               opacity: heroOpacity,
               transformOrigin: "center center",
               willChange: "transform, opacity",
+              backfaceVisibility: "hidden",
             }}
           >
             <div
@@ -137,37 +145,97 @@ export default function HeroAS() {
               {/* ── Lamp */}
               <div
                 className="absolute pointer-events-none"
-                style={{ left: "14%", top: 0, zIndex: 35, display: "flex", flexDirection: "column", alignItems: "center" }}
+                style={{
+                  left: "13%",
+                  top: "0.6rem",
+                  zIndex: 35,
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                }}
               >
+                {/* Wire */}
                 <motion.div
                   initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: "calc(50vh - 9rem)", opacity: 1 }}
-                  transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1], delay: 0.7 }}
-                  style={{ width: "1px", background: "linear-gradient(to bottom, rgba(240,235,227,0.0), rgba(240,235,227,0.25))", transformOrigin: "top center" }}
+                  animate={{ height: "18vh", opacity: 1 }}
+                  transition={{
+                    duration: 1.2,
+                    ease: [0.22, 1, 0.36, 1],
+                    delay: 0.7,
+                  }}
+                  style={{
+                    width: "1px",
+                    background:
+                      "linear-gradient(to bottom, rgba(240,235,227,0), rgba(240,235,227,.35))",
+                    transformOrigin: "top center",
+                  }}
                 />
+
+                {/* Lamp */}
                 <motion.div
-                  initial={{ opacity: 0, y: -10 }}
+                  initial={{ opacity: 0, y: -8 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, ease: "easeOut", delay: 1.85 }}
-                  style={{ display: "flex", flexDirection: "column", alignItems: "center" }}
+                  transition={{
+                    duration: 0.45,
+                    ease: "easeOut",
+                    delay: 1.7,
+                  }}
+                  style={{
+                    position: "relative",
+                    width: "170px",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "flex-start",
+                    opacity: lampOpacity,
+                    scale: lampScale,
+                    y: lampY,
+                    rotate: lampRotate,
+                    transformOrigin: "top center",
+                  }}
                 >
+                  {/* Bulb */}
                   <motion.div
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
-                    transition={{ duration: 0.4, ease: [0.34, 1.56, 0.64, 1], delay: 1.9 }}
-                    style={{ width: "5px", height: "5px", borderRadius: "50%", background: "#fff8e8", boxShadow: "0 0 6px 3px rgba(255,240,180,0.7), 0 0 18px 8px rgba(255,220,100,0.35)" }}
+                    transition={{
+                      duration: 0.4,
+                      ease: [0.34, 1.56, 0.64, 1],
+                      delay: 1.85,
+                    }}
+                    style={{
+                      position: "relative",
+                      zIndex: 2,
+                      width: "7px",
+                      height: "7px",
+                      borderRadius: "50%",
+                      background: "#fff8e8",
+                      boxShadow:
+                        "0 0 5px rgba(255,240,180,.8), 0 0 14px rgba(255,215,120,.35)",
+                    }}
                   />
+
+                  {/* Spotlight Cone */}
                   <motion.div
                     initial={{ opacity: 0, scaleY: 0 }}
                     animate={{ opacity: 1, scaleY: 1 }}
-                    transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1], delay: 2.0 }}
-                    style={{ transformOrigin: "top center", width: "220px", height: "160px", background: "radial-gradient(ellipse 60% 100% at 50% 0%, rgba(255,230,120,0.13) 0%, rgba(255,200,80,0.06) 45%, transparent 100%)", filter: "blur(2px)" }}
-                  />
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: [0, 1, 0.7, 1] }}
-                    transition={{ duration: 0.6, ease: "easeOut", delay: 2.0, times: [0, 0.4, 0.7, 1] }}
-                    style={{ position: "absolute", top: "5px", left: "50%", transform: "translateX(-50%)", width: "180px", height: "180px", borderRadius: "50%", background: "radial-gradient(circle, rgba(255,220,100,0.18) 0%, transparent 70%)", filter: "blur(8px)", pointerEvents: "none" }}
+                    transition={{
+                      duration: 0.8,
+                      ease: [0.22, 1, 0.36, 1],
+                      delay: 2,
+                    }}
+                    style={{
+                      position: "absolute",
+                      top: "7px",
+                      transform: "translateX(-50%)",
+                      transformOrigin: "top center",
+                      width: "340px",
+                      height: "170px",
+                      clipPath: "polygon(50% 0%, 18% 100%, 82% 100%)",
+                      background:
+                        "linear-gradient(to bottom, rgba(255,235,170,.18) 0%, rgba(255,220,120,.08) 45%, rgba(255,210,80,0) 100%)",
+                      filter: "blur(2px)",
+                      zIndex: 1,
+                    }}
                   />
                 </motion.div>
               </div>

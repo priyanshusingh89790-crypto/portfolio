@@ -26,10 +26,10 @@ export default function About() {
     offset: ["start end", "start start"],
   });
 
-  // About panel: translates from 100vh → 0 and scales from 0.96 → 1
-  const panelY      = useTransform(scrollYProgress, [0, 1], ["100vh", "0vh"]);
-  const panelScale  = useTransform(scrollYProgress, [0, 1], [0.97, 1]);
-  const panelOpacity = useTransform(scrollYProgress, [0, 0.25], [0, 1]);
+  // About panel: enters from behind the Hero and rises into focus
+  const panelY      = useTransform(scrollYProgress, [0, 1], ["10vh", "0vh"]);
+  const panelScale  = useTransform(scrollYProgress, [0, 0.5, 1], [0.96, 0.99, 1]);
+  const panelOpacity = useTransform(scrollYProgress, [0, 0.25, 1], [0, 0.7, 1]);
 
   useEffect(() => {
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -124,10 +124,10 @@ export default function About() {
       The motion.section is position:sticky so it stays pinned as About slides up,
       then returns to normal flow once the transition completes.
     */
-    <div ref={sectionRef} style={{ position: "relative", zIndex: 20 }}>
+    <div ref={sectionRef} style={{ position: "relative", zIndex: 20, marginTop: "-100vh", overflow: "visible" }}>
       <motion.section
         id="about"
-        className="relative py-24 lg:py-32"
+        className="relative py-24 lg:py-32 overflow-hidden isolate"
         style={{
           y: panelY,
           scale: panelScale,
@@ -136,9 +136,21 @@ export default function About() {
           boxShadow: "0 -32px 100px rgba(0,0,0,0.6)",
           transformOrigin: "center bottom",
           willChange: "transform, opacity",
+          backfaceVisibility: "hidden",
+          position: "relative",
+          minHeight: "100vh",
+          zIndex: 30,
         }}
       >
-        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+        <div className="absolute inset-0 z-0 pointer-events-none">
+          <img
+            src="/aboutme.jpeg"
+            alt=""
+            className="absolute inset-0 h-full w-full object-cover object-center opacity-20"
+          />
+          <div className="absolute inset-0 bg-[linear-gradient(120deg,rgba(2,6,23,0.96)_0%,rgba(2,6,23,0.70)_45%,rgba(2,6,23,0.92)_100%)]" />
+        </div>
+        <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8">
           {/* Section label */}
           <div className="flex items-center gap-3 mb-8">
             <div className="w-1 h-1 bg-[var(--accent-indigo)] rounded-full" />
@@ -149,67 +161,8 @@ export default function About() {
 
           <div ref={contentRef} className="grid lg:grid-cols-[1fr_1.3fr] gap-12 lg:gap-20 items-center">
 
-            {/* LEFT SIDE - Image */}
-            <div className="relative order-2 lg:order-1">
-              <div
-                className="absolute -inset-16 rounded-[40px] blur-[90px] pointer-events-none"
-                style={{
-                  background: `
-                    radial-gradient(circle at 0% 0%, rgba(255,145,210,0.55), transparent 35%),
-                    radial-gradient(circle at 100% 0%, rgba(255,235,120,0.45), transparent 35%),
-                    radial-gradient(circle at 0% 100%, rgba(255,170,80,0.45), transparent 35%),
-                    radial-gradient(circle at 100% 100%, rgba(255,180,220,0.18), transparent 45%)
-                  `,
-                  zIndex: 0,
-                }}
-              />
-
-              <div
-                ref={imageRef}
-                className="relative aspect-square rounded-3xl overflow-hidden border border-white/20 shadow-[0_30px_80px_rgba(0,0,0,0.18)] bg-white"
-              >
-                <div
-                  className="absolute inset-0"
-                  style={{
-                    background: `
-                      radial-gradient(circle at 0% 0%, rgba(255,120,190,.45), transparent 38%),
-                      radial-gradient(circle at 100% 0%, rgba(255,236,150,.45), transparent 38%),
-                      radial-gradient(circle at 0% 100%, rgba(255,170,90,.40), transparent 38%),
-                      radial-gradient(circle at 100% 100%, rgba(255,185,210,.15), transparent 45%),
-                      #ffffff
-                    `,
-                  }}
-                />
-                <div className="absolute inset-0" style={{ backdropFilter: "blur(40px)" }} />
-                <img
-                  src="mypic.jpg"
-                  alt="Priyanshu Singh"
-                  className="absolute inset-0 w-full h-full object-contain z-10"
-                />
-                <div className="absolute inset-0 z-20 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
-                <div className="absolute bottom-6 right-6 z-30 rounded-full bg-white/80 backdrop-blur-xl border border-cyan-300/40 px-4 py-2">
-                  <p className="text-xs font-semibold text-cyan-500">Available Now</p>
-                </div>
-              </div>
-
-              {/* Floating Stats Card */}
-              <div className="absolute -bottom-6 -left-6 z-20 rounded-2xl border border-white/10 bg-white/70 p-6 shadow-xl backdrop-blur-xl dark:bg-black/40">
-                <div className="space-y-4">
-                  <div>
-                    <p className="text-2xl font-bold text-violet-600">5+</p>
-                    <p className="text-xs uppercase tracking-[0.2em] text-gray-500">Projects Built</p>
-                  </div>
-                  <div className="h-px w-12 bg-gradient-to-r from-violet-500 to-transparent" />
-                  <div>
-                    <p className="text-2xl font-bold text-cyan-500">2026</p>
-                    <p className="text-xs uppercase tracking-[0.2em] text-gray-500">Certified AI</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
             {/* RIGHT SIDE - Content */}
-            <div className="order-1 lg:order-2 space-y-8">
+            <div className="w-full space-y-8">
               <div>
                 <h2
                   ref={headingRef}
