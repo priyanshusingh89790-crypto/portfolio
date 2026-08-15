@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Syne:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Syne:wght@400;500;600;700;800&family=Great+Vibes&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,34 +6,35 @@
 
 
 :root {
-  --bg-primary:    #080810;   /* near-black, main background */
-  --bg-secondary:  #0f0f1a;   /* slightly lighter, card surfaces */
-  --bg-card:       rgba(255, 255, 255, 0.03); /* glassmorphism card fill */
-  --border-glass:  rgba(255, 255, 255, 0.08); /* glassmorphism card border */
+  /* ── Palette pulled from the Hero section ── */
+  --bg-primary:    #080808;   /* hero background — near-black */
+  --bg-secondary:  #0d0d0d;   /* slightly lighter, card surfaces */
+  --bg-card:       rgba(240, 235, 227, 0.03); /* glassmorphism card fill */
+  --border-glass:  rgba(240, 235, 227, 0.08); /* glassmorphism card border */
   --accent-indigo: #6366f1;   /* primary accent — indigo */
   --accent-cyan:   #22d3ee;   /* secondary accent — cyan */
   --accent-glow:   rgba(99, 102, 241, 0.15); /* indigo glow for shadows */
-  --text-primary:  #f1f5f9;   /* near-white, headings */
-  --text-secondary:#94a3b8;   /* muted, body copy */
-  --text-muted:    #475569;   /* very muted, labels */
-  --font-display:  'Syne', sans-serif;       /* all headings */
-  --font-body:     'Space Grotesk', sans-serif; /* all body text */
+  --text-primary:  #f0ebe3;   /* hero text colour — warm off-white */
+  --text-secondary:#b5afa8;   /* muted warm tone */
+  --text-muted:    #6b6560;   /* very muted, labels */
+  --font-display:  'Syne', sans-serif;
+  --font-body:     'Space Grotesk', sans-serif;
   --radius-card:   20px;
   --radius-pill:   100px;
   --transition:    cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 [data-theme='light'] {
-  --bg-primary:    #dfe8f1;   /* slate-50 */
-  --bg-secondary:  #f1f5f9;   /* slate-100 */
+  --bg-primary:    #f7f6f2;   /* matches About/Skills/Experience cream */
+  --bg-secondary:  #eeede9;
   --bg-card:       rgba(0, 0, 0, 0.03);
   --border-glass:  rgba(0, 0, 0, 0.08);
-  --accent-indigo: #4f46e5;   /* slightly darker indigo for better contrast */
-  --accent-cyan:   #0891b2;   /* darker cyan */
+  --accent-indigo: #4f46e5;
+  --accent-cyan:   #0891b2;
   --accent-glow:   rgba(79, 70, 229, 0.15);
-  --text-primary:  #0f172a;   /* slate-900 */
-  --text-secondary:#334155;   /* slate-700 */
-  --text-muted:    #64748b;   /* slate-500 */
+  --text-primary:  #111111;   /* matches About/Experience dark text */
+  --text-secondary:#4b4b4b;
+  --text-muted:    #6b6560;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -47,10 +48,10 @@ body {
 }
 
 section {
-  padding: 8rem 3rem;   /* top/bottom: 8rem, left/right: 3rem */
-  max-width: 1400px;
+  padding: 8rem;   /* top/bottom: 8rem, left/right: 3rem */
   margin: 0 auto;
 }
+
 
 .section-label {
   font-size: 0.75rem;

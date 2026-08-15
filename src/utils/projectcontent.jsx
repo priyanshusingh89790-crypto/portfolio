@@ -12,6 +12,9 @@ const projectData = [
     color: "#E50914",
     image: "project/netflix.png",
     mobileImage: "project/netflixmob.png",
+    year: "2024",
+    category: "AI Product",
+    links: { live: NETFLIX_LINK, github: "#" },
     link: NETFLIX_LINK,
   },
   {
@@ -25,6 +28,9 @@ const projectData = [
     color: "#22d3ee",
     image: "project/devpic.png",
     mobileImage: "project/devmob.png",
+    year: "2023",
+    category: "Full-Stack",
+    links: { live: DEVMEETUP_LINK, github: "#" },
     link: DEVMEETUP_LINK,
   },
   {
@@ -38,6 +44,9 @@ const projectData = [
     color: "#f59e0b",
     image: "project/cafe.png",
     mobileImage: "project/cafemob.png",
+    year: "2022",
+    category: "Brand Site",
+    links: { live: CAFE_LINK, github: "#" },
     link: CAFE_LINK,
   },
   {
@@ -58,6 +67,9 @@ const projectData = [
     color: "#8b5cf6",
     image: "project/portfolio.png",
     mobileImage: "project/portfoliomob.png",
+    year: "2025",
+    category: "Portfolio",
+    links: { live: "/", github: "#" },
     link: "/",
   },
 ];

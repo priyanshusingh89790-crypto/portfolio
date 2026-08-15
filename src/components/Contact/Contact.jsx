@@ -9,23 +9,41 @@ export default function Contact() {
   const [formSubmitted, setFormSubmitted] = useState(false);
 
   // Text scramble effect
-  function scrambleText(element, finalText, duration = 1500) {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%';
-    let frame = 0;
-    const totalFrames = Math.ceil(duration / 16);
-    const interval = setInterval(() => {
-      element.textContent = finalText.split('').map((char, idx) => {
+function scrambleText(element, finalText, duration = 1500) {
+  if (!element) return;
+
+  const chars =
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%';
+
+  let frame = 0;
+  const totalFrames = Math.ceil(duration / 16);
+
+  const interval = setInterval(() => {
+    // Stop immediately if the element no longer exists
+    if (!element || !element.isConnected) {
+      clearInterval(interval);
+      return;
+    }
+
+    element.textContent = finalText
+      .split('')
+      .map((char, idx) => {
         if (char === ' ') return ' ';
         if (frame / totalFrames > idx / finalText.length) return char;
         return chars[Math.floor(Math.random() * chars.length)];
-      }).join('');
-      frame++;
-      if (frame >= totalFrames) {
-        element.textContent = finalText;
-        clearInterval(interval);
-      }
-    }, 16);
-  }
+      })
+      .join('');
+
+    frame++;
+
+    if (frame >= totalFrames) {
+      element.textContent = finalText;
+      clearInterval(interval);
+    }
+  }, 16);
+
+  return interval;
+}
 
   useEffect(() => {
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
