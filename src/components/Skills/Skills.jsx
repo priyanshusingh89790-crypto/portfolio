@@ -76,22 +76,24 @@ export default function Skills() {
     const ctx = gsap.context(() => {
       const titles = titleRefs.current.filter(Boolean);
       const panels = panelRefs.current.filter(Boolean);
+      const titleWrapper = titlesWrapperRef.current;
 
-      if (!titles.length || !panels.length) return;
+      if (!titles.length || !panels.length || !titleWrapper) return;
 
-      // -------------------------------
+      // ==========================================
       // INITIAL STATES
-      // -------------------------------
+      // ==========================================
 
       gsap.set(titles, {
         color: "#18181b",
       });
 
-      // Only first active title is orange
+      // First title starts as selected
       gsap.set(titles[0], {
         color: "#ff4d2e",
       });
 
+      // Panels
       panels.forEach((panel, index) => {
         gsap.set(panel, {
           autoAlpha: index === 0 ? 1 : 0,
@@ -100,40 +102,39 @@ export default function Skills() {
         });
       });
 
-      // -----------------------------------------
-      // GET EXACT TITLE POSITIONS
-      //
-      // This is important because titles like
-      // "State & Data" may have a different width,
-      // but every movement uses their real position.
-      // -----------------------------------------
+      // ==========================================
+      // GET TITLE OFFSET
+      // ==========================================
 
-      const getOffset = (index) => {
+      const getTitleOffset = (index) => {
         const firstTop = titles[0].offsetTop;
         const currentTop = titles[index].offsetTop;
 
         return currentTop - firstTop;
       };
 
-      // -----------------------------------------
-      // MASTER TIMELINE
-      // -----------------------------------------
+      // ==========================================
+      // CONTINUOUS MASTER TIMELINE
+      // ==========================================
 
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: section,
           start: "top top",
-          end: `+=${(skillGroups.length - 1) * 90}%`,
+          end: `+=${(skillGroups.length - 1) * 85}%`,
           pin: true,
-          scrub: 0.8,
+
+          // Smooth but directly connected to scrolling
+          scrub: 0.15,
+
           anticipatePin: 1,
           invalidateOnRefresh: true,
         },
       });
 
-      // -----------------------------------------
-      // EACH SKILL TRANSITION
-      // -----------------------------------------
+      // ==========================================
+      // SKILL TRANSITIONS
+      // ==========================================
 
       for (let i = 1; i < skillGroups.length; i++) {
         const previousTitle = titles[i - 1];
@@ -142,98 +143,90 @@ export default function Skills() {
         const previousPanel = panels[i - 1];
         const currentPanel = panels[i];
 
-        const step = `step-${i}`;
+        // Each transition starts immediately
+        const position = i - 1;
 
-        // -----------------------------------------
-        // 1. TITLE LIST MOVES UP
-        //
-        // Current title lands in the EXACT SAME
-        // position where the previous title was.
-        // -----------------------------------------
+        // ------------------------------------------
+        // MOVE TITLE LIST UP CONTINUOUSLY
+        // ------------------------------------------
 
         tl.to(
-          titlesWrapperRef.current,
+          titleWrapper,
           {
-            y: () => -getOffset(i),
-            duration: 0.8,
-            ease: "power3.inOut",
+            y: () => -getTitleOffset(i),
+            duration: 1,
+            ease: "none",
           },
-          step
+          position
         );
 
-        // -----------------------------------------
-        // 2. OLD TITLE BECOMES BLACK
-        //
-        // Happens while moving upward.
-        // -----------------------------------------
+        // ------------------------------------------
+        // PREVIOUS TITLE → BLACK
+        // ------------------------------------------
 
         tl.to(
           previousTitle,
           {
             color: "#18181b",
             duration: 0.35,
-            ease: "power1.inOut",
+            ease: "none",
           },
-          step
+          position
         );
 
-        // -----------------------------------------
-        // 3. NEW TITLE BECOMES ORANGE
-        //
-        // It becomes orange while arriving at the
-        // exact fixed selection position.
-        // -----------------------------------------
+        // ------------------------------------------
+        // NEW TITLE → ORANGE
+        // ------------------------------------------
 
         tl.to(
           currentTitle,
           {
             color: "#ff4d2e",
             duration: 0.35,
-            ease: "power1.inOut",
+            ease: "none",
           },
-          `${step}+=0.25`
+          position + 0.35
         );
 
-        // -----------------------------------------
-        // 4. OLD CARDS LEAVE
-        // -----------------------------------------
+        // ------------------------------------------
+        // OLD CARDS LEAVE
+        // ------------------------------------------
 
         tl.to(
           previousPanel,
           {
             autoAlpha: 0,
-            y: -25,
-            scale: 0.98,
-            duration: 0.45,
+            y: -35,
+            scale: 0.97,
+            duration: 0.65,
             ease: "power2.inOut",
           },
-          step
+          position
         );
 
-        // -----------------------------------------
-        // 5. NEW CARDS ENTER
-        // -----------------------------------------
+        // ------------------------------------------
+        // NEW CARDS ENTER
+        // ------------------------------------------
 
         tl.fromTo(
           currentPanel,
           {
             autoAlpha: 0,
-            y: 35,
+            y: 45,
             scale: 0.97,
           },
           {
             autoAlpha: 1,
             y: 0,
             scale: 1,
-            duration: 0.55,
-            ease: "power3.out",
+            duration: 0.65,
+            ease: "power2.out",
           },
-          `${step}+=0.15`
+          position + 0.15
         );
-
-        // Small pause before next change
-        tl.to({}, { duration: 0.35 });
       }
+
+      ScrollTrigger.refresh();
     }, section);
 
     return () => ctx.revert();
@@ -246,7 +239,8 @@ export default function Skills() {
       className="
         relative
         h-[78vh]
-        min-h-[580px]
+        min-h-[560px]
+        overflow-visible
         bg-[#f7f6f2]
         text-zinc-900
       "
@@ -257,76 +251,38 @@ export default function Skills() {
           flex
           h-full
           w-full
-          max-w-[1400px]
+          max-w-[1600px]
           items-center
-          gap-4
-          px-6
-          sm:px-10
+          gap-2
+          px-4
+          sm:px-8
           lg:px-14
+          2xl:px-20
         "
       >
-        {/* ================================
-            LEFT — TITLE SELECTOR
-        ================================= */}
-
-        <div
-          className="
-            relative
-            flex
-            w-[45%]
-            flex-col
-            justify-center
-          "
-        >
-          <div
-            className="
-              mb-5
-              text-[10px]
-              font-bold
-              uppercase
-              tracking-[0.3em]
-            "
-          >
+        {/* LEFT SIDE */}
+        <div className="relative z-10 flex w-[44%] flex-col justify-center">
+          <div className="mb-5 text-[10px] font-bold uppercase tracking-[0.3em] text-zinc-900">
             Skills
           </div>
-
-          {/* 
-            FIXED SELECTION POINT
-
-            The wrapper starts here.
-            The entire list moves upward.
-            Every new active title lands here.
-          */}
-
-          <div className="relative h-[320px]">
+          <div className="relative h-[280px] sm:h-[300px] lg:h-[320px] overflow-visible">
             <div
               ref={titlesWrapperRef}
-              className="
-                absolute
-                left-0
-                top-0
-                flex
-                flex-col
-                gap-1
-              "
+              className="absolute left-0 sm:left-10 lg:left-20 top-0 flex flex-col gap-1 will-change-transform"
             >
               {skillGroups.map((group, index) => (
                 <h2
                   key={group.title}
-                  ref={(element) => {
-                    titleRefs.current[index] = element;
-                  }}
+                  ref={(element) => { titleRefs.current[index] = element; }}
                   className="
                     whitespace-nowrap
-                    font-medium
+                    font-bold
                     uppercase
                     tracking-[-0.04em]
                     leading-[1.1]
-                    text-[clamp(2.2rem,3.2vw,4.3rem)]
+                    text-[clamp(1.6rem,2.8vw,4.3rem)]
                   "
-                  style={{
-                    fontFamily: "var(--font-display)",
-                  }}
+                  style={{ fontFamily: "var(--font-display)" }}
                 >
                   {group.title}
                 </h2>
@@ -335,41 +291,21 @@ export default function Skills() {
           </div>
         </div>
 
-        {/* ================================
-            RIGHT — SKILL CARDS
-        ================================= */}
-
-        <div
-          className="
-            relative
-            flex
-            h-full
-            w-[55%]
-            items-center
-            justify-center
-          "
-        >
-          <div
-            className="
-              relative
-              h-[360px]
-              w-full
-              max-w-[560px]
-            "
-          >
+        {/* RIGHT SIDE */}
+        <div className="relative flex h-full w-[56%] items-center justify-center">
+          <div className="relative h-[300px] sm:h-[340px] lg:h-[360px] w-full max-w-[560px]">
             {skillGroups.map((group, groupIndex) => (
               <div
                 key={group.title}
-                ref={(element) => {
-                  panelRefs.current[groupIndex] = element;
-                }}
+                ref={(element) => { panelRefs.current[groupIndex] = element; }}
                 className="
                   absolute
                   inset-0
                   grid
                   grid-cols-2
-                  gap-3
                   sm:grid-cols-3
+                  gap-2
+                  sm:gap-3
                 "
               >
                 {group.skills.map((skill) => (
@@ -382,11 +318,12 @@ export default function Skills() {
                       flex-col
                       items-center
                       justify-center
-                      rounded-[1.1rem]
+                      rounded-[1rem]
                       border
                       border-black/10
                       bg-white/60
-                      p-3
+                      p-2
+                      sm:p-3
                       transition-all
                       duration-300
                       hover:-translate-y-1
@@ -396,15 +333,17 @@ export default function Skills() {
                   >
                     <div
                       className="
-                        mb-2
+                        mb-1.5
                         flex
-                        h-12
-                        w-12
+                        h-9
+                        w-9
+                        sm:h-11
+                        sm:w-11
                         items-center
                         justify-center
                         rounded-xl
                         bg-[#f3f2ee]
-                        text-lg
+                        text-base
                         font-bold
                         transition-transform
                         duration-300
@@ -413,16 +352,7 @@ export default function Skills() {
                     >
                       {skill.icon}
                     </div>
-
-                    <span
-                      className="
-                        text-center
-                        text-[11px]
-                        font-semibold
-                        text-zinc-700
-                        sm:text-xs
-                      "
-                    >
+                    <span className="text-center text-[10px] sm:text-[11px] font-semibold text-zinc-700">
                       {skill.name}
                     </span>
                   </div>

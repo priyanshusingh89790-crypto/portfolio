@@ -101,11 +101,11 @@ section h2 {
   resize: none;
 }
 .contact-input:focus {
-  border-color: var(--accent-indigo);
-  box-shadow: 0 0 0 3px rgba(99,102,241,0.1);
+  border-color: #ef4423;
+  box-shadow: 0 0 0 3px rgba(239,68,35,0.12);
 }
 .contact-submit {
-  background: var(--accent-indigo);
+  background: #ef4423;
   color: white;
   border: none;
   border-radius: var(--radius-pill);
@@ -116,7 +116,7 @@ section h2 {
   align-self: flex-start;
   transition: transform 0.3s, box-shadow 0.3s;
 }
-.contact-submit:hover { transform: translateY(-2px); box-shadow: 0 16px 32px rgba(99,102,241,0.3); }
+.contact-submit:hover { transform: translateY(-2px); box-shadow: 0 16px 32px rgba(239,68,35,0.3); }
 
 /* Pulse animation for available badge */
 @keyframes pulse {
@@ -126,26 +126,22 @@ section h2 {
 
 /* Responsive */
 @media (max-width: 768px) {
-  body { cursor: auto; }           /* restore default cursor on mobile */
-  .custom-cursor { display: none; } /* hide custom cursor */
-
-  section { padding: 5rem 1.5rem; }
-
-  /* About: stack columns */
+  body { cursor: auto; }
+  .custom-cursor { display: none; }
+  section { padding: 4rem 1.25rem; }
   .about-grid { grid-template-columns: 1fr; }
   .about-sticky { position: static; }
-
-  /* Projects: disable horizontal scroll, stack vertically */
-  /* On mobile, the project track should NOT be horizontal */
-  /* Instead: set height: auto on the section, remove the pin, and render cards stacked */
-
-  /* Skills bento: 1 column */
   .skills-grid { grid-template-columns: 1fr; }
-
-  /* Timeline: single column, no alternating */
   .timeline-line { display: none; }
   .timeline-item { margin-left: 0; margin-right: 0; text-align: left; }
-
-  /* Hero h1 */
   h1 { font-size: clamp(3rem, 15vw, 5rem); }
+}
+
+@media (min-width: 1920px) {
+  section { padding: 10rem 6rem; }
+}
+
+@media (min-width: 2560px) {
+  section { padding: 12rem 10rem; }
+  body { font-size: 18px; }
 }

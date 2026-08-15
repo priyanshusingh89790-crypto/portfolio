@@ -69,76 +69,59 @@ function scrambleText(element, finalText, duration = 1500) {
   };
 
   return (
-    <section id="contact">
-      {/* Giant heading with text scramble */}
-      <h2
-        ref={headingRef}
-        className="font-[family-name:var(--font-display)] text-[clamp(3rem,8vw,7rem)] font-extrabold leading-[0.9] mb-6"
-      >
-        Let's build something.
-      </h2>
-
-      {/* Sub-content */}
-      <p className="text-[var(--text-secondary)] text-lg max-w-[480px] my-6">
-        Have a project in mind? Want to hire a developer who thinks deeply about UX and code equally?
-        Let's talk.
-      </p>
-
-      {/* Email link */}
-      <a
-        href="mailto:priyanshu@email.com"
-        className="text-[clamp(1rem,2.5vw,1.5rem)] text-[var(--accent-cyan)] inline-block mb-10 no-underline transition-colors duration-300 hover:text-[var(--accent-indigo)]"
-      >
-        priyanshu@email.com
-      </a>
-
-      {/* Social row */}
-      <div className="flex gap-6 mb-12">
-        <a
-          href="https://github.com/YOUR_HANDLE"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-[var(--text-primary)] no-underline text-[0.9rem] transition-colors duration-300 hover:text-[var(--accent-indigo)]"
+    <section id="contact" className="px-4 py-20 sm:px-10 lg:px-16 lg:py-28 2xl:px-24 2xl:py-36">
+      <div className="mx-auto max-w-[1600px]">
+        {/* Giant heading */}
+        <h2
+          ref={headingRef}
+          className="font-[family-name:var(--font-display)] text-[clamp(2.2rem,6vw,7rem)] font-extrabold leading-[0.9] mb-6"
         >
-          GitHub →
-        </a>
+          Let's build something.
+        </h2>
+
+        <p className="text-[var(--text-secondary)] text-base lg:text-lg max-w-[480px] my-6">
+          Have a project in mind? Want to hire a developer who thinks deeply about UX and code equally?
+          Let's talk.
+        </p>
+
         <a
-          href="https://linkedin.com/in/YOUR_HANDLE"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-[var(--text-primary)] no-underline text-[0.9rem] transition-colors duration-300 hover:text-[var(--accent-indigo)]"
+          href="mailto:priyanshu@email.com"
+          className="text-[clamp(0.9rem,2vw,1.5rem)] text-[#ef4423] inline-block mb-10 no-underline transition-colors duration-300 hover:text-[#ff6644]"
         >
-          LinkedIn →
+          priyanshu@email.com
         </a>
+
+        <div className="flex gap-6 mb-12">
+          <a
+            href="https://github.com/YOUR_HANDLE"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[var(--text-primary)] no-underline text-sm transition-colors duration-300 hover:text-[#ef4423]"
+          >
+            GitHub →
+          </a>
+          <a
+            href="https://linkedin.com/in/YOUR_HANDLE"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[var(--text-primary)] no-underline text-sm transition-colors duration-300 hover:text-[#ef4423]"
+          >
+            LinkedIn →
+          </a>
+        </div>
+
+        <form
+          className="w-full max-w-[520px] mt-10 flex flex-col gap-4"
+          onSubmit={handleSubmit}
+        >
+          <input type="text" placeholder="Your name" className="contact-input" required />
+          <input type="email" placeholder="Your email" className="contact-input" required />
+          <textarea placeholder="Your message" className="contact-input" rows={5} required />
+          <button type="submit" className="contact-submit">
+            {formSubmitted ? 'Sent!' : 'Send message →'}
+          </button>
+        </form>
       </div>
-
-      {/* Contact form */}
-      <form
-        className="max-w-[520px] mt-12 flex flex-col gap-4"
-        onSubmit={handleSubmit}
-      >
-        <input
-          type="text"
-          placeholder="Your name"
-          className="contact-input"
-          required
-        />
-        <input
-          type="email"
-          placeholder="Your email"
-          className="contact-input"
-          required
-        />
-        <textarea
-          placeholder="Your message"
-          className="contact-input"
-          rows={5}
-          required
-        />
-        <button type="submit" className="contact-submit">
-          {formSubmitted ? 'Sent!' : 'Send message →'}
-        </button>
-      </form>
     </section>
   );
 }

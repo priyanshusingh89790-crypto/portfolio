@@ -129,9 +129,7 @@ export default function About() {
             text-[clamp(3rem,8vw,8.5rem)]
             text-black/[0.025]
           "
-          style={{
-            fontFamily: "var(--font-display)",
-          }}
+          style={{ fontFamily: "var(--font-display)" }}
         >
           PRIYANSHU
         </span>
@@ -142,43 +140,35 @@ export default function About() {
         className="
           relative
           w-full
-          h-[380px]
-          sm:h-[430px]
-          md:h-[500px]
+          h-[340px]
+          sm:h-[400px]
+          md:h-[480px]
+          lg:h-[520px]
+          xl:h-[580px]
+          2xl:h-[640px]
         "
       >
         {/* HEADLINE WRAPPER */}
         <div
           ref={headlineWrapperRef}
-          className="
-            absolute
-            w-max
-            max-w-[90vw]
-          "
+          className="absolute w-max max-w-[92vw]"
         >
           {/* HEADLINE */}
           <div className="relative flex flex-col">
             {lines.map((text, index) => (
-              <div
-                key={text}
-                className="overflow-hidden"
-              >
+              <div key={text} className="overflow-hidden">
                 <h1
-                  ref={(element) => {
-                    lineRefs.current[index] = element;
-                  }}
+                  ref={(element) => { lineRefs.current[index] = element; }}
                   className="
                     font-black
                     uppercase
                     tracking-[-0.04em]
-                    leading-[1.4]
-                    text-[clamp(2.2rem,5vw,6.5rem)]
+                    leading-[1.35]
+                    text-[clamp(1.6rem,4.5vw,6.5rem)]
                     text-[#111]
                     whitespace-nowrap
                   "
-                  style={{
-                    fontFamily: "var(--font-display)",
-                  }}
+                  style={{ fontFamily: "var(--font-display)" }}
                 >
                   {text}
                 </h1>
@@ -186,7 +176,7 @@ export default function About() {
             ))}
           </div>
 
-          {/* FRONTEND DEVELOPER */}
+          {/* FRONTEND DEVELOPER image */}
           <div
             className="
               absolute
@@ -199,37 +189,21 @@ export default function About() {
               whitespace-nowrap
             "
           >
-            {/* Fixed-width area so F never moves */}
-            <div
-              className="
-                w-[260px]
-                sm:w-[320px]
-                md:w-[480px]
-              "
-            >
+            <div className="w-[180px] sm:w-[260px] md:w-[380px] lg:w-[480px]">
               <img
                 src="/text.png"
                 alt="Frontend Developer"
                 ref={roleRef}
-                className="
-                  w-full
-                  h-auto
-                  object-contain
-                "
+                className="w-full h-auto object-contain"
               />
             </div>
           </div>
 
           {/* DESCRIPTION */}
-          <div className="mt-7 max-w-[500px] overflow-hidden">
+          <div className="mt-5 max-w-[440px] overflow-hidden">
             <p
               ref={descriptionRef}
-              className="
-                text-sm
-                md:text-base
-                leading-7
-                text-neutral-600
-              "
+              className="text-sm md:text-base leading-7 text-neutral-600"
             >
               Building modern, responsive and interactive digital
               experiences with a focus on clean design, smooth motion

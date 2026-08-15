@@ -162,7 +162,7 @@ const DOMOverlay = ({ springIndex }) => {
           className="pointer-events-auto max-w-2xl"
         >
           <div className="flex gap-2 mb-5">
-            <span className="text-[10px] font-bold px-3 py-1.5 bg-[var(--accent-indigo)] text-white rounded uppercase tracking-[0.2em] shadow-lg">
+            <span className="text-[10px] font-bold px-3 py-1.5 bg-[#ef4423] text-white rounded uppercase tracking-[0.2em] shadow-lg">
               Featured
             </span>
             <span className="text-[10px] font-bold px-3 py-1.5 bg-white/10 text-white rounded uppercase tracking-[0.2em] backdrop-blur-md border border-white/10">
@@ -171,7 +171,7 @@ const DOMOverlay = ({ springIndex }) => {
           </div>
 
           <h3
-            className="text-[clamp(3.5rem,8vw,7rem)] leading-[0.85] font-black uppercase tracking-tighter"
+            className="text-[clamp(2rem,6vw,7rem)] leading-[0.85] font-black uppercase tracking-tighter"
             style={{
               fontFamily: "var(--font-display)",
               color: "white",
@@ -282,8 +282,12 @@ export default function Projects() {
         {/* DOM Editorial Text Overlay */}
         <DOMOverlay springIndex={springIndex} />
 
-        {/* Navigation Arrows */}
-        <div className="absolute right-8 top-1/2 -translate-y-1/2 z-50 flex flex-col items-center gap-5 pointer-events-auto">
+        {/* Navigation Arrows — move to bottom-center on mobile */}
+        <div className="
+          absolute z-50 pointer-events-auto
+          bottom-6 left-1/2 -translate-x-1/2 flex flex-row items-center gap-4
+          md:bottom-auto md:left-auto md:translate-x-0 md:right-8 md:top-1/2 md:-translate-y-1/2 md:flex-col md:gap-5
+        ">
           {/* Previous - top */}
           <button
             onClick={() => handleNav(-1)}
