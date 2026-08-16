@@ -26,7 +26,7 @@ export default function ThemeToggle() {
     <button
       onClick={toggleTheme}
       aria-label={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
-      className={`fixed bottom-8 right-[88px] z-[200] w-[44px] h-[44px] rounded-full bg-[var(--bg-card)] border border-[var(--border-glass)] backdrop-blur-md flex items-center justify-center cursor-none text-[1.1rem] transition-colors duration-300 font-[family-name:var(--font-body)] hover:text-[var(--text-primary)] ${theme === 'light' ? 'text-[var(--accent-cyan)]' : 'text-[var(--text-muted)]'}`}
+      className={`fixed bottom-8 right-[88px] z-[200] w-[44px] h-[44px] rounded-full backdrop-blur-md flex items-center justify-center cursor-none text-[1.1rem] transition-all duration-300 font-[family-name:var(--font-body)] hover:text-[var(--text-primary)] ${theme === 'light' ? 'bg-[rgba(0,0,0,0.25)] border-2 border-[#e5e7eb]' : 'bg-[var(--bg-card)] border border-[var(--border-glass)]'} ${theme === 'light' ? 'text-[var(--accent-cyan)]' : 'text-[var(--text-muted)]'}`}
     >
       {theme === 'light' ? '☀' : '☾'}
     </button>

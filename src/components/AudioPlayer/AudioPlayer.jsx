@@ -7,6 +7,7 @@ const AUDIO_URL = '/audio/ambient.mp3';
 
 export default function AudioPlayer() {
   const [playing, setPlaying] = useState(false);
+  const [theme, setTheme] = useState('dark');
   const startedRef = useRef(false);
   const playingRef = useRef(false);
   const howlRef = useRef(null);
@@ -14,6 +15,17 @@ export default function AudioPlayer() {
   useEffect(() => {
     playingRef.current = playing;
   }, [playing]);
+
+  useEffect(() => {
+    const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+    setTheme(currentTheme);
+    const observer = new MutationObserver(() => {
+      const newTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+      setTheme(newTheme);
+    });
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     howlRef.current = new Howl({
@@ -24,17 +36,40 @@ export default function AudioPlayer() {
       html5: true // Using HTML5 audio is better for larger files and auto-play policies
     });
 
-    // Start on first scroll or click
-    const startAudio = () => {
-      if (!startedRef.current) {
-        startedRef.current = true;
-        howlRef.current.play();
-        howlRef.current.fade(0, 0.12, 2000);
-        setPlaying(true);
+    // Check if hero section is visible and auto-play
+    const checkHeroAndPlay = () => {
+      const heroEl = document.getElementById('hero');
+      if (heroEl) {
+        const rect = heroEl.getBoundingClientRect();
+        const isVisible = rect.top < window.innerHeight && rect.bottom > 0;
+        if (isVisible && !startedRef.current) {
+          startedRef.current = true;
+          howlRef.current.play();
+          howlRef.current.fade(0, 0.12, 2000);
+          setPlaying(true);
+          return;
+        }
       }
+      
+      // If hero not visible, start on first scroll or click
+      const startAudio = () => {
+        if (!startedRef.current) {
+          startedRef.current = true;
+          howlRef.current.play();
+          howlRef.current.fade(0, 0.12, 2000);
+          setPlaying(true);
+        }
+      };
+      window.addEventListener('scroll', startAudio, { once: true });
+      window.addEventListener('click', startAudio, { once: true });
+      
+      return () => {
+        window.removeEventListener('scroll', startAudio);
+        window.removeEventListener('click', startAudio);
+      };
     };
-    window.addEventListener('scroll', startAudio, { once: true });
-    window.addEventListener('click', startAudio, { once: true });
+
+    checkHeroAndPlay();
 
     // Pause when tab hidden
     const handleVisibilityChange = () => {
@@ -44,8 +79,6 @@ export default function AudioPlayer() {
     document.addEventListener('visibilitychange', handleVisibilityChange);
 
     return () => {
-      window.removeEventListener('scroll', startAudio);
-      window.removeEventListener('click', startAudio);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       if (howlRef.current) {
         howlRef.current.unload();
@@ -68,7 +101,7 @@ export default function AudioPlayer() {
     <button
       onClick={toggle}
       aria-label={playing ? 'Mute music' : 'Play music'}
-      className={`fixed bottom-8 right-8 z-[200] w-[44px] h-[44px] rounded-full bg-[var(--bg-card)] border border-[var(--border-glass)] backdrop-blur-md flex items-center justify-center cursor-none text-[1.1rem] transition-colors duration-300 font-[family-name:var(--font-body)] ${playing ? 'text-[var(--accent-cyan)]' : 'text-[var(--text-muted)]'}`}
+      className={`fixed bottom-8 right-8 z-[200] w-[44px] h-[44px] rounded-full backdrop-blur-md flex items-center justify-center cursor-none text-[1.1rem] transition-all duration-300 font-[family-name:var(--font-body)] ${theme === 'light' ? 'bg-[rgba(0,0,0,0.25)] border-2 border-[#e5e7eb]' : 'bg-[var(--bg-card)] border border-[var(--border-glass)]'} ${playing ? 'text-[var(--accent-cyan)]' : 'text-[var(--text-muted)]'}`}
     >
       {playing ? '♫' : '♪'}
     </button>
