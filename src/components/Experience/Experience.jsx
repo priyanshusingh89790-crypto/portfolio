@@ -10,8 +10,8 @@ const timelineData = [
     role: "Creative Technology Intern",
     company: "WPP",
     description:
-      "Building AI agents, chatbots and intelligent automation systems while creating AI-powered frontend experiences for real production workflows.",
-    tags: ["Agentic AI", "LangChain", "n8n", "React", "Next.js", "GSAP"],
+      "Developed real animated websites and contributed to UI/UX design.",
+    tags: ["SCSS", "Three.js", "React", "Next.js", "GSAP"],
   },
   {
     year: "JAN 2026 — JUN 2026",
