@@ -93,7 +93,7 @@ function scrambleText(element, finalText, duration = 1500) {
 
         <div className="flex gap-6 mb-12">
           <a
-            href="https://github.com/YOUR_HANDLE"
+            href="https://github.com/priyanshusingh89790-crypto"
             target="_blank"
             rel="noopener noreferrer"
             className="text-[var(--text-primary)] no-underline text-sm transition-colors duration-300 hover:text-[#ef4423]"
@@ -101,7 +101,7 @@ function scrambleText(element, finalText, duration = 1500) {
             GitHub →
           </a>
           <a
-            href="https://linkedin.com/in/YOUR_HANDLE"
+            href="https://www.linkedin.com/in/priyanshu-singh-668b53328/"
             target="_blank"
             rel="noopener noreferrer"
             className="text-[var(--text-primary)] no-underline text-sm transition-colors duration-300 hover:text-[#ef4423]"

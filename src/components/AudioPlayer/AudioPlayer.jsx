@@ -8,6 +8,7 @@ const AUDIO_URL = '/audio/ambient.mp3';
 export default function AudioPlayer() {
   const [playing, setPlaying] = useState(false);
   const [theme, setTheme] = useState('dark');
+  const [loaderDone, setLoaderDone] = useState(false);
   const startedRef = useRef(false);
   const playingRef = useRef(false);
   const howlRef = useRef(null);
@@ -28,57 +29,113 @@ export default function AudioPlayer() {
   }, []);
 
   useEffect(() => {
+    // Initialize Howl with error handling
     howlRef.current = new Howl({
       src: [AUDIO_URL],
       loop: true,
-      volume: 0,
+      volume: 0.01,
       autoplay: false,
-      html5: true // Using HTML5 audio is better for larger files and auto-play policies
+      html5: true,
+      preload: 'auto',
+      onload: () => {
+        console.log('Audio loaded successfully, state:', howlRef.current.state());
+      },
+      onerror: (id, error) => {
+        console.error('Howl error:', error);
+      }
     });
 
-    // Check if hero section is visible and auto-play
-    const checkHeroAndPlay = () => {
-      const heroEl = document.getElementById('hero');
-      if (heroEl) {
-        const rect = heroEl.getBoundingClientRect();
-        const isVisible = rect.top < window.innerHeight && rect.bottom > 0;
-        if (isVisible && !startedRef.current) {
-          startedRef.current = true;
-          howlRef.current.play();
-          howlRef.current.fade(0, 0.12, 2000);
+    // Function to play audio and mark as started
+    const playAudio = () => {
+      console.log('playAudio called, startedRef:', startedRef.current);
+      if (startedRef.current) {
+        console.log('Audio already started, skipping');
+        return;
+      }
+
+      startedRef.current = true;
+      const audioState = howlRef.current.state();
+      console.log('Current audio state:', audioState);
+
+      if (audioState === 'loaded') {
+        try {
+          console.log('Audio is loaded, playing now...');
+          const soundId = howlRef.current.play();
+          console.log('Play sound ID:', soundId);
+          howlRef.current.fade(0.01, 0.25, 800, soundId);
           setPlaying(true);
-          return;
+          console.log('Audio playing successfully');
+        } catch (e) {
+          console.error('Error playing audio:', e);
+        }
+      } else if (audioState === 'loading') {
+        console.log('Audio still loading, waiting...');
+        howlRef.current.once('load', () => {
+          try {
+            console.log('Audio loaded after wait, playing now...');
+            const soundId = howlRef.current.play();
+            console.log('Play sound ID:', soundId);
+            howlRef.current.fade(0.01, 0.12, 2000, soundId);
+            setPlaying(true);
+            console.log('Audio playing successfully (after load)');
+          } catch (e) {
+            console.error('Error playing audio after load:', e);
+          }
+        });
+      } else {
+        console.log('Unknown audio state:', audioState, 'attempting play anyway');
+        try {
+          const soundId = howlRef.current.play();
+          console.log('Play attempt sound ID:', soundId);
+          howlRef.current.fade(0.01, 0.12, 2000, soundId);
+          setPlaying(true);
+          console.log('Audio playing from unknown state');
+        } catch (e) {
+          console.error('Error playing from unknown state:', e);
         }
       }
-      
-      // If hero not visible, start on first scroll or click
-      const startAudio = () => {
-        if (!startedRef.current) {
-          startedRef.current = true;
-          howlRef.current.play();
-          howlRef.current.fade(0, 0.12, 2000);
-          setPlaying(true);
-        }
-      };
-      window.addEventListener('scroll', startAudio, { once: true });
-      window.addEventListener('click', startAudio, { once: true });
-      
-      return () => {
-        window.removeEventListener('scroll', startAudio);
-        window.removeEventListener('click', startAudio);
-      };
     };
 
-    checkHeroAndPlay();
+    // Start on first user interaction (required for browser autoplay policies)
+    const handleInteraction = () => {
+      console.log('User interaction detected (after loader complete)');
+      playAudio();
+    };
+
+    // Also listen for loader complete event - ONLY set up interaction listeners after this
+    const handleLoaderComplete = () => {
+      console.log('Loader complete event received - attempting auto-play');
+      setLoaderDone(true);
+      
+      // Try to play immediately
+      playAudio();
+      
+      // Also add interaction listeners for future toggles
+      window.addEventListener('scroll', handleInteraction, { once: true });
+      window.addEventListener('click', handleInteraction, { once: true });
+      window.addEventListener('touchstart', handleInteraction, { once: true });
+      window.addEventListener('keydown', handleInteraction, { once: true });
+    };
+
+    // ONLY listen for loader complete, don't add other listeners yet
+    window.addEventListener('loaderComplete', handleLoaderComplete, { once: true });
 
     // Pause when tab hidden
     const handleVisibilityChange = () => {
-      if (document.hidden) howlRef.current.pause();
-      else if (playingRef.current) howlRef.current.play();
+      if (document.hidden) {
+        if (howlRef.current) howlRef.current.pause();
+      } else if (playingRef.current && howlRef.current) {
+        howlRef.current.play();
+      }
     };
     document.addEventListener('visibilitychange', handleVisibilityChange);
 
     return () => {
+      window.removeEventListener('loaderComplete', handleLoaderComplete);
+      window.removeEventListener('scroll', handleInteraction);
+      window.removeEventListener('click', handleInteraction);
+      window.removeEventListener('touchstart', handleInteraction);
+      window.removeEventListener('keydown', handleInteraction);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       if (howlRef.current) {
         howlRef.current.unload();
@@ -88,11 +145,12 @@ export default function AudioPlayer() {
 
   const toggle = () => {
     if (playing) {
-      howlRef.current.fade(0.12, 0, 500);
+      howlRef.current.fade(0.12, 0.01, 500);
+      setTimeout(() => howlRef.current.pause(), 500);
       setPlaying(false);
     } else {
-      howlRef.current.fade(0, 0.12, 500);
       howlRef.current.play();
+      howlRef.current.fade(0.01, 0.12, 500);
       setPlaying(true);
     }
   };

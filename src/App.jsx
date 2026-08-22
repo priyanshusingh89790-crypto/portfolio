@@ -295,6 +295,14 @@ function App() {
     return () => { lenis.destroy(); };
   }, []);
 
+  // Trigger audio when loader completes
+  useEffect(() => {
+    if (loaderComplete) {
+      // Dispatch custom event that AudioPlayer can listen to
+      window.dispatchEvent(new Event('loaderComplete'));
+    }
+  }, [loaderComplete]);
+
   return (
     <div>
       {loaderComplete && (
@@ -310,10 +318,10 @@ function App() {
           <Skills />
           <Experience />
           <Contact />
-          <AudioPlayer />
-          <ThemeToggle />
         </div>
       )}
+      <AudioPlayer />
+      <ThemeToggle />
       <Loader onComplete={() => setLoaderComplete(true)} />
     </div>
   );
