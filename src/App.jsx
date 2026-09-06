@@ -12,6 +12,7 @@ import Hero from './components/Hero/Hero';
 import About from './components/About/About';
 import Projects from './components/Projects/Projects';
 import Skills from './components/Skills/Skills';
+import ScrollVideoSection from './components/ScrollVideoSection/ScrollVideoSection';
 import Experience from './components/Experience/Experience';
 import Contact from './components/Contact/Contact';
 import AudioPlayer from './components/AudioPlayer/AudioPlayer';
@@ -23,6 +24,7 @@ const NAV_SECTIONS = [
   { id: 'about',      label: 'About',      dark: false },
   { id: 'projects',   label: 'Projects',   dark: true  },
   { id: 'skills',     label: 'Skills',     dark: false },
+  { id: 'video',      label: 'Video',      dark: true  },
   { id: 'experience', label: 'Experience', dark: true  },
   { id: 'contact',    label: 'Contact',    dark: true  },
 ];
@@ -316,6 +318,7 @@ function App() {
           <About />
           <Projects />
           <Skills />
+          <ScrollVideoSection />
           <Experience />
           <Contact />
         </div>

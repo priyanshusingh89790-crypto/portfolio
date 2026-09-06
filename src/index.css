@@ -145,3 +145,11 @@ section h2 {
   section { padding: 12rem 10rem; }
   body { font-size: 18px; }
 }
+
+#skills {
+  background: #f7f6f2;
+}
+
+#skills + .pin-spacer {
+  background: #f7f6f2;
+}
