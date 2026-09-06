@@ -1,17 +1,15 @@
 import { Howl } from 'howler';
 import { useEffect, useRef, useState } from 'react';
 
-// Use this FREE royalty-free ambient track (lofi/ambient, no copyright):
 const AUDIO_URL = '/audio/ambient.mp3';
-// OR place your own MP3 in /public/audio/ambient.mp3 and use '/audio/ambient.mp3'
 
 export default function AudioPlayer() {
   const [playing, setPlaying] = useState(false);
   const [theme, setTheme] = useState('dark');
-  const [loaderDone, setLoaderDone] = useState(false);
   const startedRef = useRef(false);
   const playingRef = useRef(false);
   const howlRef = useRef(null);
+  const ensureStartedRef = useRef(() => {});
 
   useEffect(() => {
     playingRef.current = playing;
@@ -21,15 +19,22 @@ export default function AudioPlayer() {
     const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
     setTheme(currentTheme);
     const observer = new MutationObserver(() => {
-      const newTheme = document.documentElement.getAttribute('data-theme') || 'dark';
-      setTheme(newTheme);
+      setTheme(document.documentElement.getAttribute('data-theme') || 'dark');
     });
     observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
     return () => observer.disconnect();
   }, []);
 
   useEffect(() => {
-    // Initialize Howl with error handling
+    // Two independent gates. Real playback only starts once BOTH are true:
+    //   1) the loader has finished (your UX requirement)
+    //   2) the browser has registered a genuine user gesture (its requirement,
+    //      not yours — it will silently refuse sound without one)
+    // Storing them on `window` means whichever gate fires first (even before
+    // this component mounts) isn't lost — we check both every time either fires.
+    if (typeof window.__loaderComplete === 'undefined') window.__loaderComplete = false;
+    if (typeof window.__hasUserGesture === 'undefined') window.__hasUserGesture = false;
+
     howlRef.current = new Howl({
       src: [AUDIO_URL],
       loop: true,
@@ -37,120 +42,106 @@ export default function AudioPlayer() {
       autoplay: false,
       html5: true,
       preload: 'auto',
-      onload: () => {
-        console.log('Audio loaded successfully, state:', howlRef.current.state());
+      onerror: (id, error) => console.error('Howl load error:', error),
+      onplayerror: (id, error) => {
+        // This fires when the browser blocks the play() call itself.
+        // Un-mark the gesture gate so the next real interaction retries.
+        console.warn('Howl play blocked, will retry on next interaction:', error);
+        startedRef.current = false;
       },
-      onerror: (id, error) => {
-        console.error('Howl error:', error);
-      }
     });
 
-    // Function to play audio and mark as started
-    const playAudio = () => {
-      console.log('playAudio called, startedRef:', startedRef.current);
-      if (startedRef.current) {
-        console.log('Audio already started, skipping');
-        return;
-      }
-
+    // The ONE place that's allowed to start playback for the first time.
+    // startedRef is set synchronously as the very first line, so if two
+    // handlers both call this within the same click event (e.g. the
+    // window 'click' listener below AND the button's own onClick), the
+    // second call just no-ops instead of double-triggering play/pause.
+    const ensureStarted = () => {
+      if (startedRef.current) return;
+      if (!window.__loaderComplete || !window.__hasUserGesture) return;
       startedRef.current = true;
-      const audioState = howlRef.current.state();
-      console.log('Current audio state:', audioState);
 
-      if (audioState === 'loaded') {
+      const start = () => {
         try {
-          console.log('Audio is loaded, playing now...');
           const soundId = howlRef.current.play();
-          console.log('Play sound ID:', soundId);
           howlRef.current.fade(0.01, 0.25, 800, soundId);
           setPlaying(true);
-          console.log('Audio playing successfully');
         } catch (e) {
-          console.error('Error playing audio:', e);
+          console.error('Error starting audio:', e);
+          startedRef.current = false;
         }
-      } else if (audioState === 'loading') {
-        console.log('Audio still loading, waiting...');
-        howlRef.current.once('load', () => {
-          try {
-            console.log('Audio loaded after wait, playing now...');
-            const soundId = howlRef.current.play();
-            console.log('Play sound ID:', soundId);
-            howlRef.current.fade(0.01, 0.12, 2000, soundId);
-            setPlaying(true);
-            console.log('Audio playing successfully (after load)');
-          } catch (e) {
-            console.error('Error playing audio after load:', e);
-          }
-        });
+      };
+
+      if (howlRef.current.state() === 'loaded') {
+        start();
       } else {
-        console.log('Unknown audio state:', audioState, 'attempting play anyway');
-        try {
-          const soundId = howlRef.current.play();
-          console.log('Play attempt sound ID:', soundId);
-          howlRef.current.fade(0.01, 0.12, 2000, soundId);
-          setPlaying(true);
-          console.log('Audio playing from unknown state');
-        } catch (e) {
-          console.error('Error playing from unknown state:', e);
-        }
+        howlRef.current.once('load', start);
       }
     };
+    ensureStartedRef.current = ensureStarted;
 
-    // Start on first user interaction (required for browser autoplay policies)
-    const handleInteraction = () => {
-      console.log('User interaction detected (after loader complete)');
-      playAudio();
+    const onLoaderComplete = () => {
+      window.__loaderComplete = true;
+      ensureStarted();
     };
 
-    // Also listen for loader complete event - ONLY set up interaction listeners after this
-    const handleLoaderComplete = () => {
-      console.log('Loader complete event received - attempting auto-play');
-      setLoaderDone(true);
-      
-      // Try to play immediately
-      playAudio();
-      
-      // Also add interaction listeners for future toggles
-      window.addEventListener('scroll', handleInteraction, { once: true });
-      window.addEventListener('click', handleInteraction, { once: true });
-      window.addEventListener('touchstart', handleInteraction, { once: true });
-      window.addEventListener('keydown', handleInteraction, { once: true });
+    const onInteraction = () => {
+      window.__hasUserGesture = true;
+      ensureStarted();
     };
 
-    // ONLY listen for loader complete, don't add other listeners yet
-    window.addEventListener('loaderComplete', handleLoaderComplete, { once: true });
+    // If the loader event already fired before this component mounted,
+    // this still catches it instead of waiting forever.
+    if (window.__loaderComplete) ensureStarted();
 
-    // Pause when tab hidden
+    window.addEventListener('loaderComplete', onLoaderComplete);
+    // click/touchstart/keydown reliably count as a "user gesture" for
+    // autoplay purposes; scroll does not in most browsers, so it's
+    // intentionally left out here.
+    window.addEventListener('click', onInteraction);
+    window.addEventListener('touchstart', onInteraction);
+    window.addEventListener('keydown', onInteraction);
+
     const handleVisibilityChange = () => {
-      if (document.hidden) {
-        if (howlRef.current) howlRef.current.pause();
-      } else if (playingRef.current && howlRef.current) {
-        howlRef.current.play();
-      }
+      if (!howlRef.current) return;
+      if (document.hidden) howlRef.current.pause();
+      else if (playingRef.current) howlRef.current.play();
     };
     document.addEventListener('visibilitychange', handleVisibilityChange);
 
     return () => {
-      window.removeEventListener('loaderComplete', handleLoaderComplete);
-      window.removeEventListener('scroll', handleInteraction);
-      window.removeEventListener('click', handleInteraction);
-      window.removeEventListener('touchstart', handleInteraction);
-      window.removeEventListener('keydown', handleInteraction);
+      window.removeEventListener('loaderComplete', onLoaderComplete);
+      window.removeEventListener('click', onInteraction);
+      window.removeEventListener('touchstart', onInteraction);
+      window.removeEventListener('keydown', onInteraction);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
-      if (howlRef.current) {
-        howlRef.current.unload();
-      }
+      if (howlRef.current) howlRef.current.unload();
     };
   }, []);
 
   const toggle = () => {
+    if (!howlRef.current) return;
+
+    // Clicking the button obviously counts as a real user gesture.
+    window.__hasUserGesture = true;
+
+    // If ambient audio hasn't started yet at all, this click IS the
+    // start trigger — go through the single guarded starter and stop,
+    // rather than also running the mute/unmute branch below on the
+    // same click (that combination was the "turns off, click again to
+    // play" bug).
+    if (!startedRef.current) {
+      ensureStartedRef.current();
+      return;
+    }
+
     if (playing) {
-      howlRef.current.fade(0.12, 0.01, 500);
+      howlRef.current.fade(0.25, 0.01, 500);
       setTimeout(() => howlRef.current.pause(), 500);
       setPlaying(false);
     } else {
       howlRef.current.play();
-      howlRef.current.fade(0.01, 0.12, 500);
+      howlRef.current.fade(0.01, 0.25, 500);
       setPlaying(true);
     }
   };
