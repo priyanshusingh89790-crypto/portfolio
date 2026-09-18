@@ -1,0 +1,74 @@
+PRIYANSHU SINGH
+Frontend Engineer (React.js / Next.js) · Agentic AI & Automation
+Bangalore, India | +91-8273552253 | priyanshuvwork@gmail.com | GitHub | LinkedIn | Portfolio
+
+SUMMARY
+Frontend Engineer with production experience across React, Next.js, and TypeScript, currently building creative automation systems at WPP
+— including a self-built JavaScript/JSX pipeline that auto-generates multilingual campaign designs in Adobe InDesign. Extending that
+automation thinking into agentic AI workflows — RAG pipelines, LangGraph orchestration — alongside solid full-stack fundamentals in
+Node.js, GraphQL, and REST/Redux integration.
+
+EXPERIENCE
+Creative Technology Intern — Agentic AI & Automation | WPP
+Jul 2026 – Present
+• Automated a multilingual campaign design workflow in Adobe InDesign — generating all 50–60 language variants across multiple aspect
+•
+•
+•
+
+ratios (16:9, 21:9) in under a minute per run, versus hours of manual design work previously.
+Designed the CSV data structure, InDesign layer setup, and master file architecture, and independently developed the JavaScript and JSX
+scripts — JavaScript parses the CSV data and loops through required variations, while JSX updates named layers (title, description, CTA,
+year) to auto-generate each design variation.
+Wrote unit tests for the JS/JSX automation scripts and end-to-end tests for the React/Next.js frontend interfaces, catching regressions
+before releases.
+Worked closely with the development team to learn end-to-end n8n workflow automation — triggers, webhooks, API integrations,
+conditional logic, and data transformation — applying the same automation thinking used in the InDesign pipeline.
+Built frontend interfaces with React, Next.js, TypeScript, and Tailwind CSS to power internal automation and creative-tooling platforms.
+
+•
+Software Engineer Intern — Frontend | EWHENT
+Jan 2026 – Jun 2026
+• Delivered frontend flows — dashboards, inventory, billing, authentication, role-based access — for a B2B SaaS/ERP platform spanning
+admin and end-user modules, styled with SCSS and Bootstrap.
+
+• Built end-to-end B2C flows including onboarding, catalog, cart, and checkout, styled with SCSS/Bootstrap and using React Query to
+fetch and cache catalog/cart/checkout data alongside Redux-managed app state.
+
+• Improved page load and rendering speed by 30% through code-splitting, memoization, and query optimization.
+• Wrote unit and integration tests using Jest and React Testing Library to strengthen code reliability and catch regressions before release.
+PROJECTS
+Netflix-AI — AI-Powered Movie Recommendation App — Live · GitHub
+• Built a Netflix-style streaming UI with React, Tailwind CSS, Firebase, and TMDB APIs, integrating an AI-powered recommendation
+engine.
+
+• Achieved a 90+ Lighthouse performance score through image optimization, code-splitting, and lazy loading.
+Personal Portfolio — Live · GitHub
+• Designed and built a motion-driven portfolio using React, GSAP, and Three.js with fully responsive, cross-device layouts.
+• Integrated EmailJS for contact workflows while optimizing for accessibility (WCAG-aware) and performance.
+Sales CRM — Full-Stack CRM Application — Live · GitHub
+• Built a full-stack Sales CRM to manage leads, contacts, users, and sales workflows through a centralized web application.
+• Developed secure REST APIs with JWT authentication and bcrypt password hashing, implementing protected access to CRM resources.
+• Designed and integrated frontend-backend workflows for creating, updating, assigning, and tracking sales leads and customer
+information.
+
+SKILLS
+Frontend: React.js, Next.js, React Native, TypeScript, JavaScript (ES6+), Redux, HTML5, CSS3, SCSS/SASS, Bootstrap, Tailwind CSS, CSS
+Modules, Styled-components, GSAP, Three.js
+Backend & Data: Node.js, Python, REST APIs, GraphQL (Apollo Client), TanStack Query (React Query), MongoDB, PostgreSQL, SQL, Axios
+Agentic AI & Automation: LangChain, n8n, Zapier, OpenAI API, Anthropic API, Gemini API, Prompt Engineering, Agent Workflow Design
+Cloud & DevOps: AWS (S3, IAM, EC2, CloudFront), Docker, Linux, macOS, Windows
+Testing & Tooling: Jest, React Testing Library, Cypress, Playwright, Git, GitHub, Postman, Figma, Firebase
+AI-Assisted Dev Tools: Cursor, GitHub Copilot, Codex, Kiro, Antigravity
+
+CURRENTLY BUILDING IN
+Deepening hands-on experience in Retrieval-Augmented Generation (RAG) pipelines, LangGraph for multi-agent orchestration, and vector
+database integration — extending the agentic automation work built at WPP toward full AI-engineering workflows.
+
+CERTIFICATIONS
+• Generative AI & Prompt Engineering — Udemy, 2026
+EDUCATION
+Bachelor of Computer Applications 2022 – 2025
+Lovely Professional University
+
+

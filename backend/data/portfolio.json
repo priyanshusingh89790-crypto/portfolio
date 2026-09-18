@@ -1,0 +1,155 @@
+{
+  "name": "PRIYANSHU SINGH",
+  "email": "priyanshuvwork@gmail.com",
+  "phone": "+91-8273552253",
+  "role": "Frontend Engineer",
+  "summary": "Frontend Engineer with production experience across React, Next.js, and TypeScript, currently building creative automation systems at WPP—including a self-built JavaScript/JSX pipeline that auto-generates multilingual campaign designs in Adobe InDesign. Extending that automation thinking into agentic AI workflows—RAG pipelines, LangGraph orchestration—alongside solid full-stack fundamentals in Node.js, GraphQL, and REST/Redux integration.",
+  "skills": [
+    "React.js",
+    "Next.js",
+    "React Native",
+    "TypeScript",
+    "JavaScript (ES6+)",
+    "Redux",
+    "HTML5",
+    "CSS3",
+    "SCSS/SASS",
+    "Bootstrap",
+    "Tailwind CSS",
+    "CSS Modules",
+    "Styled-components",
+    "GSAP",
+    "Three.js",
+    "Node.js",
+    "Python",
+    "REST APIs",
+    "GraphQL (Apollo Client)",
+    "TanStack Query (React Query)",
+    "MongoDB",
+    "PostgreSQL",
+    "SQL",
+    "Axios",
+    "LangChain",
+    "n8n",
+    "Zapier",
+    "OpenAI API",
+    "Anthropic API",
+    "Gemini API",
+    "Prompt Engineering",
+    "Agent Workflow Design",
+    "AWS (S3, IAM, EC2, CloudFront)",
+    "Docker",
+    "Linux",
+    "macOS",
+    "Windows",
+    "Jest",
+    "React Testing Library",
+    "Cypress",
+    "Playwright",
+    "Git",
+    "GitHub",
+    "Postman",
+    "Figma",
+    "Firebase",
+    "Cursor",
+    "GitHub Copilot",
+    "Codex",
+    "Kiro",
+    "Antigravity"
+  ],
+  "experience": [
+    {
+      "company": "WPP",
+      "role": "Creative Technology Intern — Agentic AI & Automation",
+      "duration": "Jul 2026 – Present",
+      "description": "Automated multilingual campaign design workflow in Adobe InDesign, generating 50–60 language variants across multiple aspect ratios in under a minute. Designed CSV data structure, InDesign layer setup, and master file architecture; developed JavaScript and JSX scripts for data parsing and layer updates. Wrote unit tests for automation scripts and end‑to‑end tests for React/Next.js frontend interfaces. Built frontend interfaces with React, Next.js, TypeScript, and Tailwind CSS. Gained experience with n8n workflow automation, including triggers, webhooks, API integrations, and conditional logic.",
+      "skills_used": [
+        "JavaScript",
+        "JSX",
+        "React",
+        "Next.js",
+        "TypeScript",
+        "Tailwind CSS",
+        "n8n",
+        "Adobe InDesign",
+        "Jest"
+      ]
+    },
+    {
+      "company": "EWHENT",
+      "role": "Software Engineer Intern — Frontend",
+      "duration": "Jan 2026 – Jun 2026",
+      "description": "Delivered frontend flows for dashboards, inventory, billing, authentication, and role‑based access in a B2B SaaS/ERP platform. Built B2C onboarding, catalog, cart, and checkout flows using SCSS/Bootstrap and React Query with Redux state management. Improved page load and rendering speed by 30% through code‑splitting, memoization, and query optimization. Wrote unit and integration tests with Jest and React Testing Library.",
+      "skills_used": [
+        "React",
+        "SCSS",
+        "Bootstrap",
+        "React Query",
+        "Redux",
+        "Jest",
+        "React Testing Library"
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "name": "Netflix-AI — AI-Powered Movie Recommendation App",
+      "description": "Built a Netflix‑style streaming UI with React, Tailwind CSS, Firebase, and TMDB APIs, integrating an AI‑powered recommendation engine.",
+      "technologies": [
+        "React",
+        "Tailwind CSS",
+        "Firebase",
+        "TMDB API"
+      ],
+      "features": [
+        "Streaming UI",
+        "AI‑powered recommendation engine",
+        "90+ Lighthouse performance score",
+        "Image optimization",
+        "Code‑splitting",
+        "Lazy loading"
+      ],
+      "role": "Developer"
+    },
+    {
+      "name": "Personal Portfolio",
+      "description": "Designed and built a motion‑driven portfolio using React, GSAP, and Three.js with fully responsive, cross‑device layouts. Integrated EmailJS for contact workflows while optimizing for WCAG accessibility and performance.",
+      "technologies": [
+        "React",
+        "GSAP",
+        "Three.js",
+        "EmailJS"
+      ],
+      "features": [
+        "Motion‑driven UI",
+        "Responsive cross‑device layouts",
+        "WCAG accessibility compliance",
+        "Performance optimization"
+      ],
+      "role": "Developer"
+    },
+    {
+      "name": "Sales CRM — Full-Stack CRM Application",
+      "description": "Built a full‑stack Sales CRM to manage leads, contacts, users, and sales workflows. Developed secure REST APIs with JWT authentication and bcrypt password hashing, and integrated frontend‑backend workflows for creating, updating, assigning, and tracking sales leads and customer information.",
+      "technologies": [
+        "REST APIs",
+        "JWT",
+        "bcrypt"
+      ],
+      "features": [
+        "Lead management",
+        "Contact management",
+        "User management",
+        "Sales workflow tracking",
+        "Secure authentication"
+      ],
+      "role": "Developer"
+    }
+  ],
+  "education": [
+    "Bachelor of Computer Applications, Lovely Professional University, 2022 – 2025"
+  ],
+  "certifications": [
+    "Generative AI & Prompt Engineering — Udemy, 2026"
+  ]
+}
