@@ -5,13 +5,37 @@ from app.retrieval import search_knowledge
 
 
 TEST_QUERIES = [
-    "What frontend technologies does Priyanshu know?",
-    "What is the Sales CRM project?",
-    "How was authentication implemented?",
-    "Which project uses AI or RAG?",
     "Where did Priyanshu use PostgreSQL?",
-    "Where did he use React and Node.js together?",
-    "Tell me about the project where he built a CRM.",
+
+    "Which project uses MongoDB?",
+
+    "Which projects use JWT authentication?",
+
+    "What AI projects has Priyanshu built?",
+
+"What projects use TypeScript?",
+
+"Which project uses TensorFlow.js?",
+
+"Where did he use Redux Toolkit?",
+
+"Which project has role-based access control?",
+
+"Which project uses Cloudinary?",
+
+"What backend technologies has Priyanshu actually implemented?"
+
+    "What projects use React and Express together?",
+
+"Tell me about his AI Trading Research project.",
+"Tell me about his AI Safety SOS project."
+
+"What is Priyanshu's experience with databases?",
+"    What projects involve authentication and authorization?",
+"Does Priyanshu have experience with RAG?",
+"Has he actually implemented a vector database?",
+
+"Which project uses Qdrant for RAG?",
 ]
 
 
