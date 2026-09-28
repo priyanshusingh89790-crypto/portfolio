@@ -17,6 +17,7 @@ import Experience from './components/Experience/Experience';
 import Contact from './components/Contact/Contact';
 import AudioPlayer from './components/AudioPlayer/AudioPlayer';
 import ThemeToggle from './components/ThemeToggle/ThemeToggle';
+import DialHero from './components/AI/Dialhero';
 
 // Sections in DOM order — mark each as light or dark background
 const NAV_SECTIONS = [
@@ -180,6 +181,31 @@ function Header() {
               </button>
             );
           })}
+          {/* Ask AI nav slot - hidden until docked */}
+          <a
+            id="dial-nav-slot"
+            href="/chat"
+            style={{
+              fontFamily: 'var(--font-body, sans-serif)',
+              fontSize: 'clamp(9px, 1vw, 11px)',
+              letterSpacing: '0.22em',
+              textTransform: 'uppercase',
+              color: textColor,
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              transition: 'color 0.4s, opacity 0.4s',
+              position: 'relative',
+              paddingBottom: '6px',
+              opacity: 0,
+              pointerEvents: 'none',
+              textDecoration: 'none',
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.color = textColorFull)}
+            onMouseLeave={(e) => (e.currentTarget.style.color = textColor)}
+          >
+            Ask AI
+          </a>
         </nav>
 
         {/* ── Right side: status + hamburger ── */}
@@ -289,7 +315,7 @@ function App() {
 
   useEffect(() => {
     const lenis = new Lenis({
-      duration: 1.2,
+      duration: 0.9,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
     });
     gsap.ticker.add((time) => { lenis.raf(time * 1000); });
@@ -315,6 +341,7 @@ function App() {
           <div id="hero">
             <Hero />
           </div>
+          <DialHero peek={true} chatHref="/chat" />
           <About />
           <Projects />
           <Skills />

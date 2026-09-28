@@ -216,6 +216,10 @@ export default function HeroAS() {
                   <motion.div
                     initial={{ opacity: 0, scaleY: 0 }}
                     animate={{ opacity: 1, scaleY: 1 }}
+                    onAnimationComplete={() => {
+                      window.__heroReady = true;
+                      window.dispatchEvent(new CustomEvent("hero:ready"));
+                    }}
                     transition={{
                       duration: 0.8,
                       ease: [0.22, 1, 0.36, 1],
