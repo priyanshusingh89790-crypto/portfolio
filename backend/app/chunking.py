@@ -3,8 +3,8 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 
-DEFAULT_CHUNK_SIZE = 2800
-DEFAULT_CHUNK_OVERLAP = 350
+DEFAULT_CHUNK_SIZE = 800
+DEFAULT_CHUNK_OVERLAP = 150
 SEPARATORS = ["\n\n", "\n", ". ", " ", ""]
 
 @dataclass
