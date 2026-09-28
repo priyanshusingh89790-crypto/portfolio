@@ -161,18 +161,25 @@ def load_portfolio_markdown() -> str:
     return _structured_text_to_markdown(structured_text)
 
 
-def load_resume_as_markdown() -> str:
+def load_resume_as_markdown() -> str | None:
+    """Load resume evidence when the PDF is valid; otherwise skip it safely."""
     if not RESUME_FILE.exists():
-        raise FileNotFoundError(f"Resume file not found: {RESUME_FILE}")
-    reader = PdfReader(str(RESUME_FILE))
-    pages = []
-    for page_number, page in enumerate(reader.pages, start=1):
-        text = (page.extract_text() or "").strip()
-        if text:
-            pages.append(f"## Resume Page {page_number}\n\n{text}")
-    if not pages:
-        raise RuntimeError("No text could be extracted from the resume PDF.")
-    return "# Priyanshu Singh — Resume\n\n" + "\n\n".join(pages)
+        print(f"⚠️ Resume file not found; continuing without resume: {RESUME_FILE}")
+        return None
+    try:
+        reader = PdfReader(str(RESUME_FILE))
+        pages = []
+        for page_number, page in enumerate(reader.pages, start=1):
+            text = (page.extract_text() or "").strip()
+            if text:
+                pages.append(f"## Resume Page {page_number}\n\n{text}")
+        if not pages:
+            print("⚠️ Resume PDF contains no extractable text; continuing without resume.")
+            return None
+        return "# Priyanshu Singh — Resume\n\n" + "\n\n".join(pages)
+    except Exception as exc:
+        print(f"⚠️ Resume could not be parsed ({exc}); continuing with portfolio knowledge only.")
+        return None
 
 
 def prepare_chunks(markdown: str, source_name: str, source_id: str) -> list[dict[str, Any]]:
@@ -255,7 +262,7 @@ def main() -> None:
     print(f"   Points upserted: {count}")
 
     print("\n✅ Ingestion completed.")
-    print("   Sources: portfolio_knowledge.txt (evidence sections 2-15) + Priyanshu_Singh_Resume.pdf")
+    print("   Sources: portfolio_knowledge.txt (evidence sections 2-15) + optional Priyanshu_Singh_Resume.pdf")
     print("   Run: python test_rag.py\n")
 
 
