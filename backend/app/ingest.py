@@ -15,7 +15,7 @@ load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 DATA_DIR = BASE_DIR / "data"
-KNOWLEDGE_FILE = DATA_DIR / "portfolio_knowledge.md"
+KNOWLEDGE_FILE = DATA_DIR / "portfolio_knowledge.txt"
 RESUME_FILE = DATA_DIR / "Priyanshu_Singh_Resume.pdf"
 
 
@@ -110,10 +110,51 @@ def clean_heading(value: str) -> str:
     return re.sub(r"^\d+(?:\.\d+)*[.)]?\s*", "", value).strip()
 
 
+EVIDENCE_SECTION_START = 2
+EVIDENCE_SECTION_END = 15
+
+
+def _structured_text_to_markdown(text: str) -> str:
+    """Convert the structured TXT source into a retrieval-oriented Markdown view.
+
+    Only numbered evidence sections 2-15 are embedded. Assistant instructions,
+    common-answer guidance, limitations, source maps and repository-link lists
+    are intentionally excluded because they are retrieval policy/meta-data, not
+    portfolio evidence.
+    """
+    lines = text.splitlines()
+    output: list[str] = []
+    current_section: int | None = None
+    include = False
+
+    section_pattern = re.compile(r"^(\\d+)\\.\\s+(.+?)\\s*$")
+
+    for line in lines:
+        match = section_pattern.match(line.strip())
+        if match:
+            current_section = int(match.group(1))
+            include = EVIDENCE_SECTION_START <= current_section <= EVIDENCE_SECTION_END
+            if include:
+                output.append(f"# {match.group(1)}. {match.group(2).strip()}")
+            continue
+
+        if include:
+            output.append(line)
+
+    if not output:
+        raise RuntimeError(
+            "No evidence sections were found in the structured portfolio knowledge source."
+        )
+
+    return "\\n".join(output).strip() + "\\n"
+
+
 def load_portfolio_markdown() -> str:
     if not KNOWLEDGE_FILE.exists():
         raise FileNotFoundError(f"Knowledge file not found: {KNOWLEDGE_FILE}")
-    return KNOWLEDGE_FILE.read_text(encoding="utf-8")
+
+    structured_text = KNOWLEDGE_FILE.read_text(encoding="utf-8")
+    return _structured_text_to_markdown(structured_text)
 
 
 def load_resume_as_markdown() -> str:
@@ -210,7 +251,7 @@ def main() -> None:
     print(f"   Points upserted: {count}")
 
     print("\n✅ Ingestion completed.")
-    print("   Sources: portfolio_knowledge.md + Priyanshu_Singh_Resume.pdf")
+    print("   Sources: portfolio_knowledge.txt (evidence sections 2-15) + Priyanshu_Singh_Resume.pdf")
     print("   Run: python test_rag.py\n")
 
 
