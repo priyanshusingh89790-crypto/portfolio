@@ -31,10 +31,23 @@ def ensure_collection(vector_size: int) -> None:
         vectors_config=models.VectorParams(size=vector_size, distance=models.Distance.COSINE),
     )
 
+def reset_collection(vector_size: int) -> None:
+    """Rebuild the collection so stale chunks from older corpus versions cannot remain."""
+    if client.collection_exists(QDRANT_COLLECTION):
+        client.delete_collection(QDRANT_COLLECTION)
+    client.create_collection(
+        collection_name=QDRANT_COLLECTION,
+        vectors_config=models.VectorParams(
+            size=vector_size,
+            distance=models.Distance.COSINE,
+        ),
+    )
+
+
 def upsert_chunks(chunks: list[dict[str, Any]], vectors: list[list[float]]) -> int:
     if len(chunks) != len(vectors): raise ValueError("chunks and vectors must have the same length")
     if not chunks: return 0
-    ensure_collection(len(vectors[0]))
+    reset_collection(len(vectors[0]))
     points = []
     for chunk, vector in zip(chunks, vectors):
         payload = {
