@@ -76,30 +76,31 @@ def _heading_project(heading_path: list[str]) -> str | None:
 
 
 def _content_project(heading_path: list[str], content: str) -> str | None:
-    # Policy/instruction sections are not project evidence. Do not assign a
-    # project merely because the policy text mentions project names.
+    """Resolve only the one non-heading project that has strong evidence.
+
+    Generic content matching is intentionally avoided because broad project
+    names such as AI, portfolio, CRM, and inventory can appear in unrelated
+    evidence. The current portfolio RAG foundation is the only content-level
+    exception because it has distinctive implementation markers.
+    """
     normalized_headings = [_normalize(value) for value in heading_path]
     heading_text = " ".join(normalized_headings)
     if any(marker in heading_text for marker in NON_PROJECT_SECTION_MARKERS):
         return None
 
-    normalized_content = _normalize(content)
-    matches: list[tuple[int, str]] = []
+    if "current portfolio" in heading_text:
+        normalized_content = _normalize(content)
+        rag_markers = (
+            "sentence transformers all minilm l6 v2",
+            "qdrant",
+            "384 dimensional normalized embeddings",
+            "vector search rag retrieval foundation",
+            "retrieval foundation for portfolio knowledge",
+        )
+        if sum(marker in normalized_content for marker in rag_markers) >= 1:
+            return "Portfolio RAG"
 
-    for project, aliases in PROJECT_ALIASES.items():
-        for alias in aliases:
-            normalized_alias = _normalize(alias)
-            if normalized_alias in normalized_content:
-                matches.append((len(normalized_alias), project))
-                break
-
-    # A chunk mentioning several projects is intentionally left unassigned.
-    # This is safer than assigning it to whichever project appears first.
-    projects = {project for _, project in matches}
-    if len(projects) != 1:
-        return None
-
-    return max(matches)[1]
+    return None
 
 
 def detect_project(heading_path: list[str], content: str) -> str | None:
@@ -191,6 +192,12 @@ def prepare_chunks(markdown: str, source_name: str, source_id: str) -> list[dict
         section = clean_heading(chunk.section)
         project = detect_project(heading_path, chunk.content)
 
+        category = chunk.category
+        subcategory = chunk.subcategory
+        if project == "Portfolio RAG":
+            category = "ai"
+            subcategory = "rag"
+
         prepared.append(
             {
                 "chunk_key": (
@@ -202,8 +209,8 @@ def prepare_chunks(markdown: str, source_name: str, source_id: str) -> list[dict
                 "section": section,
                 "heading_path": heading_path,
                 "chunk_index": chunk.chunk_index,
-                "category": chunk.category,
-                "subcategory": chunk.subcategory,
+                "category": category,
+                "subcategory": subcategory,
                 "content_type": chunk.content_type,
                 "project": project,
                 "technologies": [],
