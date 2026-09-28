@@ -18,92 +18,201 @@ DATA_DIR = BASE_DIR / "data"
 KNOWLEDGE_FILE = DATA_DIR / "portfolio_knowledge.md"
 RESUME_FILE = DATA_DIR / "Priyanshu_Singh_Resume.pdf"
 
-PROJECT_KEYWORDS = {
+
+# Resolve projects from explicit Markdown headings first. Avoid generic terms
+# such as "AI", "portfolio", "CRM", and "inventory" because they occur across
+# many unrelated sections and cause incorrect project metadata.
+PROJECT_ALIASES = {
     "Netflix GPT": ["netflix gpt", "netflix-ai", "netflix ai"],
-    "Inventory Management System": ["inventory management system", "inventory"],
-    "Sales CRM": ["sales crm", "crm"],
-    "SocialPost": ["socialpost", "social post"],
-    "AI Safety SOS": ["ai safety sos", "ai safety"],
-    "Mail Inbox": ["mail inbox"],
-    "Brand Project": ["brand project"],
+    "Inventory Management System": ["inventory management system"],
+    "Sales CRM": ["sales crm"],
+    "SocialPost": ["socialpost", "social post", "3w social post app"],
+    "AI Safety SOS": ["ai safety sos", "ai-safety-sos"],
+    "Mail Inbox": ["mail inbox", "mail-inbox-task"],
+    "Brand Project": ["brand project", "brand-project"],
     "PrimeReactPagination": ["primereactpagination"],
-    "AI Trading Research": ["ai trading research"],
+    "AI Trading Research": ["ai trading research", "ai-trading-research"],
     "Dev Meetup": ["dev meetup", "devmeetup"],
-    "Personal Portfolio": ["personal portfolio", "portfolio"],
-    "AI Workspace": ["ai workspace"],
-    "AI Integration": ["ai integration"],
-    "AI Recruiter": ["ai recruiter"],
+    "Personal Portfolio": ["personal portfolio"],
+    "AI Workspace": ["ai workspace", "ai-workspace"],
+    "AI Integration": ["ai integration", "ai-integration"],
+    "AI Recruiter": ["ai recruiter", "ai-recruiter"],
+    "ArchScale Voice Assistant": [
+        "archscale voice assistant",
+        "archscale-voice_assistant",
+    ],
+    "CineGraph": ["cinegraph", "cinegrapgh"],
 }
 
-def detect_project(text: str) -> str | None:
-    normalized = " ".join(text.lower().split())
-    for project, keywords in PROJECT_KEYWORDS.items():
-        if any(keyword in normalized for keyword in keywords): return project
+NON_PROJECT_SECTION_MARKERS = (
+    "ai assistant operating rules",
+    "how to answer common questions",
+    "important limitations",
+    "source evidence map",
+    "final ai instruction",
+    "github repository links",
+)
+
+
+def _normalize(value: str) -> str:
+    return " ".join(value.lower().replace("_", " ").replace("-", " ").split())
+
+
+def _heading_project(heading_path: list[str]) -> str | None:
+    normalized_headings = [_normalize(value) for value in heading_path]
+
+    # Longest aliases first so specific names win over shorter aliases.
+    aliases = [
+        (len(_normalize(alias)), project, _normalize(alias))
+        for project, values in PROJECT_ALIASES.items()
+        for alias in values
+    ]
+
+    for _, project, alias in sorted(aliases, reverse=True):
+        if any(alias == heading or alias in heading for heading in normalized_headings):
+            return project
+
     return None
+
+
+def _content_project(heading_path: list[str], content: str) -> str | None:
+    # Policy/instruction sections are not project evidence. Do not assign a
+    # project merely because the policy text mentions project names.
+    normalized_headings = [_normalize(value) for value in heading_path]
+    heading_text = " ".join(normalized_headings)
+    if any(marker in heading_text for marker in NON_PROJECT_SECTION_MARKERS):
+        return None
+
+    normalized_content = _normalize(content)
+    matches: list[tuple[int, str]] = []
+
+    for project, aliases in PROJECT_ALIASES.items():
+        for alias in aliases:
+            normalized_alias = _normalize(alias)
+            if normalized_alias in normalized_content:
+                matches.append((len(normalized_alias), project))
+                break
+
+    # A chunk mentioning several projects is intentionally left unassigned.
+    # This is safer than assigning it to whichever project appears first.
+    projects = {project for _, project in matches}
+    if len(projects) != 1:
+        return None
+
+    return max(matches)[1]
+
+
+def detect_project(heading_path: list[str], content: str) -> str | None:
+    return _heading_project(heading_path) or _content_project(heading_path, content)
+
 
 def clean_heading(value: str) -> str:
     return re.sub(r"^\d+(?:\.\d+)*[.)]?\s*", "", value).strip()
 
+
 def load_portfolio_markdown() -> str:
-    if not KNOWLEDGE_FILE.exists(): raise FileNotFoundError(f"Knowledge file not found: {KNOWLEDGE_FILE}")
+    if not KNOWLEDGE_FILE.exists():
+        raise FileNotFoundError(f"Knowledge file not found: {KNOWLEDGE_FILE}")
     return KNOWLEDGE_FILE.read_text(encoding="utf-8")
 
+
 def load_resume_as_markdown() -> str:
-    if not RESUME_FILE.exists(): raise FileNotFoundError(f"Resume file not found: {RESUME_FILE}")
+    if not RESUME_FILE.exists():
+        raise FileNotFoundError(f"Resume file not found: {RESUME_FILE}")
     reader = PdfReader(str(RESUME_FILE))
     pages = []
     for page_number, page in enumerate(reader.pages, start=1):
         text = (page.extract_text() or "").strip()
-        if text: pages.append(f"## Resume Page {page_number}\n\n{text}")
-    if not pages: raise RuntimeError("No text could be extracted from the resume PDF.")
+        if text:
+            pages.append(f"## Resume Page {page_number}\n\n{text}")
+    if not pages:
+        raise RuntimeError("No text could be extracted from the resume PDF.")
     return "# Priyanshu Singh — Resume\n\n" + "\n\n".join(pages)
+
 
 def prepare_chunks(markdown: str, source_name: str, source_id: str) -> list[dict[str, Any]]:
     raw_chunks = chunk_markdown(markdown)
     prepared = []
+
     for chunk in raw_chunks:
-        project = detect_project(" ".join(chunk.heading_path) + " " + chunk.content)
-        prepared.append({
-            "chunk_key": f"{source_id}:{chunk.chunk_key.split(':', 1)[1]}" if ":" in chunk.chunk_key else f"{source_id}:{chunk.chunk_key}",
-            "content": chunk.content,
-            "section": clean_heading(chunk.section),
-            "heading_path": [clean_heading(x) for x in chunk.heading_path],
-            "chunk_index": chunk.chunk_index,
-            "category": chunk.category,
-            "subcategory": chunk.subcategory,
-            "content_type": chunk.content_type,
-            "project": project,
-            "technologies": [],
-            "source": source_name,
-        })
+        heading_path = [clean_heading(value) for value in chunk.heading_path]
+        section = clean_heading(chunk.section)
+        project = detect_project(heading_path, chunk.content)
+
+        prepared.append(
+            {
+                "chunk_key": (
+                    f"{source_id}:{chunk.chunk_key.split(':', 1)[1]}"
+                    if ":" in chunk.chunk_key
+                    else f"{source_id}:{chunk.chunk_key}"
+                ),
+                "content": chunk.content,
+                "section": section,
+                "heading_path": heading_path,
+                "chunk_index": chunk.chunk_index,
+                "category": chunk.category,
+                "subcategory": chunk.subcategory,
+                "content_type": chunk.content_type,
+                "project": project,
+                "technologies": [],
+                "source": source_name,
+            }
+        )
+
     return prepared
+
 
 def main() -> None:
     print("\n🚀 Starting Qdrant portfolio ingestion...\n")
+
     portfolio_markdown = load_portfolio_markdown()
     resume_markdown = load_resume_as_markdown()
-    portfolio_chunks = prepare_chunks(portfolio_markdown, KNOWLEDGE_FILE.name, "portfolio_knowledge")
-    resume_chunks = prepare_chunks(resume_markdown, RESUME_FILE.name, "resume_knowledge")
+
+    portfolio_chunks = prepare_chunks(
+        portfolio_markdown, KNOWLEDGE_FILE.name, "portfolio_knowledge"
+    )
+    resume_chunks = prepare_chunks(
+        resume_markdown, RESUME_FILE.name, "resume_knowledge"
+    )
+
     chunks = portfolio_chunks + resume_chunks
-    if not chunks: raise RuntimeError("No knowledge chunks were created.")
+    if not chunks:
+        raise RuntimeError("No knowledge chunks were created.")
+
     print(f"📄 Portfolio characters: {len(portfolio_markdown):,}")
     print(f"📄 Resume characters:    {len(resume_markdown):,}")
     print(f"🧩 Portfolio chunks:     {len(portfolio_chunks)}")
     print(f"🧩 Resume chunks:        {len(resume_chunks)}")
     print("   Chunk size: 2800 characters")
     print("   Overlap: 350 characters")
+
+    project_counts: dict[str, int] = {}
+    for chunk in chunks:
+        project = chunk["project"] or "Unassigned"
+        project_counts[project] = project_counts.get(project, 0) + 1
+
+    print("\n🏷️ Project metadata:")
+    for project, count in sorted(project_counts.items()):
+        print(f"   {project}: {count} chunks")
+
     print("\n🧠 Generating embeddings...")
     vectors = embed_documents([chunk["content"] for chunk in chunks])
-    if not vectors: raise RuntimeError("No embeddings were generated.")
+    if not vectors:
+        raise RuntimeError("No embeddings were generated.")
+
     print(f"   Embeddings: {len(vectors)}")
     print(f"   Vector dimension: {len(vectors[0])}")
+
     ensure_collection(len(vectors[0]))
+
     print("\n📌 Upserting into Qdrant...")
     count = upsert_chunks(chunks, vectors)
     print(f"   Points upserted: {count}")
+
     print("\n✅ Ingestion completed.")
     print("   Sources: portfolio_knowledge.md + Priyanshu_Singh_Resume.pdf")
     print("   Run: python test_rag.py\n")
+
 
 if __name__ == "__main__":
     main()
