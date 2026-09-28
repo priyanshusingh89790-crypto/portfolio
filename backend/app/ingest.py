@@ -223,8 +223,10 @@ def main() -> None:
     portfolio_chunks = prepare_chunks(
         portfolio_markdown, KNOWLEDGE_FILE.name, "portfolio_knowledge"
     )
-    resume_chunks = prepare_chunks(
-        resume_markdown, RESUME_FILE.name, "resume_knowledge"
+    resume_chunks = (
+        prepare_chunks(resume_markdown, RESUME_FILE.name, "resume_knowledge")
+        if resume_markdown is not None
+        else []
     )
 
     chunks = portfolio_chunks + resume_chunks
@@ -232,7 +234,11 @@ def main() -> None:
         raise RuntimeError("No knowledge chunks were created.")
 
     print(f"📄 Portfolio characters: {len(portfolio_markdown):,}")
-    print(f"📄 Resume characters:    {len(resume_markdown):,}")
+    print(
+        f"📄 Resume characters:    {len(resume_markdown):,}"
+        if resume_markdown is not None
+        else "📄 Resume characters:    0 (resume skipped)"
+    )
     print(f"🧩 Portfolio chunks:     {len(portfolio_chunks)}")
     print(f"🧩 Resume chunks:        {len(resume_chunks)}")
     print("   Chunk size: 800 characters")
