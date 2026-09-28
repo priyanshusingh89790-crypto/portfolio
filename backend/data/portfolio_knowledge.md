@@ -938,9 +938,26 @@ The portfolio is not a generic static portfolio. Its current architecture alread
 
 ## AI integration status
 
-The AI portfolio integration is an active work-in-progress and is not treated as completed in this knowledge base.
+The AI portfolio integration is an active work-in-progress. The current backend now has a verified RAG foundation, but the complete portfolio AI experience is not treated as finished.
 
 The intended AI experience is a custom visual interaction integrated into the portfolio rather than a generic chatbot widget.
+
+### Current RAG foundation — verified in the portfolio repository
+
+The current backend implementation provides a retrieval foundation for portfolio knowledge:
+
+- portfolio_knowledge.md is the primary evidence-backed knowledge source.
+- Priyanshu_Singh_Resume.pdf is also ingested as a separate source.
+- Markdown is recursively chunked with overlap.
+- Each chunk receives heading, category, content-type and project metadata.
+- sentence-transformers/all-MiniLM-L6-v2 generates 384-dimensional normalized embeddings.
+- Qdrant stores the vectors using cosine similarity.
+- Chunk IDs are deterministic, allowing re-ingestion to update existing knowledge instead of creating duplicate points.
+- User queries are embedded with the same model and searched against Qdrant.
+- Retrieval currently returns the top five results with a similarity threshold.
+- Project metadata is resolved from explicit Markdown project headings rather than generic words such as "AI" or "portfolio".
+
+This is evidence of a working vector-search/RAG retrieval foundation in the portfolio repository. It should not be described as a completed production AI assistant, agentic system, or production-scale RAG application. Groq answer generation, reranking, agent orchestration and streaming are separate later layers.
 
 ---
 
@@ -1226,7 +1243,7 @@ Unless new evidence is added, do **not** claim:
 - CI/CD ownership.
 - Automated testing coverage.
 - Server-side pagination implementation for PrimeReactPagination.
-- RAG/vector database implementation.
+- Production-scale RAG deployment or production retrieval metrics.
 - Fine-tuned LLMs.
 - AI agents with tool calling.
 - Production ML model training.
