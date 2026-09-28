@@ -112,6 +112,7 @@ def clean_heading(value: str) -> str:
 
 EVIDENCE_SECTION_START = 2
 EVIDENCE_SECTION_END = 15
+EXCLUDED_EVIDENCE_SECTIONS = {14}
 
 
 def _structured_text_to_markdown(text: str) -> str:
@@ -133,7 +134,10 @@ def _structured_text_to_markdown(text: str) -> str:
         match = section_pattern.match(line.strip())
         if match:
             current_section = int(match.group(1))
-            include = EVIDENCE_SECTION_START <= current_section <= EVIDENCE_SECTION_END
+            include = (
+                EVIDENCE_SECTION_START <= current_section <= EVIDENCE_SECTION_END
+                and current_section not in EXCLUDED_EVIDENCE_SECTIONS
+            )
             if include:
                 output.append(f"# {match.group(1)}. {match.group(2).strip()}")
             continue
@@ -224,8 +228,8 @@ def main() -> None:
     print(f"📄 Resume characters:    {len(resume_markdown):,}")
     print(f"🧩 Portfolio chunks:     {len(portfolio_chunks)}")
     print(f"🧩 Resume chunks:        {len(resume_chunks)}")
-    print("   Chunk size: 2800 characters")
-    print("   Overlap: 350 characters")
+    print("   Chunk size: 800 characters")
+    print("   Overlap: 150 characters")
 
     project_counts: dict[str, int] = {}
     for chunk in chunks:
