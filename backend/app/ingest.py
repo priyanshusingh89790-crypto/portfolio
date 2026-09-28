@@ -127,7 +127,7 @@ def _structured_text_to_markdown(text: str) -> str:
     current_section: int | None = None
     include = False
 
-    section_pattern = re.compile(r"^(\\d+)\\.\\s+(.+?)\\s*$", re.IGNORECASE)
+    section_pattern = re.compile(r"^(\d+)\.\s+(.+?)\s*$")
 
     for line in lines:
         match = section_pattern.match(line.strip())
@@ -146,7 +146,7 @@ def _structured_text_to_markdown(text: str) -> str:
             "No evidence sections were found in the structured portfolio knowledge source."
         )
 
-    return "\\n".join(output).strip() + "\\n"
+    return "\n".join(output).strip() + "\n"
 
 
 def load_portfolio_markdown() -> str:
