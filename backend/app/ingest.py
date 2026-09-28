@@ -127,7 +127,7 @@ def _structured_text_to_markdown(text: str) -> str:
     current_section: int | None = None
     include = False
 
-    section_pattern = re.compile(r"^(\\d+)\\.\\s+(.+?)\\s*$")
+    section_pattern = re.compile(r"^(\\d+)\\.\\s+(.+?)\\s*$", re.IGNORECASE)
 
     for line in lines:
         match = section_pattern.match(line.strip())
