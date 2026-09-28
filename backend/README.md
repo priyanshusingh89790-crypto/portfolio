@@ -1,41 +1,99 @@
 # Priyanshu Portfolio AI Backend
 
-## Architecture
+## Current RAG architecture
 
-User question -> Groq understands question against resume/profile ->
-if resume is sufficient, Groq answers directly -> otherwise Groq produces
-semantic retrieval queries -> FastAPI retrieves evidence from Supabase ->
-Groq reads resume + evidence and generates the final grounded answer.
+```
+portfolio_knowledge.md
+        ↓
+recursive chunking + overlap
+        ↓
+metadata / categories
+        ↓
+Sentence Transformers embeddings
+        ↓
+Qdrant
+        ↓
+query embedding
+        ↓
+semantic similarity search
+        ↓
+top-K evidence chunks
+```
 
-FastAPI is a data/evidence layer. It does not hard-code portfolio answers.
+The RAG foundation is intentionally separate from Groq. First prove that chunking,
+embeddings, Qdrant upsert, and semantic retrieval return the right evidence. The
+chat orchestration can consume this retrieval layer after retrieval quality is verified.
 
 ## Setup
+
+Create a Python environment and install dependencies:
 
 ```bash
 python3 -m venv venv
 source venv/bin/activate
 python -m pip install -r requirements.txt
-python -m uvicorn app.main:app --reload
 ```
 
-Set `GROQ_API_KEY`, `SUPABASE_URL`, and `SUPABASE_KEY` in `.env`.
+Set Qdrant connection variables in `.env`:
 
-Run `sql/001_portfolio_search.sql` in Supabase before ingestion.
-Then run:
+```env
+QDRANT_URL=http://localhost:6333
+QDRANT_API_KEY=
+QDRANT_COLLECTION=portfolio_knowledge
+EMBEDDING_MODEL=sentence-transformers/all-MiniLM-L6-v2
+```
+
+For Qdrant Cloud, use the cluster URL and API key instead. Qdrant's Python client
+supports point upsert and vector search against a Qdrant endpoint. citeturn0search0turn0search4
+
+## Ingest the knowledge base
+
+From `backend/`:
 
 ```bash
 python -m app.ingest
 ```
 
-## Endpoints
+This will:
 
-- `GET /api/health`
-- `POST /api/chat` — structured JSON response
-- `POST /api/chat/stream` — SSE token stream
-- `POST /api/analyze-jd` — JD analysis workflow
+1. Read `data/portfolio_knowledge.md`.
+2. Split it recursively with overlap while preserving heading context.
+3. Attach category, subcategory, project, content type, and source metadata.
+4. Generate document embeddings with `all-MiniLM-L6-v2`.
+5. Create the Qdrant collection if needed.
+6. Upsert the points using stable IDs.
 
-## Chat behavior
+Qdrant upsert inserts a point when the ID is new and updates/replaces the point when
+the same ID already exists. citeturn0search0
 
-Normal questions are answered from the resume/profile without a database search.
-Deep implementation questions trigger semantic evidence retrieval. Project source
-URLs are resolved and validated server-side; the model cannot invent GitHub URLs.
+## Test retrieval
+
+```bash
+python test_rag.py
+```
+
+The test embeds each question and prints the top semantic matches, their scores,
+metadata, and content. No Groq answer generation is involved yet.
+
+## Environment
+
+Do not commit `.env` or Qdrant credentials. The repository's `.gitignore` already
+ignores the backend environment file.
+
+## Next stage
+
+Once retrieval is consistently returning the correct evidence:
+
+```
+Qdrant retrieval
+      ↓
+Groq grounded answer generation
+      ↓
+validated project/source metadata
+      ↓
+portfolio AI UI
+```
+
+Qdrant supports cosine similarity collections and payload metadata, so metadata
+filtering can be added later without introducing PostgreSQL/Supabase into the RAG layer.
+citeturn0search4
