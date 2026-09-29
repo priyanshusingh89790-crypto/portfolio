@@ -364,6 +364,7 @@ export default function HeroAS() {
                   Scroll
                 </span>
               </motion.div>
+              <div className="absolute right-1/2 bottom-9 flex flex-col text-white font bold text-[18px] items-center gap-2.5 z-40"> hi here  </div>
 
             </div>
           </motion.div>

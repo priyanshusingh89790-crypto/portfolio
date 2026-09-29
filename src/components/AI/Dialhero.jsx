@@ -140,7 +140,7 @@ export default function DialHero({
         setActive(idx);
         if (navigator.vibrate) navigator.vibrate(6);
       }
-      const isReady = st.riseV > 0.985;
+      const isReady = st.riseV >= (peek ? PEEK_RISE : 0.985);
       if (isReady !== st.ready) {
         st.ready = isReady;
         setReady(isReady);
@@ -273,7 +273,7 @@ export default function DialHero({
           key={active}
           data-show={showCard ? 1 : 0}
           onClick={() => showCard && ask(current)}
-          className="dh-card absolute cursor-pointer left-1/2 top-1/2 z-30 w-[min(30vmin,250px)] -translate-x-1/2 -translate-y-1/2 text-neutral-900 max-md:bottom-[6vh] max-md:top-auto max-md:w-[min(88vw,380px)] max-md:translate-y-0 max-md:rounded-2xl max-md:bg-white max-md:p-5 max-md:shadow-2xl"
+          className="dh-card absolute cursor-pointer left-1/2 top-1/2 z-[200] w-[min(30vmin,250px)] -translate-x-1/2 -translate-y-1/2 text-neutral-900 max-md:bottom-[6vh] max-md:top-auto max-md:w-[min(88vw,380px)] max-md:translate-y-0 max-md:rounded-2xl max-md:bg-white max-md:p-5 max-md:shadow-2xl"
         >
           <p className="text-xs text-neutral-400">
             {pad(active + 1)} of {pad(count)} · {current.label}
@@ -283,10 +283,9 @@ export default function DialHero({
           </p>
           <button
             type="button"
-            className="mt-4 rounded-full px-5 py-2 text-sm text-white transition hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
+            className="mt-4 rounded-full px-2 py-1 text-sm text-white transition hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black border border-white/20"
             style={{
-              background: 'linear-gradient(135deg, #ff6b35 0%, #7fd1ae 100%)',
-              opacity: 0.9
+              background: 'linear-gradient(135deg, #ff6b35 0%, #7fd1ae 100%)'
             }}
           >
             Ask AI

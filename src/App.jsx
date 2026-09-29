@@ -185,24 +185,19 @@ function Header() {
           <a
             id="dial-nav-slot"
             href="/chat"
+            className="rounded-full px-2 py-1 text-sm text-white transition hover:opacity-90 border border-white/20"
             style={{
               fontFamily: 'var(--font-body, sans-serif)',
               fontSize: 'clamp(9px, 1vw, 11px)',
               letterSpacing: '0.22em',
               textTransform: 'uppercase',
-              color: textColor,
-              background: 'none',
-              border: 'none',
+              background: 'linear-gradient(135deg, #ff6b35 100%, #7fd1ae 100%)',
               cursor: 'pointer',
-              transition: 'color 0.4s, opacity 0.4s',
-              position: 'relative',
-              paddingBottom: '6px',
+              transition: 'opacity 0.4s',
               opacity: 0,
               pointerEvents: 'none',
               textDecoration: 'none',
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.color = textColorFull)}
-            onMouseLeave={(e) => (e.currentTarget.style.color = textColor)}
           >
             Ask AI
           </a>
