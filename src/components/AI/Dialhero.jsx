@@ -27,7 +27,8 @@ const MOCK_QUESTIONS = [
   { label: "Contact", q: "What's the best way to reach you?" },
 ];
 
-const RISE = 0.22; // share of the scroll used to lift the dial into view
+const RISE = 0.22; // share of the scroll used by the question sequence
+const PEEK_REVEAL_PROGRESS = 0.392; // reveal timing: ~half visible when the Hero finishes
 const TAIL = 0.06; // dead scroll at the end so the last question can settle
 const IDLE_MS = 200; // how long scrolling must stop before the needle locks
 const DOCK_THRESHOLD = 0.94; // scroll progress threshold for docking (94%)
@@ -112,7 +113,7 @@ export default function DialHero({
       const q = clamp((p - lead) / (1 - lead - TAIL));
       
       // Update rise based on scroll (STATE 2)
-      s.current.rise = peek ? easeOut(clamp(p / RISE)) : 1;
+      s.current.rise = peek ? easeOut(clamp(p / PEEK_REVEAL_PROGRESS)) : 1;
       
       s.current.raw = q * (count - 1) * step;
       s.current.snap = false;
