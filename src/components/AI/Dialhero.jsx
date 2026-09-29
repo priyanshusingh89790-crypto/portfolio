@@ -28,7 +28,7 @@ const MOCK_QUESTIONS = [
 ];
 
 const RISE = 0.22; // share of the scroll used by the question sequence
-const PEEK_REVEAL_PROGRESS = 0.392; // reveal timing: ~half visible when the Hero finishes
+const PEEK_REVEAL_PROGRESS = 0.12; // quick handoff from the Hero bottom into the DialHero center
 const TAIL = 0.06; // dead scroll at the end so the last question can settle
 const IDLE_MS = 200; // how long scrolling must stop before the needle locks
 const DOCK_THRESHOLD = 0.94; // scroll progress threshold for docking (94%)
@@ -227,7 +227,7 @@ export default function DialHero({
       className="dh relative"
       style={{ 
         height: `${count * 40 + 140}vh`,
-        marginTop: peek ? '-50vh' : 0,
+        marginTop: peek ? '-100vh' : 0,
         pointerEvents: 'none',
         zIndex: 150
       }}
