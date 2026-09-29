@@ -54,7 +54,7 @@ export default function DialHero({
   const stageRef = useRef(null);
   const dialRef = useRef(null);
   const needleRef = useRef(null);
-  const s = useRef({ raw: 0, angle: 0, rise: peek ? 0 : 1, riseV: peek ? 0 : 1, snap: true, idx: 0, ready: false });
+  const s = useRef({ raw: 0, angle: 0, rise: peek ? PEEK_RISE : 1, riseV: peek ? PEEK_RISE : 1, snap: true, idx: 0, ready: false });
 
   const [active, setActive] = useState(0);
   const [idle, setIdle] = useState(true);
@@ -62,43 +62,12 @@ export default function DialHero({
   const [launch, setLaunch] = useState(null);
   const [docked, setDocked] = useState(false);
 
-  // Peek entrance animation - start immediately on mount
+  // The dial is parked half-hidden at the bottom of the Hero while the Hero is sticky.
+  // It only begins rising once normal document scrolling reaches this section.
   useEffect(() => {
-    if (stageRef.current && peek) {
-      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      
-      // Check if user already scrolled past the top
-      const scrollY = window.scrollY;
-      if (scrollY > 10) {
-        // Skip peek, go directly to fully visible
-        s.current.rise = 1;
-        s.current.riseV = 1;
-        return;
-      }
-
-      if (reduce) {
-        // Skip animation for reduced motion - jump to half-visible
-        s.current.rise = PEEK_RISE;
-        s.current.riseV = PEEK_RISE;
-      } else {
-        // Start at 0 (fully below viewport)
-        s.current.rise = 0;
-        s.current.riseV = 0;
-        // Set transition duration for peek animation on the dial
-        if (dialRef.current) {
-          dialRef.current.style.transition = `transform ${PEEK_TIMING}ms cubic-bezier(0.22, 1, 0.36, 1)`;
-        }
-        // Animate to PEEK_RISE (top half visible at bottom) - PEEK_TIMING ms ease-out
-        const timer = setTimeout(() => {
-          s.current.rise = PEEK_RISE;
-          // Reset transition to default after peek completes
-          if (dialRef.current) {
-            dialRef.current.style.transition = '';
-          }
-        }, PEEK_TIMING);
-        return () => clearTimeout(timer);
-      }
-    }
+    if (!peek) return;
+    s.current.rise = PEEK_RISE;
+    s.current.riseV = PEEK_RISE;
   }, [peek]);
 
   // scroll -> target angle + rise; idle timer decides when to snap
@@ -112,8 +81,11 @@ export default function DialHero({
       const p = clamp(-r.top / range);
       const q = clamp((p - lead) / (1 - lead - TAIL));
       
-      // Update rise based on scroll (STATE 2)
-      s.current.rise = peek ? easeOut(clamp(p / PEEK_REVEAL_PROGRESS)) : 1;
+      // The first half is parked at the Hero's bottom. After the Hero ends,
+      // normal scrolling lifts the dial toward the center.
+      s.current.rise = peek
+        ? PEEK_RISE + (1 - PEEK_RISE) * easeOut(clamp(p / PEEK_REVEAL_PROGRESS))
+        : 1;
       
       s.current.raw = q * (count - 1) * step;
       s.current.snap = false;
@@ -255,7 +227,7 @@ export default function DialHero({
       className="dh relative"
       style={{ 
         height: `${count * 40 + 140}vh`,
-        marginTop: 0,
+        marginTop: peek ? '-50vh' : 0,
         pointerEvents: 'none',
         zIndex: 150
       }}
@@ -264,7 +236,7 @@ export default function DialHero({
 
       <div ref={stageRef} className="dh-stage sticky top-0 h-screen overflow-hidden"
         style={{ 
-          "--rise": peek ? 0 : 1, 
+          "--rise": peek ? PEEK_RISE : 1, 
           pointerEvents: 'auto'
         }}
       >
