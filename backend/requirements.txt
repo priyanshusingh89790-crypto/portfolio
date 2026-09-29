@@ -3,3 +3,5 @@ qdrant-client
 sentence-transformers
 pypdf
 groq
+fastapi
+uvicorn[standard]
