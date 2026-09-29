@@ -338,7 +338,7 @@ function App() {
           <CustomCursor />
           <Header />
           {/* Hero has no id set inside its component — add a wrapper */}
-          <div id="hero">
+          <div id="hero" style={{ position: 'relative', zIndex: 200 }}>
             <Hero />
           </div>
           <DialHero peek={true} chatHref="/chat" />
