@@ -255,7 +255,7 @@ export default function DialHero({
       className="dh relative"
       style={{ 
         height: `${count * 40 + 140}vh`,
-        marginTop: peek ? '-50vh' : 0,
+        marginTop: 0,
         pointerEvents: 'none',
         zIndex: 150
       }}
