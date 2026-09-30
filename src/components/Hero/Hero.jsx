@@ -371,7 +371,6 @@ export default function HeroAS() {
 
         {/* DialHero handoff: parked 90% below the viewport, then rises to center
             during the same final 100vh cinematic exit as the Hero. */}
-        <DialHero revealProgress={exitProgress} />
 
       </div>
     </>
