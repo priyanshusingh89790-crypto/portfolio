@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react"
 import { motion, useScroll, useTransform } from "motion/react"
+import DialHero from "../AI/Dialhero"
 
 const PORTRAIT = "./mypic.jpg"
 
@@ -378,8 +379,19 @@ export default function HeroAS() {
           </motion.div>
         </div>
 
-        {/* DialHero handoff: parked 90% below the viewport, then rises to center
-            during the same final 100vh cinematic exit as the Hero. */}
+        {/* DialHero handoff: starts ~90% below the viewport exactly when Hero ends,
+            then uses its own scroll animation to rise into view. */}
+        <div
+          style={{
+            position: "absolute",
+            top: "100%",
+            left: 0,
+            right: 0,
+            zIndex: 150,
+          }}
+        >
+          <DialHero peek={true} chatHref="/chat" />
+        </div>
 
       </div>
     </>
