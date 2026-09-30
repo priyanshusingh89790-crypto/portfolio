@@ -17,7 +17,6 @@ import Experience from './components/Experience/Experience';
 import Contact from './components/Contact/Contact';
 import AudioPlayer from './components/AudioPlayer/AudioPlayer';
 import ThemeToggle from './components/ThemeToggle/ThemeToggle';
-import DialHero from './components/AI/Dialhero';
 
 // Sections in DOM order — mark each as light or dark background
 const NAV_SECTIONS = [
@@ -335,7 +334,6 @@ function App() {
           {/* Hero has no id set inside its component — add a wrapper */}
           <div id="hero" style={{ position: "relative", zIndex: 200 }}>
   <Hero />
-  <DialHero peek={true} chatHref="/chat" />
 </div>
           <About />
           <Projects />
