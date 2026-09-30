@@ -34,7 +34,7 @@ const IDLE_MS = 200; // how long scrolling must stop before the needle locks
 const DOCK_THRESHOLD = 0.94; // scroll progress threshold for docking (94%)
 const DOCK_HYSTERESIS = 0.02; // hysteresis to prevent flicker (2%)
 const PEEK_TIMING = 1000; // ms for peek entrance animation
-const PEEK_RISE = 0.5; // rise value for peek position (0.5 = top half visible)
+const PEEK_RISE = 0.1; // start with ~90% of the dial below the viewport
 
 const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
 const easeOut = (t) => 1 - Math.pow(1 - t, 3);
