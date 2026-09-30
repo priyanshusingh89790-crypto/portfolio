@@ -1,5 +1,6 @@
 import { useRef } from "react"
 import { motion, useScroll, useTransform } from "motion/react"
+import DialHero from "../AI/Dialhero"
 
 const PORTRAIT = "./mypic.jpg"
 
@@ -96,7 +97,7 @@ export default function HeroAS() {
             position: "sticky",
             top: 0,
             height: "100vh",
-            overflow: "hidden",
+            overflow: "visible",
             zIndex: 1,
             isolation: "isolate",
             // perspective on the outer container makes translateZ work
@@ -364,11 +365,13 @@ export default function HeroAS() {
                   Scroll
                 </span>
               </motion.div>
-              <div className="absolute right-1/2 bottom-9 flex flex-col text-white font bold text-[18px] items-center gap-2.5 z-40"> hi here  </div>
-
             </div>
           </motion.div>
         </div>
+
+        {/* DialHero handoff: parked 90% below the viewport, then rises to center
+            during the same final 100vh cinematic exit as the Hero. */}
+        <DialHero revealProgress={exitProgress} />
 
       </div>
     </>
