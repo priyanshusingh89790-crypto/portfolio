@@ -54,7 +54,7 @@ export default function DialHero({
   const stageRef = useRef(null);
   const dialRef = useRef(null);
   const needleRef = useRef(null);
-  const s = useRef({ raw: 0, angle: 0, rise: peek ? PEEK_RISE : 1, riseV: peek ? PEEK_RISE : 1, snap: true, idx: 0, ready: false });
+  const s = useRef({ raw: 0, angle: 0, rise: peek ? PEEK_RISE : 1, riseV: peek ? PEEK_RISE : 1, handoff: 0, snap: true, idx: 0, ready: false });
 
   const [active, setActive] = useState(0);
   const [idle, setIdle] = useState(true);
@@ -85,6 +85,10 @@ export default function DialHero({
       s.current.rise = peek
         ? PEEK_RISE + (1 - PEEK_RISE) * easeOut(clamp(p / PEEK_REVEAL_PROGRESS))
         : 1;
+
+      s.current.handoff = heroReleased
+        ? easeOut(clamp(p / PEEK_REVEAL_PROGRESS))
+        : 0;
       
       s.current.raw = q * (count - 1) * step;
       s.current.snap = false;
@@ -132,6 +136,7 @@ export default function DialHero({
 
       if (needleRef.current) needleRef.current.style.transform = `rotate(${st.angle - 90}deg)`;
       stageRef.current?.style.setProperty("--rise", st.riseV.toFixed(4));
+      stageRef.current?.style.setProperty("--handoff", st.handoff.toFixed(4));
 
       const idx = clamp(Math.round(st.angle / step), 0, count - 1);
       if (idx !== st.idx) {
@@ -247,7 +252,7 @@ useEffect(() => {
       <style>{css}</style>
 
       <div ref={stageRef} className={`dh-stage sticky top-0 h-screen overflow-hidden ${
-  !heroReleased ? "dh-hero-parked" : ""
+  
 }`}
         style={{ 
           "--rise": peek ? PEEK_RISE : 1, 
@@ -320,18 +325,14 @@ useEffect(() => {
 
 const css = `
 .dh{font-family:"Helvetica Neue",Helvetica,Arial,sans-serif}
-.dh-stage{--rise:0}
-
-.dh-hero-parked .dh-dial{
-  transform:translate(-50%,calc(-50% + 40vh + var(--size) / 2)) scale(calc(.88 + .12 * var(--rise)));
-}
+.dh-stage{--rise:0;--handoff:0}
 
 .dh-dial{
   --size:min(84vmin,700px);--r:calc(var(--size)/2 - 22px);
   position:absolute;left:50%;top:50%;z-index:150;width:var(--size);height:var(--size);
   border-radius:50%;background:#fff;color:#111;
   box-shadow:0 30px 80px rgba(0,0,0,.25),0 0 0 1px rgba(0,0,0,.06);
-  transform:translate(-50%,calc(-50% + (1 - var(--rise)) * 50vh)) scale(calc(.88 + .12 * var(--rise)));
+  transform:translate(-50%,calc(-50% + (1 - var(--handoff)) * (40vh + var(--size) / 2) + var(--handoff) * (1 - var(--rise)) * 50vh)) scale(calc(.88 + .12 * var(--rise)));
   will-change:transform;transition:transform 1s cubic-bezier(0.22,1,0.36,1);pointer-events:auto}
 .dh-dial.dh-docked{
   transform:translate(-50%,-50%) translate(var(--dock-x,0),var(--dock-y,0)) scale(var(--dock-scale,1));
