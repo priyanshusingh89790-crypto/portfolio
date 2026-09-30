@@ -384,7 +384,7 @@ export default function HeroAS() {
         <div
           style={{
             position: "absolute",
-            top: "100%",
+            top: "calc(100% - 100vh)",
             left: 0,
             right: 0,
             zIndex: 150,
