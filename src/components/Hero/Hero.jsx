@@ -1,4 +1,4 @@
-import { useRef } from "react"
+import { useRef, useEffect } from "react"
 import { motion, useScroll, useTransform } from "motion/react"
 import DialHero from "../AI/Dialhero"
 
@@ -17,6 +17,22 @@ export default function HeroAS() {
   })  // ── Cinematic exit: driven by the final 100vh of the 400vh container
   // sp goes 0→1 over 400vh, so the last 100vh = sp 0.75→1.0
   const exitProgress = useTransform(sp, [0.75, 1.0], [0, 1])
+  useEffect(() => {
+  const unsubscribe = exitProgress.on("change", (value) => {
+    window.dispatchEvent(
+      new CustomEvent("hero-exit-progress", {
+        detail: value,
+      })
+    )
+
+    if (value >= 0.999) {
+      window.dispatchEvent(new CustomEvent("hero-exit-complete"))
+      unsubscribe()
+    }
+  })
+
+  return unsubscribe
+}, [exitProgress])
   const heroOpacity  = useTransform(exitProgress, [0, 0.6, 1], [1, 0.25, 0])
   const heroTransform = useTransform(exitProgress, [0, 0.6, 1], [
     "translate3d(0px, 0px, 0px) scale(1)",

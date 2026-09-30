@@ -61,6 +61,7 @@ export default function DialHero({
   const [ready, setReady] = useState(false);
   const [launch, setLaunch] = useState(null);
   const [docked, setDocked] = useState(false);
+  const [heroReleased, setHeroReleased] = useState(false);
 
   // The dial is parked half-hidden at the bottom of the Hero while the Hero is sticky.
   // It only begins rising once normal document scrolling reaches this section.
@@ -83,9 +84,11 @@ export default function DialHero({
       
       // The first half is parked at the Hero's bottom. After the Hero ends,
       // normal scrolling lifts the dial toward the center.
-      s.current.rise = peek
-        ? PEEK_RISE + (1 - PEEK_RISE) * easeOut(clamp(p / PEEK_REVEAL_PROGRESS))
-        : 1;
+      if (heroReleased) {
+        s.current.rise = peek
+          ? PEEK_RISE + (1 - PEEK_RISE) * easeOut(clamp(p / PEEK_REVEAL_PROGRESS))
+          : 1;
+      }
       
       s.current.raw = q * (count - 1) * step;
       s.current.snap = false;
@@ -221,20 +224,60 @@ export default function DialHero({
   const showCard = ready && idle && !launch && !docked;
   const current = questions[active];
 
+useEffect(() => {
+  const handleHeroExitProgress = (event) => {
+    const progress = event.detail;
+
+    if (typeof progress !== "number") return;
+
+    s.current.rise =
+      PEEK_RISE + (1 - PEEK_RISE) * easeOut(progress);
+  };
+
+  const handleHeroExitComplete = () => {
+    setHeroReleased(true);
+  };
+
+  window.addEventListener(
+    "hero-exit-progress",
+    handleHeroExitProgress
+  );
+
+  window.addEventListener(
+    "hero-exit-complete",
+    handleHeroExitComplete
+  );
+
+  return () => {
+    window.removeEventListener(
+      "hero-exit-progress",
+      handleHeroExitProgress
+    );
+
+    window.removeEventListener(
+      "hero-exit-complete",
+      handleHeroExitComplete
+    );
+  };
+}, []);
+
+
   return (
-    <section
-      ref={sectionRef}
-      className="dh relative"
-      style={{ 
-        height: `${count * 40 + 140}vh`,
-        marginTop: peek ? '-100vh' : 0,
-        pointerEvents: 'none',
-        zIndex: 150
-      }}
-    >
+  <section
+  ref={sectionRef}
+  className="dh relative"
+  style={{
+    height: `${count * 40 + 140}vh`,
+    marginTop: 0,
+    pointerEvents: 'none',
+    zIndex: 150
+  }}
+>
       <style>{css}</style>
 
-      <div ref={stageRef} className="dh-stage sticky top-0 h-screen overflow-hidden"
+      <div ref={stageRef} className={`dh-stage sticky top-0 h-screen overflow-hidden ${
+  !heroReleased ? "dh-hero-attached" : ""
+}`}
         style={{ 
           "--rise": peek ? PEEK_RISE : 1, 
           pointerEvents: 'auto'
