@@ -82,13 +82,9 @@ export default function DialHero({
       const p = clamp(-r.top / range);
       const q = clamp((p - lead) / (1 - lead - TAIL));
       
-      // The first half is parked at the Hero's bottom. After the Hero ends,
-      // normal scrolling lifts the dial toward the center.
-      if (heroReleased) {
-        s.current.rise = peek
-          ? PEEK_RISE + (1 - PEEK_RISE) * easeOut(clamp(p / PEEK_REVEAL_PROGRESS))
-          : 1;
-      }
+      s.current.rise = peek
+        ? PEEK_RISE + (1 - PEEK_RISE) * easeOut(clamp(p / PEEK_REVEAL_PROGRESS))
+        : 1;
       
       s.current.raw = q * (count - 1) * step;
       s.current.snap = false;
@@ -225,41 +221,16 @@ export default function DialHero({
   const current = questions[active];
 
 useEffect(() => {
-  const handleHeroExitProgress = (event) => {
-    const progress = event.detail;
+    const handleHeroExitComplete = () => {
+      setHeroReleased(true);
+    };
 
-    if (typeof progress !== "number") return;
+    window.addEventListener("hero-exit-complete", handleHeroExitComplete);
 
-    s.current.rise =
-      PEEK_RISE + (1 - PEEK_RISE) * easeOut(progress);
-  };
-
-  const handleHeroExitComplete = () => {
-    setHeroReleased(true);
-  };
-
-  window.addEventListener(
-    "hero-exit-progress",
-    handleHeroExitProgress
-  );
-
-  window.addEventListener(
-    "hero-exit-complete",
-    handleHeroExitComplete
-  );
-
-  return () => {
-    window.removeEventListener(
-      "hero-exit-progress",
-      handleHeroExitProgress
-    );
-
-    window.removeEventListener(
-      "hero-exit-complete",
-      handleHeroExitComplete
-    );
-  };
-}, []);
+    return () => {
+      window.removeEventListener("hero-exit-complete", handleHeroExitComplete);
+    };
+  }, []);
 
 
   return (
@@ -276,7 +247,7 @@ useEffect(() => {
       <style>{css}</style>
 
       <div ref={stageRef} className={`dh-stage sticky top-0 h-screen overflow-hidden ${
-  !heroReleased ? "dh-hero-attached" : ""
+  !heroReleased ? "dh-hero-parked" : ""
 }`}
         style={{ 
           "--rise": peek ? PEEK_RISE : 1, 
@@ -350,6 +321,10 @@ useEffect(() => {
 const css = `
 .dh{font-family:"Helvetica Neue",Helvetica,Arial,sans-serif}
 .dh-stage{--rise:0}
+
+.dh-hero-parked .dh-dial{
+  transform:translate(-50%,calc(-50% + 40vh + var(--size) / 2)) scale(calc(.88 + .12 * var(--rise)));
+}
 
 .dh-dial{
   --size:min(84vmin,700px);--r:calc(var(--size)/2 - 22px);
