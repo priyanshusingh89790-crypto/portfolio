@@ -42,7 +42,7 @@ def _format_result(point: Any) -> dict[str, Any]:
 
 
 def _query_terms(query: str) -> list[str]:
-    """Extract useful entity/keyword terms for a lexical ranking boost."""
+    """Extract useful entity/keyword terms for a lexical retrieval pass."""
     terms = re.findall(r"[A-Za-z][A-Za-z0-9+#.-]{1,}", query)
     return [
         term
@@ -63,9 +63,7 @@ def _lexical_match_score(result: dict[str, Any], terms: list[str]) -> float:
             str(result.get("source_title") or ""),
             str(metadata.get("project") or ""),
             str(metadata.get("section") or ""),
-            " ".join(
-                str(item) for item in metadata.get("technologies", []) or []
-            ),
+            " ".join(str(item) for item in metadata.get("technologies", []) or []),
         ]
     ).lower()
 
@@ -81,9 +79,8 @@ def _hybrid_search(
     category: str | None,
     project: str | None,
 ) -> list[dict[str, Any]]:
-    """One semantic query against Qdrant plus a lightweight lexical boost."""
+    """Combine semantic retrieval with a low-threshold lexical/entity pass."""
     vector = embed_query(query)
-
     points = search(
         vector,
         limit=limit,
@@ -92,15 +89,35 @@ def _hybrid_search(
         project=project,
     )
 
+    results: dict[str, dict[str, Any]] = {
+        str(point.id): _format_result(point)
+        for point in points
+    }
+
+    # Short entity queries such as "WPP" can have weak embedding similarity.
+    # Retrieve them without the normal threshold, then let exact term matches
+    # provide a modest ranking boost instead of replacing semantic retrieval.
     terms = _query_terms(query)
+    for term in terms:
+        term_vector = embed_query(term)
+        term_points = search(
+            term_vector,
+            limit=limit,
+            score_threshold=0.0,
+            category=category,
+            project=project,
+        )
+        for point in term_points:
+            result = _format_result(point)
+            key = result["id"]
+            existing = results.get(key)
+            if existing is None or result["score"] > existing["score"]:
+                results[key] = result
 
     ranked: list[dict[str, Any]] = []
-
-    for point in points:
-        result = _format_result(point)
+    for result in results.values():
         lexical_boost = _lexical_match_score(result, terms)
         semantic_score = float(result["score"])
-
         result["rank"] = semantic_score + lexical_boost
         result["lexical_boost"] = lexical_boost
         ranked.append(result)
@@ -121,7 +138,6 @@ def search_knowledge(
         return []
 
     limit = max(1, min(int(limit), MAX_LIMIT))
-
     return _hybrid_search(
         query,
         limit=limit,
@@ -152,5 +168,4 @@ def search_many(
 
     results = list(merged.values())
     results.sort(key=lambda item: item["rank"], reverse=True)
-
     return results[:max(1, min(int(total_limit), MAX_LIMIT))]
