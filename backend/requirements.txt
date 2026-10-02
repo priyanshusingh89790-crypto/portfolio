@@ -1,6 +1,6 @@
 python-dotenv
 qdrant-client
-sentence-transformers
+fastembed
 pypdf
 groq
 fastapi
