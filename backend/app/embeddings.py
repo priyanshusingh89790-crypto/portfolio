@@ -3,7 +3,7 @@ from __future__ import annotations
 import os
 from functools import lru_cache
 
-from sentence_transformers import SentenceTransformer
+from fastembed import TextEmbedding
 
 
 EMBEDDING_MODEL_NAME = os.getenv(
@@ -13,8 +13,8 @@ EMBEDDING_MODEL_NAME = os.getenv(
 
 
 @lru_cache(maxsize=1)
-def get_embedding_model() -> SentenceTransformer:
-    return SentenceTransformer(EMBEDDING_MODEL_NAME)
+def get_embedding_model() -> TextEmbedding:
+    return TextEmbedding(model_name=EMBEDDING_MODEL_NAME)
 
 
 def embed_documents(texts: list[str]) -> list[list[float]]:
@@ -22,23 +22,16 @@ def embed_documents(texts: list[str]) -> list[list[float]]:
         return []
 
     model = get_embedding_model()
-    vectors = model.encode_document(
-        texts,
-        normalize_embeddings=True,
-        show_progress_bar=False,
-    )
-    return [vector.tolist() for vector in vectors]
+    return [vector.tolist() for vector in model.embed(texts)]
 
 
 def embed_query(text: str) -> list[float]:
     model = get_embedding_model()
-    vector = model.encode_query(
-        text,
-        normalize_embeddings=True,
-        show_progress_bar=False,
-    )
+    vector = next(model.query_embed(text))
     return vector.tolist()
 
 
 def embedding_dimension() -> int:
-    return int(get_embedding_model().get_sentence_embedding_dimension())
+    model = get_embedding_model()
+    vector = next(model.query_embed("dimension check"))
+    return len(vector)
