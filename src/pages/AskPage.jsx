@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { ExternalLink, Github, Globe, Paperclip, ArrowUp } from "lucide-react";
@@ -53,6 +54,8 @@ const ACTIVE = "#ff7a1a";
 const INK = "#12141f";
 
 export default function AskPage() {
+  const [searchParams] = useSearchParams();
+  const initialQuestion = searchParams.get("q") || "";
   const [size, setSize] = useState({ w: DW, h: DH });
   const [pos, setPos] = useState(0);
   const [messages, setMessages] = useState([]);
@@ -148,6 +151,12 @@ export default function AskPage() {
   useEffect(() => {
     scroller.current?.scrollTo({ top: scroller.current.scrollHeight, behavior: "smooth" });
   }, [messages]);
+
+  // If AskAiHero sent a question, run it automatically on this page.
+  useEffect(() => {
+    if (!initialQuestion) return;
+    send(initialQuestion);
+  }, [initialQuestion]);
 
   /* ---------- sending ---------- */
   const send = async (text) => {
