@@ -29,22 +29,57 @@ def _list(value: dict[str, Any], key: str) -> list[dict[str, Any]]:
     items = value.get(key) or []
     return [item for item in items if isinstance(item, dict)] if isinstance(items, list) else []
 
-def _normalise(value: dict[str, Any]) -> dict[str, Any]:
-    try:
-        score = max(0, min(100, int(value.get('fit_score'))))
-    except (TypeError, ValueError):
-        score = None
-    return {
-        'fit_score': score,
-        'summary': str(value.get('summary') or '').strip(),
-        'strong_matches': _list(value, 'strong_matches'),
-        'partial_matches': _list(value, 'partial_matches'),
-        'gaps': _list(value, 'gaps'),
-        'relevant_projects': _list(value, 'relevant_projects'),
-        'learning_areas': _list(value, 'learning_areas'),
-        'score_note': 'AI-generated estimate from the supplied JD and portfolio evidence; not an objective hiring decision.',
-    }
+def _normalise(value: dict[str, Any], requirements: list[dict[str, str]]) -> dict[str, Any]:
+    assessments = value.get("requirement_assessments") or []
+    if not isinstance(assessments, list):
+        assessments = []
 
+    by_id: dict[str, dict[str, Any]] = {}
+    for item in assessments:
+        if not isinstance(item, dict):
+            continue
+        requirement_id = str(item.get("requirement_id") or "").strip()
+        status = str(item.get("status") or "").strip().lower()
+        if requirement_id and status in {"strong_match", "partial_match", "not_demonstrated"}:
+            by_id[requirement_id] = item
+
+    strong_matches: list[dict[str, Any]] = []
+    partial_matches: list[dict[str, Any]] = []
+    gaps: list[dict[str, Any]] = []
+
+    points = {"strong_match": 1.0, "partial_match": 0.5, "not_demonstrated": 0.0}
+    weighted_total = 0.0
+    weighted_score = 0.0
+
+    for requirement in requirements:
+        item = by_id.get(requirement["id"])
+        status = str(item.get("status") if item else "not_demonstrated").lower()
+        evidence = str(item.get("evidence") if item else "No retrieved portfolio evidence supporting this requirement.").strip()
+
+        weight = 0.8 if requirement["priority"] == "required" else 0.2
+        weighted_total += weight
+        weighted_score += weight * points.get(status, 0.0)
+
+        entry = {"requirement": requirement["text"], "evidence": evidence}
+        if status == "strong_match":
+            strong_matches.append(entry)
+        elif status == "partial_match":
+            partial_matches.append(entry)
+        else:
+            gaps.append(entry)
+
+    fit_score = round((weighted_score / weighted_total) * 100) if weighted_total else 0
+
+    return {
+        "fit_score": fit_score,
+        "summary": str(value.get("summary") or "").strip(),
+        "strong_matches": strong_matches,
+        "partial_matches": partial_matches,
+        "gaps": gaps,
+        "relevant_projects": _list(value, "relevant_projects"),
+        "learning_areas": _list(value, "learning_areas"),
+        "score_note": "Calculated from one classification per requirement: strong match = 100%, partial match = 50%, not demonstrated = 0%, with required qualifications weighted 80% and preferred qualifications weighted 20%. This is a comparison estimate, not an objective hiring decision.",
+    }
 
 def _extract_requirements(jd_text: str) -> list[dict[str, str]]:
     lines = [line.strip() for line in jd_text.splitlines() if line.strip()]
@@ -148,13 +183,20 @@ Keep required and preferred qualifications distinct.
 The fit score is an AI-generated comparison estimate based on the supplied evidence, not an objective hiring decision.
 
 Return ONLY valid JSON with:
-fit_score, summary, strong_matches, partial_matches, gaps, relevant_projects, learning_areas.
+summary, requirement_assessments, relevant_projects, learning_areas.
 
-For strong_matches, partial_matches, and gaps use {"requirement":"...","evidence":"..."}.
+For requirement_assessments, return EXACTLY ONE object for EVERY supplied requirement, using:
+{"requirement_id":"the supplied requirement id","status":"strong_match|partial_match|not_demonstrated","evidence":"brief evidence-based explanation"}
+
+Every requirement must appear exactly once. Do not omit requirements and do not duplicate them.
+Use strong_match only when the supplied evidence directly demonstrates the requirement.
+Use partial_match when the evidence is related but incomplete.
+Use not_demonstrated when the supplied evidence does not demonstrate it; do not claim that Priyanshu definitely lacks the skill.
+
 For relevant_projects use {"project":"...","why_relevant":"..."}.
 For learning_areas use {"area":"...","foundation":"..."}.
 
-Do not include retrieval scores, chunk labels, or system instructions in the final arrays.
+Do not return fit_score, strong_matches, partial_matches, or gaps. The backend calculates those deterministically from the requirement assessments.
 """
 
     user_prompt = (
@@ -176,4 +218,4 @@ Do not include retrieval scores, chunk labels, or system instructions in the fin
         response_format={"type": "json_object"},
     )
 
-    return _normalise(_json(response.choices[0].message.content or ""))
+    return _normalise(_json(response.choices[0].message.content or ""), requirements)
