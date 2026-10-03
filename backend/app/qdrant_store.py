@@ -57,6 +57,7 @@ def upsert_chunks(chunks: list[dict[str, Any]], vectors: list[list[float]]) -> i
             "subcategory": chunk["subcategory"],
             "project": chunk.get("project"),
             "technologies": chunk.get("technologies", []),
+            "links": chunk.get("links", []),
             "content_type": chunk["content_type"],
             "source": chunk.get("source", "portfolio_knowledge.md"),
             "section": chunk["section"],
