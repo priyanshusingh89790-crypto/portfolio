@@ -83,7 +83,7 @@ export default function HeroAS() {
   // Fire hero-exit-complete when exitProgress hits 1
   useEffect(() => {
     return exitProgress.on("change", (v) => {
-      if (v >= 0.98) {
+      if (v >= 0.999) {
         window.dispatchEvent(new CustomEvent("hero-exit-complete"));
       }
     });
