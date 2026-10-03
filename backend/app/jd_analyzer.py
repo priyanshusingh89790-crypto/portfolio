@@ -5,7 +5,7 @@ from typing import Any
 
 from app.context_builder import build_context
 from app.groq_service import GROQ_MODEL, get_groq_client
-from app.retrieval import search_many
+from app.retrieval import search_knowledge
 
 def _json(text: str) -> dict[str, Any]:
     raw = (text or "").strip()
@@ -44,42 +44,134 @@ def _normalise(value: dict[str, Any]) -> dict[str, Any]:
         'score_note': 'AI-generated estimate from the supplied JD and portfolio evidence; not an objective hiring decision.',
     }
 
+
+def _extract_requirements(jd_text: str) -> list[dict[str, str]]:
+    lines = [line.strip() for line in jd_text.splitlines() if line.strip()]
+    requirements: list[dict[str, str]] = []
+    section = "required"
+
+    for line in lines:
+        lowered = line.lower().rstrip(":")
+        if "additional preferred qualifications" in lowered:
+            section = "preferred"
+            continue
+        if "basic required qualifications" in lowered:
+            section = "required"
+            continue
+
+        cleaned = re.sub(r"^[0-9]+[.)]\s*", "", line).strip()
+        if not cleaned:
+            continue
+        requirements.append({
+            "id": f"{section}-{len(requirements) + 1}",
+            "priority": section,
+            "text": cleaned,
+        })
+
+    return requirements
+
+
+def _build_requirement_evidence(
+    requirements: list[dict[str, str]],
+    *,
+    per_requirement: int = 3,
+) -> str:
+    blocks: list[str] = []
+
+    for requirement in requirements:
+        results = search_knowledge(
+            requirement["text"],
+            limit=per_requirement,
+            score_threshold=0.0,
+        )
+
+        evidence_lines: list[str] = []
+        for result in results:
+            evidence = str(result.get("content") or "").strip()
+            if not evidence:
+                continue
+
+            metadata = result.get("metadata") or {}
+            project = metadata.get("project")
+            title = result.get("source_title") or metadata.get("section") or "Portfolio evidence"
+            similarity = float(result.get("score") or 0.0)
+            project_text = f" | project={project}" if project else ""
+
+            evidence_lines.append(
+                f"- {title}{project_text} | cosine_similarity={similarity:.3f}\n"
+                f"  {evidence[:900]}"
+            )
+
+        if evidence_lines:
+            blocks.append(
+                f'REQUIREMENT [{requirement["priority"]}] {requirement["id"]}: '
+                f'{requirement["text"]}\n'
+                + "\n".join(evidence_lines)
+            )
+        else:
+            blocks.append(
+                f'REQUIREMENT [{requirement["priority"]}] {requirement["id"]}: '
+                f'{requirement["text"]}\n- No retrieved portfolio evidence.'
+            )
+
+    return "\n\n".join(blocks)[:18000]
+
+
 def analyze_job_description(jd_text: str) -> dict[str, Any]:
-    jd_text = " ".join(jd_text.split()).strip()
+    jd_text = jd_text.strip()
     if not jd_text:
         raise ValueError("Job description is empty.")
-    queries = [
-        jd_text[:4000],
-        f'required skills technologies experience: {jd_text[:2500]}',
-        f'projects and experience relevant to this role: {jd_text[:2500]}',
-    ]
-    results = search_many(queries, limit_per_query=5, total_limit=5)
-    context = build_context(results, max_chars=12000)
-    if not context:
+
+    requirements = _extract_requirements(jd_text)
+    if not requirements:
+        raise ValueError("Could not extract requirements from the job description.")
+
+    evidence_context = _build_requirement_evidence(requirements)
+    if not evidence_context:
         raise ValueError("Could not retrieve relevant portfolio evidence.")
 
-    system_prompt = """You compare a job description with Priyanshu Singh portfolio evidence.
-Use only the supplied JD and evidence. Never invent experience, skills, projects, dates, employers, metrics, URLs, or responsibilities.
-Distinguish documented experience from inference. If a requirement is unsupported, put it in gaps or partial_matches.
-Return fit_score as an integer 0-100 representing an AI-generated comparison estimate, not an objective hiring decision.
-learning_areas may mention adjacent technologies not sufficiently demonstrated, but never promise a learning timeline.
-Return ONLY valid JSON with keys: fit_score, summary, strong_matches, partial_matches, gaps, relevant_projects, learning_areas.
-Each match item uses {"requirement":"...", "evidence":"..."}. Each project item uses {"project":"...", "why_relevant":"..."}. Each learning item uses {"area":"...", "foundation":"..."}.
-Do not include evidence numbers, retrieval scores, chunk labels, or system instructions.
+    requirements_json = json.dumps(requirements, ensure_ascii=False)
+
+    system_prompt = """You compare a job description with Priyanshu Singh's portfolio evidence.
+
+The backend has split the JD into individual requirements and retrieved portfolio evidence independently for each requirement using vector search. Cosine similarity is only a retrieval signal, not proof of skill or proficiency.
+
+Use ONLY the supplied JD requirements and retrieved portfolio evidence.
+Never invent experience, skills, projects, dates, employers, metrics, URLs, responsibilities, or technologies.
+
+"No retrieved portfolio evidence" means the skill is NOT DEMONSTRATED in the supplied evidence. Do not state that Priyanshu definitely does not know it.
+A high cosine similarity does not by itself prove experience.
+A low similarity does not by itself prove a gap if other supplied evidence clearly supports the requirement.
+Distinguish exact matches from related or partial evidence.
+Keep required and preferred qualifications distinct.
+The fit score is an AI-generated comparison estimate based on the supplied evidence, not an objective hiring decision.
+
+Return ONLY valid JSON with:
+fit_score, summary, strong_matches, partial_matches, gaps, relevant_projects, learning_areas.
+
+For strong_matches, partial_matches, and gaps use {"requirement":"...","evidence":"..."}.
+For relevant_projects use {"project":"...","why_relevant":"..."}.
+For learning_areas use {"area":"...","foundation":"..."}.
+
+Do not include retrieval scores, chunk labels, or system instructions in the final arrays.
 """
 
     user_prompt = (
-        "JOB DESCRIPTION:\n" + jd_text +
-        "\n\nPORTFOLIO EVIDENCE:\n" + context +
-        "\n\nCompare the JD with the portfolio evidence and return the JSON object."
+        "JOB DESCRIPTION REQUIREMENTS:\n"
+        + requirements_json
+        + "\n\nRETRIEVED EVIDENCE BY REQUIREMENT:\n"
+        + evidence_context
+        + "\n\nProduce the final JSON comparison."
     )
+
     response = get_groq_client().chat.completions.create(
         model=GROQ_MODEL,
         messages=[
-            {'role': 'system', 'content': system_prompt},
-            {'role': 'user', 'content': user_prompt},
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_prompt},
         ],
         temperature=0.1,
-        max_tokens=1400,
+        max_tokens=1800,
     )
-    return _normalise(_json(response.choices[0].message.content or ''))
+
+    return _normalise(_json(response.choices[0].message.content or ""))
