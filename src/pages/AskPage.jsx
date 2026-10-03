@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { ExternalLink, Github, Globe } from "lucide-react";
+import { ExternalLink, Github, Globe, Paperclip } from "lucide-react";
 import gsap from "gsap";
 import { sendChatMessage } from "../services/chatService";
 
@@ -291,19 +291,30 @@ export default function AskPage() {
         </div>
 
         <div style={{ paddingBottom: px(64), paddingTop: px(16) }}>
-          <input
-            value={draft}
-            onChange={(e) => setDraft(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && send(draft)}
-            placeholder="Ask me anything…"
-            disabled={busy}
-            className="w-full bg-transparent outline-none"
-            style={{
-              fontSize: px(30), fontWeight: 400, letterSpacing: "-0.01em",
-              borderBottom: `${Math.max(1, px(2))}px solid ${INK}`, paddingBottom: px(10),
-            }}
-          />
-        </div>
+          <div className="relative">
+            <input
+              value={draft}
+              onChange={(e) => setDraft(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && send(draft)}
+              placeholder="Ask me anything…"
+              disabled={busy}
+              className="w-full bg-transparent outline-none pr-12"
+              style={{
+                fontSize: px(30), fontWeight: 400, letterSpacing: "-0.01em",
+                borderBottom: `${Math.max(1, px(2))}px solid ${INK}`, paddingBottom: px(10),
+              }}
+            />
+            <button
+              type="button"
+              aria-label="Upload job description"
+              title="Upload job description"
+              disabled={busy}
+              className="absolute right-0 bottom-2 grid place-items-center rounded-full transition-all duration-200 hover:bg-black/5 disabled:opacity-40"
+              style={{ width: px(38), height: px(38) }}
+            >
+              <Paperclip size={px(21)} strokeWidth={1.8} />
+            </button>
+          </div>        </div>
       </div>
 
       <style>{`
