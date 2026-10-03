@@ -258,10 +258,13 @@ export default function AskAiHero({
     <div
       ref={wrapperRef}
       style={{
-        position: "relative",
-        // When parked, push the visible sticky element down so 90% is below viewport.
-        // translateY on the wrapper doesn't remove document height.
-        '--park-offset': peek && !released ? '90vh' : '0px',
+        // Park the whole AskAiHero at 11% while Hero is running.
+        // Once Hero releases it, return it to normal document flow.
+        position: peek && !released ? "fixed" : "relative",
+        top: peek && !released ? "11%" : "auto",
+        left: peek && !released ? 0 : "auto",
+        width: "100%",
+        zIndex: 3,
       }}
     >
       <section
