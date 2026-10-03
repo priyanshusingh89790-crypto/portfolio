@@ -348,10 +348,29 @@ function App() {
             <Route path="/ask" element={<AskPage />} />
             <Route path="*" element={
               <>
-                <div id="hero" style={{ position: "relative", zIndex: 2 }}>
+                <div
+                  id="hero"
+                  style={{
+                    position: "relative",
+                    zIndex: 2,
+                  }}
+                >
                   <Hero />
+
+                  {/* Ask AI is anchored to the Hero and sits 10% from its top.
+                      It remains parked internally until hero-exit-complete fires. */}
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: "10%",
+                      left: 0,
+                      width: "100%",
+                      zIndex: 3,
+                    }}
+                  >
+                    <AskAiHero peek lenis={lenisRef.current} />
+                  </div>
                 </div>
-                <AskAiHero peek lenis={lenisRef.current} />
                 <About />
                 <Projects />
                 <Skills />
