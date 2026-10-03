@@ -196,6 +196,8 @@ Use not_demonstrated when the supplied evidence does not demonstrate it; do not 
 For relevant_projects use {"project":"...","why_relevant":"..."}.
 For learning_areas use {"area":"...","foundation":"..."}.
 
+learning_areas is REQUIRED. Include useful learning areas for the most important partial_match and not_demonstrated requirements. If there are no meaningful gaps, return an empty list. Do not invent a missing skill; base each learning area on a supplied requirement and its evidence.
+
 Do not return fit_score, strong_matches, partial_matches, or gaps. The backend calculates those deterministically from the requirement assessments.
 """
 
