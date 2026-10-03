@@ -74,7 +74,7 @@ const pad = (n) => String(n).padStart(2, "0");
 
 export default function AskAiHero({
   questions = MOCK_QUESTIONS,
-  chatHref = "/chat",
+  chatHref = "/ask",
   onAsk,
   peek = false,
   lenis: lenisProp,
@@ -233,6 +233,40 @@ export default function AskAiHero({
       },
     });
   };
+  // When the 12th (last) question is reached, reveal the existing header Ask AI button.
+  useEffect(() => {
+    const slot = document.getElementById("dial-nav-slot");
+    if (!slot) return;
+
+    if (active === count - 1) {
+      gsap.killTweensOf(slot);
+      gsap.fromTo(
+        slot,
+        { opacity: 0, scale: 0.65, y: -10, pointerEvents: "none" },
+        {
+          opacity: 1,
+          scale: 1,
+          y: 0,
+          pointerEvents: "auto",
+          duration: 0.7,
+          ease: "back.out(1.7)",
+          overwrite: true,
+        }
+      );
+    } else {
+      gsap.killTweensOf(slot);
+      gsap.to(slot, {
+        opacity: 0,
+        scale: 0.85,
+        y: -6,
+        pointerEvents: "none",
+        duration: 0.35,
+        ease: "power2.out",
+        overwrite: true,
+      });
+    }
+  }, [active, count]);
+
   const showCard = ready && idle && !launch;
   const current = questions[active];
 
