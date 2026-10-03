@@ -31,3 +31,18 @@ export async function sendChatMessage(message) {
   return data;
 
 }
+
+export async function analyzeJobDescription(jobDescription) {
+  const trimmed = jobDescription.trim();
+  if (!trimmed) throw new Error("Job description cannot be empty");
+  const response = await fetch(`${BACKEND_URL}/api/ai/analyze-jd`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ job_description: trimmed }),
+  });
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({ detail: "Unknown error" }));
+    throw new Error(errorData.detail || `API error: ${response.status}`);
+  }
+  return response.json();
+}
