@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { ExternalLink, Github, Globe, Paperclip } from "lucide-react";
+import { ExternalLink, Github, Globe, Paperclip, ArrowUp } from "lucide-react";
 import gsap from "gsap";
-import { sendChatMessage } from "../services/chatService";
+import { analyzeJobDescription, sendChatMessage } from "../services/chatService";
 
 const QUESTIONS = [
   "Which project are you proudest of?",
@@ -37,6 +37,8 @@ export default function AskPage() {
   const [messages, setMessages] = useState([]);
   const [draft, setDraft] = useState("");
   const [busy, setBusy] = useState(false);
+  const [selectedFile, setSelectedFile] = useState("");
+  const fileInput = useRef(null);
 
   const proxy = useRef({ v: 0 });
   const target = useRef(0);
@@ -152,6 +154,51 @@ export default function AskPage() {
     }
   };
 
+  const extractFileText = async (file) => {
+    const name = file.name.toLowerCase();
+    if (name.endsWith(".txt") || name.endsWith(".md")) return file.text();
+    if (name.endsWith(".pdf")) {
+      const pdfjs = await import("pdfjs-dist");
+      const pdf = await pdfjs.getDocument({ data: new Uint8Array(await file.arrayBuffer()) }).promise;
+      const pages = [];
+      for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber += 1) {
+        const page = await pdf.getPage(pageNumber);
+        const content = await page.getTextContent();
+        pages.push(content.items.map((item) => item.str || "").join(" "));
+      }
+      return pages.join("\n\n");
+    }
+    if (name.endsWith(".docx")) {
+      const mammoth = await import("mammoth");
+      return (await mammoth.extractRawText({ arrayBuffer: await file.arrayBuffer() })).value;
+    }
+    throw new Error("Please upload a TXT, MD, PDF, or DOCX job description.");
+  };
+
+  const onFileChange = async (e) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    setBusy(true);
+    setSelectedFile(file.name);
+    try {
+      const text = await extractFileText(file);
+      if (!text.trim()) throw new Error("Could not extract any text from this file.");
+      const result = await analyzeJobDescription(text);
+      const strong = (result.strong_matches || []).map((x) => `- **${x.requirement}** — ${x.evidence}`).join("\n");
+      const partial = (result.partial_matches || []).map((x) => `- **${x.requirement}** — ${x.evidence}`).join("\n");
+      const gaps = (result.gaps || []).map((x) => `- **${x.requirement}** — ${x.evidence}`).join("\n");
+      setMessages((m) => [...m,
+        { id: Date.now(), role: "user", text: `Analyze this job description: **${file.name}**` },
+        { id: Date.now() + 1, role: "ai", text: `### JD Match — ${result.fit_score ?? 0}%\n\n${result.summary || "Analysis completed."}\n\n**Strong matches**\n${strong || "- None"}\n\n**Partial matches**\n${partial || "- None"}\n\n**Not demonstrated**\n${gaps || "- None"}` }
+      ]);
+    } catch (error) {
+      setMessages((m) => [...m, { id: Date.now(), role: "ai", text: `Error: ${error.message}` }]);
+    } finally {
+      setBusy(false);
+      setSelectedFile("");
+    }
+  };
   const onItemClick = (i) => {
     if (moved.current) return;
     if (i === active) send(QUESTIONS[i]);
@@ -296,25 +343,30 @@ export default function AskPage() {
               value={draft}
               onChange={(e) => setDraft(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && send(draft)}
-              placeholder="Ask me anything…"
+              placeholder={selectedFile || "Ask me anything…"}
               disabled={busy}
-              className="w-full bg-transparent outline-none pr-12"
+              className="w-full bg-transparent outline-none pr-24"
               style={{
                 fontSize: px(30), fontWeight: 400, letterSpacing: "-0.01em",
                 borderBottom: `${Math.max(1, px(2))}px solid ${INK}`, paddingBottom: px(10),
               }}
             />
-            <button
-              type="button"
-              aria-label="Upload job description"
-              title="Upload job description"
-              disabled={busy}
-              className="absolute right-0 bottom-2 grid place-items-center rounded-full transition-all duration-200 hover:bg-black/5 disabled:opacity-40"
-              style={{ width: px(38), height: px(38) }}
-            >
-              <Paperclip size={px(21)} strokeWidth={1.8} />
-            </button>
-          </div>        </div>
+            <input ref={fileInput} type="file" accept=".txt,.md,.pdf,.docx" onChange={onFileChange} className="hidden" />
+            <div className="absolute right-0 bottom-1 flex items-center gap-2">
+              <button type="button" aria-label="Upload job description" title="Upload job description" disabled={busy}
+                onClick={() => fileInput.current?.click()}
+                className="grid place-items-center rounded-full transition-all duration-200 hover:bg-black/5 disabled:opacity-40"
+                style={{ width: px(38), height: px(38) }}>
+                <Paperclip size={px(20)} strokeWidth={1.8} />
+              </button>
+              <button type="button" aria-label="Send message" title="Send" disabled={busy || !draft.trim()}
+                onClick={() => send(draft)}
+                className="grid place-items-center rounded-full text-white transition-all duration-200 hover:scale-105 disabled:opacity-30"
+                style={{ width: px(38), height: px(38), background: INK }}>
+                <ArrowUp size={px(20)} strokeWidth={2.1} />
+              </button>
+            </div>
+          </div>      </div>
       </div>
 
       <style>{`
