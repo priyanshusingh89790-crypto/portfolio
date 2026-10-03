@@ -1061,3 +1061,27 @@ Strong skills demonstrated
 
 ---
 
+
+
+---
+
+14. VERIFIED PROJECT LINKS
+
+Verified GitHub repositories for Priyanshu's projects. These URLs are factual links and must be preserved exactly when relevant. No live deployment URL is claimed here unless explicitly listed.
+
+- Personal Portfolio — GitHub: https://github.com/priyanshusingh89790-crypto/portfolio
+- Netflix GPT — GitHub: https://github.com/priyanshusingh89790-crypto/netflix-gpt
+- Dev Meetup — GitHub: https://github.com/priyanshusing89790-crypto/Dev-meetup
+- PrimeReactPagination — GitHub: https://github.com/priyanshusing89790-crypto/PrimeReactPagination
+- AI Safety SOS — GitHub: https://github.com/priyanshusing89790-crypto/ai-safety-sos
+- AI Recruiter — GitHub: https://github.com/priyanshusing89790-crypto/ai-recruiter
+- Mail Inbox Task — GitHub: https://github.com/priyanshusing89790-crypto/Mail-Inbox-Task
+- Inventory Management System — GitHub: https://github.com/priyanshusing89790-crypto/inventory-management-system
+- CineGraph — GitHub: https://github.com/priyanshusing89790-crypto/cinegrapgh
+- Sales CRM — GitHub: https://github.com/priyanshusing89790-crypto/sales_CRM
+- AI Workspace — GitHub: https://github.com/priyanshusing89790-crypto/Ai-workspace
+- SocialPost — GitHub: https://github.com/priyanshusing89790-crypto/3w-social-post-app
+- AI Trading Research — GitHub: https://github.com/priyanshusing89790-crypto/AI-TRADING-RESEARCH
+- AI Integration — GitHub: https://github.com/priyanshusing89790-crypto/Ai-integration
+- ArchScale Voice Assistant — GitHub: https://github.com/priyanshusing89790-crypto/ARCHSCALE-VOICE_ASSISTANT
+- Brand Project — GitHub: https://github.com/priyanshusing89790-crypto/brand-project
