@@ -11,6 +11,7 @@ import Loader from './components/Loader/Loader';
 import CustomCursor from './components/CustomCursor/CustomCursor';
 import Hero from './components/Hero/Hero';
 import AskAiHero from './components/AI/askaihero';
+import Dialhero from './components/AI/Dialhero';
 import About from './components/About/About';
 import Projects from './components/Projects/Projects';
 import Skills from './components/Skills/Skills';
@@ -356,21 +357,10 @@ function App() {
                   }}
                 >
                   <Hero />
-
-                  {/* Ask AI stays exactly where it is visually during Hero.
-                      Hero controls its release through the existing event. */}
-                  <div
-                    style={{
-                      position: "fixed",
-                      top: "11%",
-                      left: 0,
-                      width: "100%",
-                      zIndex: 3,
-                    }}
-                  >
-                    <AskAiHero peek lenis={lenisRef.current} />
-                  </div>
                 </div>
+
+                <AskAiHero lenis={lenisRef.current} />
+                <Dialhero />
                 <About />
                 <Projects />
                 <Skills />
