@@ -113,7 +113,7 @@ def clean_heading(value: str) -> str:
 
 EVIDENCE_SECTION_START = 2
 EVIDENCE_SECTION_END = 15
-EXCLUDED_EVIDENCE_SECTIONS = {14}
+EXCLUDED_EVIDENCE_SECTIONS = set()
 
 
 def _structured_text_to_markdown(text: str) -> str:
@@ -214,6 +214,7 @@ def prepare_chunks(markdown: str, source_name: str, source_id: str) -> list[dict
                 "content_type": chunk.content_type,
                 "project": project,
                 "technologies": [],
+                "links": [],
                 "source": source_name,
             }
         )
