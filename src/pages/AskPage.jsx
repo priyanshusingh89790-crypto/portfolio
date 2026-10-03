@@ -6,18 +6,39 @@ import gsap from "gsap";
 import { analyzeJobDescription, sendChatMessage } from "../services/chatService";
 
 const QUESTIONS = [
-  "Which project are you proudest of?",
-  "How does your RAG assistant work?",
-  "What's your tech stack?",
-  "Tell me about your AI projects",
-  "How do you handle performance?",
-  "What's your experience with React?",
-  "How do you design systems?",
-  "What are you learning now?",
-  "How does the WPP automation work?",
-  "What's your approach to testing?",
-  "Tell me about your work at EWHENT",
-  "Why should someone hire you?",
+
+  "What can Priyanshu build?",
+
+  "What are Priyanshu's strongest technical skills?",
+
+  "Tell me about Priyanshu's best projects",
+
+  "Show me Priyanshu's AI work",
+
+  "How does Priyanshu's portfolio AI work?",
+
+  "What has Priyanshu built with React?",
+
+  "What full-stack applications has Priyanshu built?",
+
+  "What has Priyanshu built with AI and RAG?",
+
+  "How does Priyanshu integrate LLMs into applications?",
+
+  "What makes Priyanshu's projects technically interesting?",
+
+  "Show me Priyanshu's GitHub projects",
+
+  "What is Priyanshu currently learning?",
+
+  "Why should we hire Priyanshu?",
+
+  "What kind of developer is Priyanshu?",
+
+  "How does Priyanshu approach building a project?",
+
+  "What technologies does Priyanshu use to build AI applications?"
+
 ];
 
 // design constants measured from the reference (1838 x 922)
@@ -27,7 +48,7 @@ const CIRCLE_R = 614;    // white circle radius
 const DOT_R = 582;       // dots arc radius
 const TEXT_R = 636;      // label start radius
 const BUMP = 95;         // active label push-out
-const STEP = 4.2;        // degrees between items
+const STEP = 5;        // degrees between items
 const ACTIVE = "#ff7a1a";
 const INK = "#12141f";
 
@@ -347,7 +368,7 @@ export default function AskPage() {
               disabled={busy}
               className="w-full bg-transparent outline-none pr-24"
               style={{
-                fontSize: px(30), fontWeight: 400, letterSpacing: "-0.01em",
+                fontSize: px(24), fontWeight: 400, letterSpacing: "-0.01em",
                 borderBottom: `${Math.max(1, px(2))}px solid ${INK}`, paddingBottom: px(10),
               }}
             />
@@ -456,7 +477,7 @@ export default function AskPage() {
                 className="absolute whitespace-nowrap"
                 style={{
                   left: 0, top: 0, transformOrigin: "0 0",
-                  fontSize: px(44), fontWeight: 400, letterSpacing: "-0.015em", lineHeight: 1,
+                  fontSize: px(24), fontWeight: 400, letterSpacing: "-0.015em", lineHeight: 1,
                   color: isActive ? ACTIVE : INK,
                   transform: `rotate(${a}deg) translate(${px(TEXT_R + BUMP * near)}px, -50%)`,
                   transition: "color .25s",

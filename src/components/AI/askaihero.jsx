@@ -36,18 +36,31 @@ gsap.registerPlugin(ScrollTrigger, CustomEase);
 CustomEase.create("dhLaunch", "0.7, 0, 0.2, 1");
 
 const MOCK_QUESTIONS = [
-  { label: "Projects", q: "Which project are you proudest of, and why?" },
-  { label: "WPP", q: "How did you automate multilingual InDesign campaigns?" },
-  { label: "EWHENT", q: "What did you build on the ERP platform at EWHENT?" },
-  { label: "Stack", q: "What does your day-to-day frontend stack look like?" },
-  { label: "Agents", q: "How do you design an agentic AI workflow?" },
-  { label: "n8n", q: "Which n8n automations have saved the most time?" },
-  { label: "Performance", q: "How do you keep a React app fast as it grows?" },
-  { label: "State", q: "Redux, context or something else: how do you choose?" },
-  { label: "RAG", q: "How does this portfolio's RAG chatbot work?" },
-  { label: "Hire me", q: "Why should a team hire you as a frontend developer?" },
-  { label: "Learning", q: "What are you learning right now?" },
-  { label: "Contact", q: "What's the best way to reach you?" },
+
+  { label: "Projects", q: "Which project best represents what you can build?" },
+
+  { label: "WPP", q: "How did you automate multilingual InDesign campaigns at WPP?" },
+
+  { label: "EWHENT", q: "What did you build for the ERP platform at EWHENT?" },
+
+  { label: "Frontend", q: "What does your frontend stack look like, and why?" },
+
+  { label: "AI Agents", q: "How do you design and build agentic AI workflows?" },
+
+  { label: "n8n", q: "What workflows have you automated with n8n?" },
+
+  { label: "Performance", q: "How do you keep React applications fast as they scale?" },
+
+  { label: "State", q: "How do you decide between Redux, Context, and other state solutions?" },
+
+  { label: "RAG", q: "How does the AI assistant in this portfolio use RAG?" },
+
+  { label: "Hiring", q: "What makes you a strong fit for a frontend developer role?" },
+
+  { label: "Learning", q: "What are you currently learning and building?" },
+
+  { label: "Contact", q: "How can I get in touch with you?" },
+
 ];
 
 const RISE = 0.22; // share of the scroll used to lift the dial into view
@@ -285,7 +298,7 @@ export default function AskAiHero({
                 style={{ "--a": `${i * step - 90}deg` }}
                 aria-label={`Go to ${it.label}`}
               >
-                ({it.label})
+                {it.label}
               </button>
             ))}
 

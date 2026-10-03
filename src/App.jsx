@@ -361,8 +361,8 @@ function App() {
                       It remains parked internally until hero-exit-complete fires. */}
                   <div
                     style={{
-                      position: "absolute",
-                      top: "10%",
+                      position: "fixed",
+                      top: "11%",
                       left: 0,
                       width: "100%",
                       zIndex: 3,
