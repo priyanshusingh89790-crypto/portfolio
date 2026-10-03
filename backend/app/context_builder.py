@@ -20,6 +20,7 @@ def build_context(
         source = result.get("source") or "unknown source"
         section = metadata.get("section") or result.get("source_title") or "unknown section"
         project = metadata.get("project")
+        links = metadata.get("links") or []
         content = str(result.get("content") or "").strip()
 
         if not content:
@@ -28,6 +29,8 @@ def build_context(
         label_parts = [f"Evidence {index}", f"source={source}", f"section={section}"]
         if project:
             label_parts.append(f"project={project}")
+        if links:
+            label_parts.append(f"verified_links={", ".join(str(item) for item in links)}")
 
         block = f"[{' | '.join(label_parts)}]\n{content}"
         remaining = max_chars - total_chars
