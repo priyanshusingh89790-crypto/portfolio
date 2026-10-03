@@ -1,6 +1,5 @@
 import { useEffect, useRef } from "react"
 import { motion, useScroll, useTransform } from "motion/react"
-import DialHero from "../AI/Dialhero"
 
 const PORTRAIT = "./mypic.jpg"
 
@@ -17,16 +16,6 @@ export default function HeroAS() {
   })  // ── Cinematic exit: driven by the final 100vh of the 400vh container
   // sp goes 0→1 over 400vh, so the last 100vh = sp 0.75→1.0
   const exitProgress = useTransform(sp, [0.75, 1.0], [0, 1])
-  useEffect(() => {
-    const unsubscribe = exitProgress.on("change", (value) => {
-      if (value >= 0.999) {
-        window.dispatchEvent(new CustomEvent("hero-exit-complete"))
-        unsubscribe()
-      }
-    })
-
-    return unsubscribe
-  }, [exitProgress])
   const heroOpacity  = useTransform(exitProgress, [0, 0.6, 1], [1, 0.25, 0])
   const heroTransform = useTransform(exitProgress, [0, 0.6, 1], [
     "translate3d(0px, 0px, 0px) scale(1)",
@@ -91,6 +80,15 @@ export default function HeroAS() {
   const circRot     = useTransform(sp, [0, 0.75], [0, 720])
   const scrollIndOp = useTransform(sp, [0, 0.04, 0.14], [0, 1, 0])
 
+  // Fire hero-exit-complete when exitProgress hits 1
+  useEffect(() => {
+    return exitProgress.on("change", (v) => {
+      if (v >= 0.98) {
+        window.dispatchEvent(new CustomEvent("hero-exit-complete"));
+      }
+    });
+  }, [exitProgress]);
+
   return (
     <>
       {/*
@@ -107,7 +105,7 @@ export default function HeroAS() {
             position: "sticky",
             top: 0,
             height: "100vh",
-            overflow: "visible",
+            overflow: "hidden",
             zIndex: 1,
             isolation: "isolate",
             // perspective on the outer container makes translateZ work
@@ -227,10 +225,6 @@ export default function HeroAS() {
                   <motion.div
                     initial={{ opacity: 0, scaleY: 0 }}
                     animate={{ opacity: 1, scaleY: 1 }}
-                    onAnimationComplete={() => {
-                      window.__heroReady = true;
-                      window.dispatchEvent(new CustomEvent("hero:ready"));
-                    }}
                     transition={{
                       duration: 0.8,
                       ease: [0.22, 1, 0.36, 1],
@@ -375,22 +369,9 @@ export default function HeroAS() {
                   Scroll
                 </span>
               </motion.div>
+
             </div>
           </motion.div>
-        </div>
-
-        {/* DialHero handoff: starts ~90% below the viewport exactly when Hero ends,
-            then uses its own scroll animation to rise into view. */}
-        <div
-          style={{
-            position: "absolute",
-            top: "calc(100% - 100vh)",
-            left: 0,
-            right: 0,
-            zIndex: 150,
-          }}
-        >
-          <DialHero peek={true} chatHref="/chat" />
         </div>
 
       </div>

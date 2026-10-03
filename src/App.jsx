@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Lenis from 'lenis';
@@ -9,6 +10,7 @@ gsap.registerPlugin(ScrollTrigger);
 import Loader from './components/Loader/Loader';
 import CustomCursor from './components/CustomCursor/CustomCursor';
 import Hero from './components/Hero/Hero';
+import AskAiHero from './components/AI/askaihero';
 import About from './components/About/About';
 import Projects from './components/Projects/Projects';
 import Skills from './components/Skills/Skills';
@@ -17,6 +19,7 @@ import Experience from './components/Experience/Experience';
 import Contact from './components/Contact/Contact';
 import AudioPlayer from './components/AudioPlayer/AudioPlayer';
 import ThemeToggle from './components/ThemeToggle/ThemeToggle';
+import AskPage from './pages/AskPage';
 
 // Sections in DOM order — mark each as light or dark background
 const NAV_SECTIONS = [
@@ -183,7 +186,7 @@ function Header() {
           {/* Ask AI nav slot - hidden until docked */}
           <a
             id="dial-nav-slot"
-            href="/chat"
+            href="/ask"
             className="rounded-full px-2 py-1 text-sm text-white transition hover:opacity-90 border border-white/20"
             style={{
               fontFamily: 'var(--font-body, sans-serif)',
@@ -306,15 +309,23 @@ function Header() {
 // ── App ───────────────────────────────────────────────────────────────────────
 function App() {
   const [loaderComplete, setLoaderComplete] = useState(false);
+  const location = useLocation();
+  const lenisRef = useRef(null);
 
   useEffect(() => {
     const lenis = new Lenis({
       duration: 0.9,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
     });
+    lenisRef.current = lenis;
+    // expose globally so AskAiHero can reuse it
+    window.__lenis = lenis;
     gsap.ticker.add((time) => { lenis.raf(time * 1000); });
     gsap.ticker.lagSmoothing(0);
-    return () => { lenis.destroy(); };
+    return () => {
+      lenis.destroy();
+      delete window.__lenis;
+    };
   }, []);
 
   // Trigger audio when loader completes
@@ -325,22 +336,31 @@ function App() {
     }
   }, [loaderComplete]);
 
+  const isAskPage = location.pathname === '/ask';
+
   return (
     <div>
       {loaderComplete && (
         <div>
           <CustomCursor />
-          <Header />
-          {/* Hero has no id set inside its component — add a wrapper */}
-          <div id="hero" style={{ position: "relative", zIndex: 200 }}>
-  <Hero />
-</div>
-          <About />
-          <Projects />
-          <Skills />
-          <ScrollVideoSection />
-          <Experience />
-          <Contact />
+          {!isAskPage && <Header />}
+          <Routes>
+            <Route path="/ask" element={<AskPage />} />
+            <Route path="*" element={
+              <>
+                <div id="hero" style={{ position: "relative", zIndex: 2 }}>
+                  <Hero />
+                </div>
+                <AskAiHero peek lenis={lenisRef.current} />
+                <About />
+                <Projects />
+                <Skills />
+                <ScrollVideoSection />
+                <Experience />
+                <Contact />
+              </>
+            } />
+          </Routes>
         </div>
       )}
       <AudioPlayer />
