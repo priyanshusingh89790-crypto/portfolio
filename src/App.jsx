@@ -11,7 +11,6 @@ import Loader from './components/Loader/Loader';
 import CustomCursor from './components/CustomCursor/CustomCursor';
 import Hero from './components/Hero/Hero';
 import AskAiHero from './components/AI/askaihero';
-import Dialhero from './components/AI/Dialhero';
 import About from './components/About/About';
 import Projects from './components/Projects/Projects';
 import Skills from './components/Skills/Skills';
@@ -360,7 +359,6 @@ function App() {
                 </div>
 
                 <AskAiHero lenis={lenisRef.current} />
-                <Dialhero />
                 <About />
                 <Projects />
                 <Skills />
