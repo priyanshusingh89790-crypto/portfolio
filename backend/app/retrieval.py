@@ -33,6 +33,7 @@ def _format_result(point: Any) -> dict[str, Any]:
             "subcategory": payload.get("subcategory"),
             "content_type": payload.get("content_type"),
             "technologies": payload.get("technologies", []),
+            "links": payload.get("links", []),
             "section": payload.get("section"),
             "heading_path": payload.get("heading_path", []),
             "chunk_key": payload.get("chunk_key"),
