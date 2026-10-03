@@ -309,8 +309,15 @@ function Header() {
 // ── App ───────────────────────────────────────────────────────────────────────
 function App() {
   const [loaderComplete, setLoaderComplete] = useState(false);
+  const [askHeroReleased, setAskHeroReleased] = useState(false);
   const location = useLocation();
   const lenisRef = useRef(null);
+
+  useEffect(() => {
+    const onHeroExit = () => setAskHeroReleased(true);
+    window.addEventListener('hero-exit-complete', onHeroExit);
+    return () => window.removeEventListener('hero-exit-complete', onHeroExit);
+  }, []);
 
   useEffect(() => {
     const lenis = new Lenis({
@@ -356,20 +363,20 @@ function App() {
                   }}
                 >
                   <Hero />
+                </div>
 
-                  {/* Ask AI is anchored to the Hero and sits 10% from its top.
-                      It remains parked internally until hero-exit-complete fires. */}
-                  <div
-                    style={{
-                      position: "fixed",
-                      top: "11%",
-                      left: 0,
-                      width: "100%",
-                      zIndex: 3,
-                    }}
-                  >
-                    <AskAiHero peek lenis={lenisRef.current} />
-                  </div>
+                {/* Ask AI is fixed at 11% only while Hero is animating.
+                    After Hero exits, it returns to normal document flow. */}
+                <div
+                  style={{
+                    position: askHeroReleased ? "relative" : "fixed",
+                    top: askHeroReleased ? "auto" : "11%",
+                    left: askHeroReleased ? "auto" : 0,
+                    width: "100%",
+                    zIndex: 3,
+                  }}
+                >
+                  <AskAiHero peek lenis={lenisRef.current} />
                 </div>
                 <About />
                 <Projects />
