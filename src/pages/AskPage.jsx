@@ -1,4 +1,7 @@
 import { useEffect, useRef, useState } from "react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import { ExternalLink, Github, Globe } from "lucide-react";
 import gsap from "gsap";
 import { sendChatMessage } from "../services/chatService";
 
@@ -236,7 +239,52 @@ export default function AskPage() {
                   letterSpacing: "-0.01em",
                 }}
               >
-                {m.text || "…"}
+                {m.text ? (
+                  m.role === "ai" ? (
+                    <div className="ai-markdown">
+                      <ReactMarkdown
+                        remarkPlugins={[remarkGfm]}
+                        components={{
+                          p: ({ children }) => <p>{children}</p>,
+                          strong: ({ children }) => <strong>{children}</strong>,
+                          ul: ({ children }) => <ul>{children}</ul>,
+                          ol: ({ children }) => <ol>{children}</ol>,
+                          li: ({ children }) => <li>{children}</li>,
+                          br: () => <br />,
+                          a: ({ href, children }) => {
+                            const isGithub = /github\.com/i.test(href || "");
+                            const isLive = !isGithub && /^(https?:\/\/)/i.test(href || "");
+                            const label = isGithub ? "GitHub Repository" : isLive ? "Open Link" : "External Link";
+                            const Icon = isGithub ? Github : Globe;
+                            return (
+                              <a
+                                href={href}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="ai-link-card"
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                <span className="ai-link-icon"><Icon size={18} strokeWidth={1.8} /></span>
+                                <span className="ai-link-copy">
+                                  <span className="ai-link-label">{label}</span>
+                                  <span className="ai-link-title">{children}</span>
+                                </span>
+                                <ExternalLink className="ai-link-arrow" size={17} strokeWidth={1.8} />
+                              </a>
+                            );
+                          },
+                          table: ({ children }) => <div className="ai-table-wrap"><table>{children}</table></div>,
+                          th: ({ children }) => <th>{children}</th>,
+                          td: ({ children }) => <td>{children}</td>,
+                        }}
+                      >
+                        {m.text}
+                      </ReactMarkdown>
+                    </div>
+                  ) : (
+                    m.text
+                  )
+                ) : "…"}
               </div>
             </div>
           ))}
@@ -257,6 +305,42 @@ export default function AskPage() {
           />
         </div>
       </div>
+
+      <style>{`
+        .ai-markdown { font-size: ${px(22)}px; line-height: 1.5; letter-spacing: -0.01em; }
+        .ai-markdown p { margin: 0 0 ${px(22)}px; }
+        .ai-markdown p:last-child { margin-bottom: 0; }
+        .ai-markdown strong { font-weight: 650; color: #080a10; }
+        .ai-markdown ul, .ai-markdown ol { margin: 0 0 ${px(22)}px; padding-left: ${px(28)}px; }
+        .ai-markdown li { margin: 0 0 ${px(8)}px; padding-left: ${px(3)}px; }
+        .ai-markdown li::marker { color: #ff6b35; }
+        .ai-link-card {
+          display: flex; align-items: center; gap: ${px(14)}px; width: 100%;
+          box-sizing: border-box; margin: ${px(24)}px 0; padding: ${px(15)}px ${px(16)}px;
+          border: 1px solid rgba(18,20,31,.12); border-radius: ${px(16)}px;
+          background: rgba(255,255,255,.68); color: #12141f; text-decoration: none;
+          box-shadow: 0 10px 30px rgba(18,20,31,.06);
+          transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease, background .25s ease;
+        }
+        .ai-link-card:hover { transform: translateY(-3px); border-color: rgba(255,107,53,.5); background: #fff; box-shadow: 0 16px 36px rgba(18,20,31,.11); }
+        .ai-link-icon { width: ${px(38)}px; height: ${px(38)}px; flex: 0 0 auto; display: grid; place-items: center; border-radius: 11px; background: #12141f; color: #fff; }
+        .ai-link-copy { min-width: 0; flex: 1; display: flex; flex-direction: column; gap: 3px; }
+        .ai-link-label { font-size: ${px(10)}px; letter-spacing: .14em; text-transform: uppercase; opacity: .45; }
+        .ai-link-title { font-size: ${px(15)}px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .ai-link-arrow { flex: 0 0 auto; opacity: .5; transition: transform .25s ease, opacity .25s ease; }
+        .ai-link-card:hover .ai-link-arrow { transform: translate(2px,-2px); opacity: 1; }
+        .ai-table-wrap { width: 100%; overflow-x: auto; margin: ${px(22)}px 0; border: 1px solid rgba(18,20,31,.1); border-radius: ${px(14)}px; background: rgba(255,255,255,.5); }
+        .ai-table-wrap table { width: 100%; border-collapse: collapse; min-width: 420px; font-size: ${px(15)}px; }
+        .ai-table-wrap th, .ai-table-wrap td { text-align: left; padding: ${px(11)}px ${px(13)}px; border-bottom: 1px solid rgba(18,20,31,.08); }
+        .ai-table-wrap th { font-weight: 650; background: rgba(18,20,31,.04); }
+        .ai-table-wrap tr:last-child td { border-bottom: 0; }
+        @media (max-width: 767px) {
+          .ai-markdown { font-size: 17px; line-height: 1.48; }
+          .ai-markdown p { margin-bottom: 18px; }
+          .ai-link-card { margin: 18px 0; padding: 13px; border-radius: 14px; }
+          .ai-link-title { font-size: 14px; }
+        }
+      `}</style>
 
       {/* WHEEL (right, fixed) */}
       <div
