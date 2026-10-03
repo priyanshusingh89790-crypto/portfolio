@@ -172,6 +172,7 @@ Do not include retrieval scores, chunk labels, or system instructions in the fin
         ],
         temperature=0.1,
         max_tokens=1800,
+        response_format={"type": "json_object"},
     )
 
     return _normalise(_json(response.choices[0].message.content or ""))
