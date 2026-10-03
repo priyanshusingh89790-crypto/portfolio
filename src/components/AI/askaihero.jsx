@@ -26,6 +26,7 @@
  *         <DialHero peek onAsk={(q) => router.push(`/chat?q=${encodeURIComponent(q.q)}`)} />
  */
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { CustomEase } from "gsap/CustomEase";
@@ -78,6 +79,7 @@ export default function AskAiHero({
   peek = false,
   lenis: lenisProp,
 }) {
+  const navigate = useNavigate();
   const count = questions.length;
   const step = 360 / count;
   const lead = peek ? RISE : 0;
@@ -92,24 +94,11 @@ export default function AskAiHero({
   const lenisRef      = useRef(null);
   const lastIdxRef    = useRef(0);
   const idleTimerRef  = useRef(null);
-  const releasedRef   = useRef(!peek); // parked until hero-exit-complete
 
   const [active,  setActive]  = useState(0);
   const [idle,    setIdle]    = useState(true);
   const [ready,   setReady]   = useState(!peek);
   const [launch,  setLaunch]  = useState(null);
-  const [released, setReleased] = useState(!peek);
-
-  // ── Park / release on hero-exit-complete ───────────────────────────────────
-  useEffect(() => {
-    if (!peek) return;
-    const onHeroExit = () => {
-      releasedRef.current = true;
-      setReleased(true);
-    };
-    window.addEventListener("hero-exit-complete", onHeroExit, { once: true });
-    return () => window.removeEventListener("hero-exit-complete", onHeroExit);
-  }, [peek]);
 
   // ── Lenis + ScrollTrigger ──────────────────────────────────────────────────
   useEffect(() => {
@@ -147,9 +136,6 @@ export default function AskAiHero({
     lenis.on("scroll", resetIdle);
 
     const apply = (self) => {
-      // Don't animate before hero has finished
-      if (!releasedRef.current) return;
-
       const p = self.progress;
 
       const rise = peek ? easeOutCubic(clamp(p / RISE)) : 1;
@@ -240,14 +226,13 @@ export default function AskAiHero({
       onComplete: () => {
         if (onAsk) {
           onAsk(item);
-          setTimeout(() => setLaunch(null), 1200);
         } else {
-          window.location.assign(`${chatHref}?q=${encodeURIComponent(item.q)}`);
+          navigate(`${chatHref}?q=${encodeURIComponent(item.q)}`);
         }
+        setTimeout(() => setLaunch(null), 1200);
       },
     });
   };
-
   const showCard = ready && idle && !launch;
   const current = questions[active];
 
@@ -258,11 +243,7 @@ export default function AskAiHero({
     <div
       ref={wrapperRef}
       style={{
-        // Park the whole AskAiHero at 11% while Hero is running.
-        // Once Hero releases it, return it to normal document flow.
-        position: peek && !released ? "fixed" : "relative",
-        top: peek && !released ? "11%" : "auto",
-        left: peek && !released ? 0 : "auto",
+        position: "relative",
         width: "100%",
         zIndex: 3,
       }}
@@ -273,8 +254,7 @@ export default function AskAiHero({
         style={{
           height: `${count * 40 + 140}vh`,
           // Shift the sticky stage down when parked
-          transform: peek && !released ? 'translateY(90vh)' : 'translateY(0)',
-          transition: released ? 'transform 0.6s cubic-bezier(0.22,1,0.36,1)' : 'none',
+          transform: "translateY(0)",
         }}
       >
         <style>{css}</style>
@@ -282,7 +262,7 @@ export default function AskAiHero({
         <div
           ref={stageRef}
           className="dh-stage sticky top-0 h-screen overflow-hidden"
-          style={{ "--rise": peek ? 0 : 1 }}
+          style={{ "--rise": 1 }}
         >
           {/* dial */}
           <div ref={dialRef} className="dh-dial">
